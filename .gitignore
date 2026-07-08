@@ -49,6 +49,7 @@ web_modules/
 
 # Optional npm cache directory
 .npm
+Developmentnpm-cache/
 
 # Optional eslint cache
 .eslintcache
@@ -77,6 +78,9 @@ web_modules/
 # Next.js build output
 .next
 out
+
+# Vercel local project state
+.vercel/
 
 # Nuxt.js build / generate output
 .nuxt
