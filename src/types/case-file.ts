@@ -34,6 +34,21 @@ export type ClaimStatus =
   | "speculative"
   | "disproven";
 
+export type ResearchStatus = "Documented" | "In Review" | "Requires Research";
+
+export type DossierField = {
+  label: string;
+  value: string;
+  status: ResearchStatus;
+  note?: string;
+};
+
+export type DossierSection = {
+  status: ResearchStatus;
+  summary: string;
+  fields: readonly DossierField[];
+};
+
 export type ArtifactProfile = {
   type: string;
   title: string;
@@ -76,6 +91,14 @@ export type TimelineEvent = {
   evidenceIds: readonly string[];
 };
 
+export type SourceRecord = {
+  id: string;
+  title: string;
+  citation: string;
+  status: ResearchStatus;
+  notes: string;
+};
+
 export type ResearchQuestion = {
   id: string;
   question: string;
@@ -96,6 +119,13 @@ export type RevisionRecord = {
   summary: string;
 };
 
+export type ConfidenceAssessment = {
+  level: ConfidenceLevel;
+  status: ResearchStatus;
+  rationale: string;
+  requirements: readonly string[];
+};
+
 export type CaseFile = {
   id: string;
   caseNumber: string;
@@ -109,10 +139,15 @@ export type CaseFile = {
   primaryQuestion: string;
   confidence: ConfidenceLevel;
   artifact: ArtifactProfile;
+  overview: DossierSection;
+  provenance: DossierSection;
+  physicalDescription: DossierSection;
   evidence: readonly EvidenceRecord[];
   claims: readonly ClaimRecord[];
   timeline: readonly TimelineEvent[];
+  sources: readonly SourceRecord[];
   researchQuestions: readonly ResearchQuestion[];
+  confidenceAssessment: ConfidenceAssessment;
   contributors: readonly ContributorCredit[];
   revisions: readonly RevisionRecord[];
 };
