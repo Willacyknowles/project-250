@@ -1,24 +1,26 @@
 type CaseFileSectionProps = {
-  title: string;
-  eyebrow?: string;
   children: React.ReactNode;
+  id: string;
+  eyebrow?: string;
+  title: string;
 };
 
 export function CaseFileSection({
-  title,
-  eyebrow,
   children,
+  eyebrow,
+  id,
+  title,
 }: CaseFileSectionProps) {
   return (
-    <section className="border-b border-border">
-      <div className="mx-auto max-w-6xl px-6 py-8 lg:px-8">
+    <section className="scroll-mt-6" id={id}>
+      <div className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
         {eyebrow ? (
-          <p className="text-sm font-semibold uppercase text-evidence">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
             {eyebrow}
           </p>
         ) : null}
         <h2 className="mt-2 text-2xl font-semibold text-foreground">{title}</h2>
-        <div className="mt-5">{children}</div>
+        <div className="mt-6">{children}</div>
       </div>
     </section>
   );
