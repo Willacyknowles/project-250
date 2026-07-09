@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileOverview } from "@/components/case-files/case-file-overview";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
@@ -6,9 +7,9 @@ import { CaseFileSection } from "@/components/case-files/case-file-section";
 import { EmptyState } from "@/components/case-files/empty-state";
 import { siteConfig } from "@/config/site";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
+import { getEvidenceItemsByCaseFileId } from "@/lib/evidence";
 import {
   formatConfidence,
-  formatEvidenceType,
   formatStatus,
 } from "@/lib/case-file-labels";
 import type {
@@ -126,7 +127,13 @@ function LedgerCard({
   );
 }
 
-function EvidenceHierarchy({ caseFile }: { caseFile: CaseFile }) {
+function EvidenceHierarchy({
+  caseFile,
+  evidenceCount,
+}: {
+  caseFile: CaseFile;
+  evidenceCount: number;
+}) {
   const documentedFacts = countFieldsByStatus(caseFile, "Documented");
   const unknowns = countFieldsByStatus(caseFile, "Requires Research");
 
@@ -145,10 +152,10 @@ function EvidenceHierarchy({ caseFile }: { caseFile: CaseFile }) {
         value={`${caseFile.claims.length}`}
       />
       <LedgerCard
-        description="Evidence intake is intentionally empty until source material is reviewed."
+        description="Evidence records are available as vault placeholders until source material is reviewed."
         label="Evidence"
         tone="evidence"
-        value={`${caseFile.evidence.length}`}
+        value={`${evidenceCount}`}
       />
       <LedgerCard
         description="Source citations must be entered before the dossier can support conclusions."
@@ -203,6 +210,8 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     notFound();
   }
 
+  const evidenceItems = getEvidenceItemsByCaseFileId(caseFile.id);
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <CaseFileOverview caseFile={caseFile} />
@@ -216,7 +225,7 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
               <p className="max-w-4xl text-lg leading-8 text-body">
                 {caseFile.overview.summary}
               </p>
-              <EvidenceHierarchy caseFile={caseFile} />
+              <EvidenceHierarchy caseFile={caseFile} evidenceCount={evidenceItems.length} />
               <div className="rounded-lg border border-border bg-background p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                   Primary Question
@@ -256,34 +265,45 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
           </CaseFileSection>
 
           <CaseFileSection eyebrow="Evidence" id="evidence" title="Evidence">
-            {caseFile.evidence.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2">
-                {caseFile.evidence.map((evidence) => (
+            <div className="space-y-5">
+              <div className="rounded-lg border border-border bg-background p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                      Evidence Vault
+                    </p>
+                    <h3 className="mt-2 text-xl font-semibold text-foreground">
+                      {evidenceItems.length} placeholder evidence records
+                    </h3>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-body">
+                      The vault contains artifact-level evidence placeholders for review. Every record remains marked Requires Research until images, source references, and human verification are added.
+                    </p>
+                  </div>
+                  <Link
+                    className="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white"
+                    href={`/case-files/${caseFile.slug}/evidence` as Route}
+                  >
+                    Open Evidence Vault
+                  </Link>
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-3">
+                {evidenceItems.slice(0, 3).map((item) => (
                   <article
                     className="rounded-lg border border-border bg-background p-5"
-                    key={evidence.id}
+                    key={item.id}
                   >
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                      {formatEvidenceType(evidence.type)}
-                    </p>
-                    <h3 className="mt-2 text-lg font-semibold text-foreground">
-                      {evidence.title}
+                    <CaseFileBadge tone="warning">{item.status}</CaseFileBadge>
+                    <h3 className="mt-4 text-lg font-semibold text-foreground">
+                      {item.title}
                     </h3>
                     <p className="mt-3 text-sm leading-6 text-body">
-                      {evidence.description}
-                    </p>
-                    <p className="mt-4 text-sm font-medium text-muted">
-                      Confidence: {formatConfidence(evidence.confidence)}
+                      {item.description}
                     </p>
                   </article>
                 ))}
               </div>
-            ) : (
-              <EmptyState
-                description="Evidence records must be entered from primary sources, artifact images, documents, or reviewed source material before claims appear in this dossier."
-                title="No evidence records published"
-              />
-            )}
+            </div>
           </CaseFileSection>
 
           <CaseFileSection eyebrow="Claims" id="claims" title="Claims">
