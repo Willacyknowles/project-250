@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/case-files/empty-state";
 import { siteConfig } from "@/config/site";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import { getEvidenceItemsByCaseFileId } from "@/lib/evidence";
+import { getTimelineEventsByCaseFileId } from "@/lib/timeline";
 import {
   formatConfidence,
   formatStatus,
@@ -211,6 +212,7 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
   }
 
   const evidenceItems = getEvidenceItemsByCaseFileId(caseFile.id);
+  const timelineEvents = getTimelineEventsByCaseFileId(caseFile.id);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -335,17 +337,41 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
           </CaseFileSection>
 
           <CaseFileSection eyebrow="Timeline" id="timeline" title="Timeline">
-            {caseFile.timeline.length > 0 ? (
-              <ol className="grid gap-4">
-                {caseFile.timeline.map((event) => (
+            <div className="space-y-5">
+              <div className="rounded-lg border border-border bg-background p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                      Investigation Timeline
+                    </p>
+                    <h3 className="mt-2 text-xl font-semibold text-foreground">
+                      {timelineEvents.length} placeholder timeline events
+                    </h3>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-body">
+                      Timeline entries are structured for future dated evidence, but every event remains marked Requires Research until sources and claims are reviewed.
+                    </p>
+                  </div>
+                  <Link
+                    className="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white"
+                    href={`/case-files/${caseFile.slug}/timeline` as Route}
+                  >
+                    Open Timeline
+                  </Link>
+                </div>
+              </div>
+              <ol className="grid gap-4 md:grid-cols-3">
+                {timelineEvents.slice(0, 3).map((event) => (
                   <li
                     className="rounded-lg border border-border bg-background p-5"
                     key={event.id}
                   >
-                    <p className="text-sm font-semibold text-evidence">
-                      {event.dateLabel}
-                    </p>
-                    <h3 className="mt-2 text-lg font-semibold text-foreground">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <p className="text-sm font-semibold text-evidence">
+                        {event.dateLabel}
+                      </p>
+                      <CaseFileBadge tone="warning">{event.status}</CaseFileBadge>
+                    </div>
+                    <h3 className="mt-3 text-lg font-semibold text-foreground">
                       {event.title}
                     </h3>
                     <p className="mt-3 text-sm leading-6 text-body">
@@ -354,14 +380,8 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
                   </li>
                 ))}
               </ol>
-            ) : (
-              <EmptyState
-                description="Timeline events must be generated from dated evidence, reviewed sources, and documented investigation milestones."
-                title="No timeline events published"
-              />
-            )}
+            </div>
           </CaseFileSection>
-
           <CaseFileSection eyebrow="Sources" id="sources" title="Sources">
             {caseFile.sources.length > 0 ? (
               <div className="grid gap-4">
@@ -477,3 +497,4 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     </main>
   );
 }
+
