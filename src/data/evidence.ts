@@ -51,6 +51,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     relatedClaimIds: [],
     sourceReferences: sourcePlaceholder("title-page"),
     imagePlaceholder: researchPlaceholder("Title Page Image"),
+    archiveMediaIds: ["title-page-archive-placeholder"],
     revisionHistory: revision("title-page"),
   },
   {
@@ -66,6 +67,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     relatedClaimIds: [],
     sourceReferences: sourcePlaceholder("sidgwick-inscription"),
     imagePlaceholder: researchPlaceholder("Inscription Image"),
+    archiveMediaIds: ["sidgwick-inscription-archive-placeholder"],
     revisionHistory: revision("sidgwick-inscription"),
   },
   {
@@ -81,6 +83,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     relatedClaimIds: [],
     sourceReferences: sourcePlaceholder("barker-imprint"),
     imagePlaceholder: researchPlaceholder("Imprint Image"),
+    archiveMediaIds: ["barker-imprint-archive-placeholder"],
     revisionHistory: revision("barker-imprint"),
   },
   {
@@ -96,6 +99,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     relatedClaimIds: [],
     sourceReferences: sourcePlaceholder("binding"),
     imagePlaceholder: researchPlaceholder("Binding Image"),
+    archiveMediaIds: ["binding-archive-placeholder"],
     revisionHistory: revision("binding"),
   },
   {
@@ -111,6 +115,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     relatedClaimIds: [],
     sourceReferences: sourcePlaceholder("marginal-notes"),
     imagePlaceholder: researchPlaceholder("Marginal Notes Image"),
+    archiveMediaIds: ["marginal-notes-archive-placeholder"],
     revisionHistory: revision("marginal-notes"),
   },
   {
@@ -126,6 +131,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     relatedClaimIds: [],
     sourceReferences: sourcePlaceholder("printers-device"),
     imagePlaceholder: researchPlaceholder("Printer's Device Image"),
+    archiveMediaIds: ["printers-device-archive-placeholder"],
     revisionHistory: revision("printers-device"),
   },
   {
@@ -141,6 +147,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     relatedClaimIds: [],
     sourceReferences: sourcePlaceholder("genealogies"),
     imagePlaceholder: researchPlaceholder("Genealogies Image"),
+    archiveMediaIds: ["genealogies-archive-placeholder"],
     revisionHistory: revision("genealogies"),
   },
   {
@@ -156,6 +163,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     relatedClaimIds: [],
     sourceReferences: sourcePlaceholder("maps"),
     imagePlaceholder: researchPlaceholder("Maps Image"),
+    archiveMediaIds: ["maps-archive-placeholder"],
     revisionHistory: revision("maps"),
   },
   {
@@ -171,6 +179,8 @@ export const evidenceItems: readonly EvidenceItem[] = [
     relatedClaimIds: [],
     sourceReferences: sourcePlaceholder("colophon"),
     imagePlaceholder: researchPlaceholder("Colophon Image"),
+    archiveMediaIds: ["colophon-archive-placeholder"],
     revisionHistory: revision("colophon"),
   },
 ];
+

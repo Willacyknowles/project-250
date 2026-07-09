@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArchiveImagePanel } from "@/components/archive/archive-image-panel";
+import { ArchiveMediaMetadata } from "@/components/archive/archive-media-metadata";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import {
+  getArchiveMediaByEvidenceId,
+  getPrimaryArchiveMediaForEvidence,
+} from "@/lib/archive-media";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import {
   formatConfidence,
@@ -13,7 +19,10 @@ import {
   getEvidenceItemForCaseFile,
   getEvidenceItemsByCaseFileId,
 } from "@/lib/evidence";
-import { formatEvidenceArtifactType } from "@/lib/evidence-labels";
+import {
+  formatArchiveMediaType,
+  formatEvidenceArtifactType,
+} from "@/lib/evidence-labels";
 
 type EvidenceDetailPageProps = {
   params: Promise<{
@@ -90,6 +99,9 @@ export default async function EvidenceDetailPage({
     notFound();
   }
 
+  const archiveMedia = getArchiveMediaByEvidenceId(evidence.id);
+  const primaryMedia = getPrimaryArchiveMediaForEvidence(evidence.id);
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border bg-surface">
@@ -99,6 +111,15 @@ export default async function EvidenceDetailPage({
             <Link href={`/case-files/${caseFile.slug}/evidence` as Route}>
               Evidence Vault
             </Link>
+            {primaryMedia ? (
+              <Link
+                href={
+                  `/case-files/${caseFile.slug}/evidence/${evidence.id}/archive` as Route
+                }
+              >
+                Archive Viewer
+              </Link>
+            ) : null}
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
             <CaseFileBadge tone="evidence">
@@ -107,6 +128,9 @@ export default async function EvidenceDetailPage({
             <CaseFileBadge tone="warning">{evidence.status}</CaseFileBadge>
             <CaseFileBadge tone="trust">
               Confidence: {formatConfidence(evidence.confidence)}
+            </CaseFileBadge>
+            <CaseFileBadge tone="neutral">
+              {archiveMedia.length} Archive Media
             </CaseFileBadge>
           </div>
           <p className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
@@ -123,24 +147,53 @@ export default async function EvidenceDetailPage({
 
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[1fr_22rem] lg:px-8">
         <div className="space-y-8">
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Image Evidence
-            </p>
-            <div className="mt-5 rounded-lg border border-dashed border-border bg-background p-8 text-center">
-              <p className="text-lg font-semibold text-foreground">
-                {evidence.imagePlaceholder.label}
+          {primaryMedia ? (
+            <>
+              <ArchiveImagePanel media={primaryMedia} />
+
+              <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
+                      Archive Access
+                    </p>
+                    <h2 className="mt-2 text-2xl font-semibold text-foreground">
+                      Placeholder Archive Viewer
+                    </h2>
+                  </div>
+                  <CaseFileBadge tone="warning">
+                    {primaryMedia.placeholderState}
+                  </CaseFileBadge>
+                </div>
+                <p className="mt-4 text-sm leading-6 text-body">
+                  This record has an archive media control entry, but no verified
+                  image, scan, or document has been attached.
+                </p>
+                <Link
+                  className="mt-5 inline-flex rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-accent transition hover:border-accent hover:bg-accent/5"
+                  href={
+                    `/case-files/${caseFile.slug}/evidence/${evidence.id}/archive` as Route
+                  }
+                >
+                  Open Archive Viewer
+                </Link>
+              </section>
+
+              <ArchiveMediaMetadata media={primaryMedia} />
+            </>
+          ) : (
+            <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
+                Archive Media
               </p>
-              <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-body">
-                {evidence.imagePlaceholder.description}
-              </p>
-              <div className="mt-5 flex justify-center">
-                <CaseFileBadge tone="warning">
-                  {evidence.imagePlaceholder.status}
-                </CaseFileBadge>
+              <div className="mt-5 rounded-lg border border-dashed border-warning/40 bg-warning/5 p-5">
+                <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+                <p className="mt-4 text-sm leading-6 text-body">
+                  No archive media record is attached to this evidence item.
+                </p>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
@@ -242,6 +295,18 @@ export default async function EvidenceDetailPage({
             <MetadataRow
               label="Confidence"
               value={formatConfidence(evidence.confidence)}
+            />
+            <MetadataRow
+              label="Archive Media"
+              value={`${archiveMedia.length} placeholder record${archiveMedia.length === 1 ? "" : "s"}`}
+            />
+            <MetadataRow
+              label="Primary Media Type"
+              value={
+                primaryMedia
+                  ? formatArchiveMediaType(primaryMedia.mediaType)
+                  : "Requires Research"
+              }
             />
             <MetadataRow label="Related Case File" value={caseFile.title} />
             <MetadataRow

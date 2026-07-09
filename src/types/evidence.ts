@@ -16,6 +16,8 @@ export type EvidenceArtifactType =
   | "map"
   | "colophon";
 
+export type ArchiveMediaType = "image" | "scan" | "document" | "placeholder";
+
 export type EvidenceImagePlaceholder = {
   label: string;
   status: ResearchStatus;
@@ -43,6 +45,21 @@ export type RelatedClaimReference = {
   status: ClaimStatus;
 };
 
+export type ArchiveMedia = {
+  id: string;
+  title: string;
+  mediaType: ArchiveMediaType;
+  caption: string;
+  status: ResearchStatus;
+  confidence: ConfidenceLevel;
+  altText: string;
+  placeholderState: ResearchStatus;
+  photographerCreator?: string;
+  dateCaptured?: string;
+  notes?: string;
+  relatedEvidenceId: string;
+};
+
 export type EvidenceItem = {
   id: string;
   title: string;
@@ -55,5 +72,6 @@ export type EvidenceItem = {
   relatedClaimIds: readonly RelatedClaimReference[];
   sourceReferences: readonly EvidenceSourceReference[];
   imagePlaceholder: EvidenceImagePlaceholder;
+  archiveMediaIds: readonly string[];
   revisionHistory: readonly EvidenceRevision[];
 };

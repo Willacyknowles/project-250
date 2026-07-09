@@ -1,0 +1,244 @@
+import type { Metadata } from "next";
+import type { Route } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArchiveImagePanel } from "@/components/archive/archive-image-panel";
+import { ArchiveMediaMetadata } from "@/components/archive/archive-media-metadata";
+import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { getPrimaryArchiveMediaForEvidence } from "@/lib/archive-media";
+import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
+import {
+  formatConfidence,
+  formatEvidenceType,
+  formatStatus,
+} from "@/lib/case-file-labels";
+import {
+  getEvidenceItemForCaseFile,
+  getEvidenceItemsByCaseFileId,
+} from "@/lib/evidence";
+import { formatEvidenceArtifactType } from "@/lib/evidence-labels";
+
+type EvidenceArchivePageProps = {
+  params: Promise<{
+    evidenceId: string;
+    slug: string;
+  }>;
+};
+
+function MetadataRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border border-border bg-background p-4">
+      <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+        {label}
+      </dt>
+      <dd className="mt-2 text-sm font-medium text-foreground">{value}</dd>
+    </div>
+  );
+}
+
+export function generateStaticParams() {
+  return getCaseFiles().flatMap((caseFile) =>
+    getEvidenceItemsByCaseFileId(caseFile.id).map((item) => ({
+      evidenceId: item.id,
+      slug: caseFile.slug,
+    })),
+  );
+}
+
+export async function generateMetadata({
+  params,
+}: EvidenceArchivePageProps): Promise<Metadata> {
+  const { evidenceId, slug } = await params;
+  const caseFile = getCaseFileBySlug(slug);
+
+  if (!caseFile) {
+    return {
+      title: "Archive Media Not Found",
+    };
+  }
+
+  const evidence = getEvidenceItemForCaseFile(caseFile.id, evidenceId);
+
+  if (!evidence) {
+    return {
+      title: "Archive Media Not Found",
+    };
+  }
+
+  return {
+    title: `${evidence.title} Archive Viewer`,
+    description:
+      "Prototype archive viewer with placeholder media for the Evidence Vault foundation.",
+  };
+}
+
+export default async function EvidenceArchivePage({
+  params,
+}: EvidenceArchivePageProps) {
+  const { evidenceId, slug } = await params;
+  const caseFile = getCaseFileBySlug(slug);
+
+  if (!caseFile) {
+    notFound();
+  }
+
+  const evidence = getEvidenceItemForCaseFile(caseFile.id, evidenceId);
+
+  if (!evidence) {
+    notFound();
+  }
+
+  const media = getPrimaryArchiveMediaForEvidence(evidence.id);
+
+  if (!media) {
+    notFound();
+  }
+
+  return (
+    <main className="min-h-screen bg-background text-foreground">
+      <header className="border-b border-border bg-surface">
+        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
+          <div className="flex flex-wrap gap-4 text-sm font-semibold text-accent">
+            <Link href={`/case-files/${caseFile.slug}` as Route}>Case File</Link>
+            <Link href={`/case-files/${caseFile.slug}/evidence` as Route}>
+              Evidence Vault
+            </Link>
+            <Link
+              href={
+                `/case-files/${caseFile.slug}/evidence/${evidence.id}` as Route
+              }
+            >
+              Evidence Record
+            </Link>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <CaseFileBadge tone="evidence">
+              Case File {caseFile.caseNumber.padStart(3, "0")}
+            </CaseFileBadge>
+            <CaseFileBadge tone="warning">{media.status}</CaseFileBadge>
+            <CaseFileBadge tone="trust">
+              Confidence: {formatConfidence(media.confidence)}
+            </CaseFileBadge>
+            <CaseFileBadge tone="neutral">Prototype Archive Viewer</CaseFileBadge>
+          </div>
+          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+            Digital Archive Foundation
+          </p>
+          <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
+            {evidence.title} Archive Viewer
+          </h1>
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-body">
+            Placeholder archive media viewer for {caseFile.title}. This page
+            verifies the route, layout, metadata, and placeholder state before
+            real media ingestion exists.
+          </p>
+        </div>
+      </header>
+
+      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[1fr_22rem] lg:px-8">
+        <div className="space-y-8">
+          <ArchiveImagePanel media={media} eyebrow="Prototype Archive Viewer" />
+          <ArchiveMediaMetadata media={media} />
+
+          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
+                  Evidence Context
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-foreground">
+                  {evidence.title}
+                </h2>
+              </div>
+              <CaseFileBadge tone="warning">{evidence.status}</CaseFileBadge>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-body">
+              {evidence.description}
+            </p>
+          </section>
+        </div>
+
+        <aside className="space-y-5 lg:sticky lg:top-6 lg:self-start">
+          <dl className="grid gap-3 rounded-lg border border-border bg-surface p-5 shadow-sm">
+            <MetadataRow label="Media ID" value={media.id} />
+            <MetadataRow label="Evidence ID" value={evidence.id} />
+            <MetadataRow
+              label="Artifact Type"
+              value={formatEvidenceArtifactType(evidence.artifactType)}
+            />
+            <MetadataRow
+              label="Evidence Type"
+              value={formatEvidenceType(evidence.evidenceType)}
+            />
+            <MetadataRow label="Media Status" value={media.status} />
+            <MetadataRow
+              label="Media Confidence"
+              value={formatConfidence(media.confidence)}
+            />
+            <MetadataRow label="Placeholder State" value={media.placeholderState} />
+          </dl>
+
+          <section className="rounded-lg border border-border bg-surface p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
+              Related Claims
+            </p>
+            {evidence.relatedClaimIds.length > 0 ? (
+              <div className="mt-4 grid gap-3">
+                {evidence.relatedClaimIds.map((claim) => (
+                  <div
+                    className="rounded-lg border border-border bg-background p-4"
+                    key={claim.id}
+                  >
+                    <p className="text-sm font-semibold text-foreground">
+                      {claim.label}
+                    </p>
+                    <p className="mt-2 text-sm text-muted">
+                      {formatStatus(claim.status)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-4 rounded-lg border border-dashed border-warning/40 bg-warning/5 p-4">
+                <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+                <p className="mt-3 text-sm leading-6 text-body">
+                  No related claims are attached.
+                </p>
+              </div>
+            )}
+          </section>
+
+          <section className="rounded-lg border border-border bg-surface p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
+              Source References
+            </p>
+            <div className="mt-4 grid gap-3">
+              {evidence.sourceReferences.map((source) => (
+                <div
+                  className="rounded-lg border border-border bg-background p-4"
+                  key={source.id}
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <p className="text-sm font-semibold text-foreground">
+                      {source.label}
+                    </p>
+                    <CaseFileBadge tone="warning">{source.status}</CaseFileBadge>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-body">
+                    {source.citation}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+  );
+}
