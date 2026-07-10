@@ -4,23 +4,30 @@ import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import { formatConfidence } from "@/lib/case-file-labels";
+import { formatClaimType } from "@/lib/claim-labels";
 import {
-  formatSourceIndependenceLevel,
-  formatSourceType,
-} from "@/lib/source-labels";
-import {
-  getSourceRecordForCaseFile,
-  getSourceRecordsByCaseFileId,
-} from "@/lib/sources";
+  getClaimRecordForCaseFile,
+  getClaimRecordsByCaseFileId,
+} from "@/lib/claims";
+import { getEvidenceItemById } from "@/lib/evidence";
+import { getSourceRecordById } from "@/lib/sources";
+import { getTimelineEventById } from "@/lib/timeline";
 import type { ResearchStatus } from "@/types/case-file";
-import type { SourceRelationReference } from "@/types/source";
 
-type SourceDetailPageProps = {
+type ClaimDetailPageProps = {
   params: Promise<{
+    claimId: string;
     slug: string;
-    sourceId: string;
   }>;
 };
+
+type RelationReference = {
+  id: string;
+  label: string;
+  status: ResearchStatus;
+};
+
+const requiresResearch = "Requires Research" as const;
 
 const statusTone: Record<ResearchStatus, "neutral" | "trust" | "warning"> = {
   Documented: "trust",
@@ -45,14 +52,44 @@ function MetadataRow({
   );
 }
 
+function evidenceReference(id: string): RelationReference {
+  const evidence = getEvidenceItemById(id);
+
+  return {
+    id,
+    label: evidence?.title ?? id,
+    status: evidence?.status ?? requiresResearch,
+  };
+}
+
+function sourceReference(id: string): RelationReference {
+  const source = getSourceRecordById(id);
+
+  return {
+    id,
+    label: source?.title ?? id,
+    status: source?.status ?? requiresResearch,
+  };
+}
+
+function timelineReference(id: string): RelationReference {
+  const event = getTimelineEventById(id);
+
+  return {
+    id,
+    label: event?.title ?? id,
+    status: event?.status ?? requiresResearch,
+  };
+}
+
 function RelationLinks({
   emptyLabel,
   getHref,
   items,
 }: {
   emptyLabel: string;
-  getHref?: (item: SourceRelationReference) => Route;
-  items: readonly SourceRelationReference[];
+  getHref: (item: RelationReference) => Route;
+  items: readonly RelationReference[];
 }) {
   if (items.length === 0) {
     return (
@@ -65,91 +102,76 @@ function RelationLinks({
 
   return (
     <div className="grid gap-3 sm:grid-cols-2">
-      {items.map((item) => {
-        const content = (
-          <>
-            <span className="font-semibold text-foreground">{item.label}</span>
-            <CaseFileBadge tone={statusTone[item.status]}>
-              {item.status}
-            </CaseFileBadge>
-          </>
-        );
-
-        if (getHref) {
-          return (
-            <Link
-              className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm transition hover:border-evidence"
-              href={getHref(item)}
-              key={item.id}
-            >
-              {content}
-            </Link>
-          );
-        }
-
-        return (
-          <div
-            className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm"
-            key={item.id}
-          >
-            {content}
-          </div>
-        );
-      })}
+      {items.map((item) => (
+        <Link
+          className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm transition hover:border-evidence"
+          href={getHref(item)}
+          key={item.id}
+        >
+          <span className="font-semibold text-foreground">{item.label}</span>
+          <CaseFileBadge tone={statusTone[item.status]}>
+            {item.status}
+          </CaseFileBadge>
+        </Link>
+      ))}
     </div>
   );
 }
 
 export function generateStaticParams() {
   return getCaseFiles().flatMap((caseFile) =>
-    getSourceRecordsByCaseFileId(caseFile.id).map((source) => ({
+    getClaimRecordsByCaseFileId(caseFile.id).map((claim) => ({
+      claimId: claim.id,
       slug: caseFile.slug,
-      sourceId: source.id,
     })),
   );
 }
 
 export async function generateMetadata({
   params,
-}: SourceDetailPageProps): Promise<Metadata> {
-  const { slug, sourceId } = await params;
+}: ClaimDetailPageProps): Promise<Metadata> {
+  const { claimId, slug } = await params;
   const caseFile = getCaseFileBySlug(slug);
 
   if (!caseFile) {
     return {
-      title: "Source Not Found",
+      title: "Claim Not Found",
     };
   }
 
-  const source = getSourceRecordForCaseFile(caseFile.id, sourceId);
+  const claim = getClaimRecordForCaseFile(caseFile.id, claimId);
 
-  if (!source) {
+  if (!claim) {
     return {
-      title: "Source Not Found",
+      title: "Claim Not Found",
     };
   }
 
   return {
-    title: `${source.title} Source Record`,
-    description: source.notes,
+    title: `${claim.title} Claim Record`,
+    description: claim.statement,
   };
 }
 
-export default async function SourceDetailPage({
+export default async function ClaimDetailPage({
   params,
-}: SourceDetailPageProps) {
-  const { slug, sourceId } = await params;
+}: ClaimDetailPageProps) {
+  const { claimId, slug } = await params;
   const caseFile = getCaseFileBySlug(slug);
 
   if (!caseFile) {
     notFound();
   }
 
-  const source = getSourceRecordForCaseFile(caseFile.id, sourceId);
+  const claim = getClaimRecordForCaseFile(caseFile.id, claimId);
 
-  if (!source) {
+  if (!claim) {
     notFound();
   }
+
+  const relatedEvidence = claim.relatedEvidenceIds.map(evidenceReference);
+  const relatedSources = claim.relatedSourceIds.map(sourceReference);
+  const relatedTimelineEvents = claim.relatedTimelineEventIds.map(timelineReference);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -157,32 +179,29 @@ export default async function SourceDetailPage({
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
           <div className="flex flex-wrap gap-4 text-sm font-semibold text-accent">
             <Link href={`/case-files/${caseFile.slug}` as Route}>Case File</Link>
-            <Link href={`/case-files/${caseFile.slug}/sources` as Route}>
-              Source Library
+            <Link href={`/case-files/${caseFile.slug}/claims` as Route}>
+              Claims Engine
             </Link>
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
             <CaseFileBadge tone="evidence">
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
-            <CaseFileBadge tone={statusTone[source.status]}>
-              {source.status}
+            <CaseFileBadge tone={statusTone[claim.status]}>
+              {claim.status}
             </CaseFileBadge>
             <CaseFileBadge tone="trust">
-              Confidence: {formatConfidence(source.confidence)}
-            </CaseFileBadge>
-            <CaseFileBadge tone="neutral">
-              {formatSourceIndependenceLevel(source.independenceLevel)}
+              Confidence: {formatConfidence(claim.confidence)}
             </CaseFileBadge>
           </div>
           <p className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            Source Record
+            Claim Record
           </p>
           <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
-            {source.title}
+            {claim.title}
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-body">
-            {source.notes}
+            {claim.statement}
           </p>
         </div>
       </header>
@@ -193,66 +212,86 @@ export default async function SourceDetailPage({
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-                  Citation Control
+                  Claim Statement
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-foreground">
-                  Citation Placeholder
+                  Assertion Control
                 </h2>
               </div>
-              <CaseFileBadge tone={statusTone[source.status]}>
-                {source.status}
+              <CaseFileBadge tone={statusTone[claim.status]}>
+                {claim.status}
               </CaseFileBadge>
             </div>
+            <p className="mt-5 text-sm leading-6 text-body">{claim.statement}</p>
             <div className="mt-5 rounded-lg border border-dashed border-warning/40 bg-warning/5 p-5">
               <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
-              <p className="mt-4 text-sm leading-6 text-body">
-                {source.citationPlaceholder}
-              </p>
+              <p className="mt-4 text-sm leading-6 text-body">{claim.notes}</p>
             </div>
           </section>
 
           <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Related Evidence
+              Linked Evidence
             </p>
             <div className="mt-5">
               <RelationLinks
-                emptyLabel="No evidence is linked to this source record yet."
+                emptyLabel="No evidence is linked to this claim yet."
                 getHref={(item) =>
                   `/case-files/${caseFile.slug}/evidence/${item.id}` as Route
                 }
-                items={source.relatedEvidence}
+                items={relatedEvidence}
               />
             </div>
           </section>
 
           <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Related Timeline Events
+              Linked Sources
             </p>
             <div className="mt-5">
               <RelationLinks
-                emptyLabel="No timeline events are linked to this source record yet."
+                emptyLabel="No sources are linked to this claim yet."
+                getHref={(item) =>
+                  `/case-files/${caseFile.slug}/sources/${item.id}` as Route
+                }
+                items={relatedSources}
+              />
+            </div>
+          </section>
+
+          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
+              Linked Timeline Events
+            </p>
+            <div className="mt-5">
+              <RelationLinks
+                emptyLabel="No timeline events are linked to this claim yet."
                 getHref={(item) =>
                   `/case-files/${caseFile.slug}/timeline#${item.id}` as Route
                 }
-                items={source.relatedTimelineEvents}
+                items={relatedTimelineEvents}
               />
             </div>
           </section>
 
           <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Related Claims
+              Open Questions
             </p>
-            <div className="mt-5">
-              <RelationLinks
-                emptyLabel="No claims are linked. Claims must wait for evidence and source review."
-                getHref={(item) =>
-                  `/case-files/${caseFile.slug}/claims/${item.id}` as Route
-                }
-                items={source.relatedClaims}
-              />
+            <div className="mt-5 grid gap-3">
+              {claim.openQuestions.map((question) => (
+                <article
+                  className="rounded-lg border border-border bg-background p-4"
+                  key={question.id}
+                >
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                    {question.status}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-body">
+                    {question.question}
+                  </p>
+                </article>
+              ))}
             </div>
           </section>
 
@@ -261,7 +300,7 @@ export default async function SourceDetailPage({
               Revision History
             </p>
             <div className="mt-5 grid gap-3">
-              {source.revisionHistory.map((revision) => (
+              {claim.revisionHistory.map((revision) => (
                 <article
                   className="rounded-lg border border-border bg-background p-4"
                   key={revision.id}
@@ -286,32 +325,28 @@ export default async function SourceDetailPage({
 
         <aside className="lg:sticky lg:top-6 lg:self-start">
           <dl className="grid gap-3 rounded-lg border border-border bg-surface p-5 shadow-sm">
-            <MetadataRow label="Source ID" value={source.id} />
-            <MetadataRow label="Source Type" value={formatSourceType(source.sourceType)} />
-            <MetadataRow label="Status" value={source.status} />
+            <MetadataRow label="Claim ID" value={claim.id} />
+            <MetadataRow label="Claim Type" value={formatClaimType(claim.claimType)} />
+            <MetadataRow label="Status" value={claim.status} />
             <MetadataRow
               label="Confidence"
-              value={formatConfidence(source.confidence)}
+              value={formatConfidence(claim.confidence)}
             />
             <MetadataRow
-              label="Independence"
-              value={formatSourceIndependenceLevel(source.independenceLevel)}
+              label="Linked Evidence"
+              value={claim.relatedEvidenceIds.length}
             />
             <MetadataRow
-              label="Repository / Archive"
-              value={source.repositoryArchive}
-            />
-            <MetadataRow
-              label="Related Evidence"
-              value={source.relatedEvidence.length}
-            />
-            <MetadataRow
-              label="Related Claims"
-              value={source.relatedClaims.length}
+              label="Linked Sources"
+              value={claim.relatedSourceIds.length}
             />
             <MetadataRow
               label="Timeline Events"
-              value={source.relatedTimelineEvents.length}
+              value={claim.relatedTimelineEventIds.length}
+            />
+            <MetadataRow
+              label="Open Questions"
+              value={claim.openQuestions.length}
             />
           </dl>
         </aside>
@@ -319,4 +354,3 @@ export default async function SourceDetailPage({
     </main>
   );
 }
-

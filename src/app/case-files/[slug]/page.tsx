@@ -4,17 +4,15 @@ import { notFound } from "next/navigation";
 import { CaseFileOverview } from "@/components/case-files/case-file-overview";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { CaseFileSection } from "@/components/case-files/case-file-section";
-import { EmptyState } from "@/components/case-files/empty-state";
 import { siteConfig } from "@/config/site";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
+import { formatClaimType } from "@/lib/claim-labels";
+import { getClaimRecordsByCaseFileId } from "@/lib/claims";
 import { getEvidenceItemsByCaseFileId } from "@/lib/evidence";
 import { formatSourceType } from "@/lib/source-labels";
 import { getSourceRecordsByCaseFileId } from "@/lib/sources";
 import { getTimelineEventsByCaseFileId } from "@/lib/timeline";
-import {
-  formatConfidence,
-  formatStatus,
-} from "@/lib/case-file-labels";
+import { formatConfidence } from "@/lib/case-file-labels";
 import type {
   CaseFile,
   DossierField,
@@ -130,12 +128,84 @@ function LedgerCard({
   );
 }
 
+function DossierProgressPanel({
+  claimCount,
+  evidenceCount,
+  sourceCount,
+  timelineEventCount,
+}: {
+  claimCount: number;
+  evidenceCount: number;
+  sourceCount: number;
+  timelineEventCount: number;
+}) {
+  const items = [
+    {
+      label: "Evidence",
+      value: evidenceCount,
+      description: "Artifact records awaiting review.",
+    },
+    {
+      label: "Sources",
+      value: sourceCount,
+      description: "Citation records awaiting verification.",
+    },
+    {
+      label: "Timeline Events",
+      value: timelineEventCount,
+      description: "Dated event placeholders awaiting support.",
+    },
+    {
+      label: "Claims",
+      value: claimCount,
+      description: "Assertion containers awaiting evidence.",
+    },
+  ] as const;
+
+  return (
+    <section className="rounded-lg border border-border bg-background p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+            Dossier Progress
+          </p>
+          <h3 className="mt-2 text-xl font-semibold text-foreground">
+            Foundation Records
+          </h3>
+        </div>
+        <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+      </div>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {items.map((item) => (
+          <article
+            className="rounded-lg border border-border bg-surface p-4"
+            key={item.label}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                {item.label}
+              </p>
+              <p className="text-2xl font-semibold text-foreground">
+                {item.value}
+              </p>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-body">
+              {item.description}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
 function EvidenceHierarchy({
   caseFile,
+  claimCount,
   evidenceCount,
   sourceCount,
 }: {
   caseFile: CaseFile;
+  claimCount: number;
   evidenceCount: number;
   sourceCount: number;
 }) {
@@ -154,7 +224,7 @@ function EvidenceHierarchy({
         description="No historical claims are published until each statement is tied to evidence."
         label="Claims"
         tone="warning"
-        value={`${caseFile.claims.length}`}
+        value={`${claimCount}`}
       />
       <LedgerCard
         description="Evidence records are available as vault placeholders until source material is reviewed."
@@ -215,6 +285,7 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     notFound();
   }
 
+  const claimRecords = getClaimRecordsByCaseFileId(caseFile.id);
   const evidenceItems = getEvidenceItemsByCaseFileId(caseFile.id);
   const sourceRecords = getSourceRecordsByCaseFileId(caseFile.id);
   const timelineEvents = getTimelineEventsByCaseFileId(caseFile.id);
@@ -234,8 +305,15 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
               </p>
               <EvidenceHierarchy
                 caseFile={caseFile}
+                claimCount={claimRecords.length}
                 evidenceCount={evidenceItems.length}
                 sourceCount={sourceRecords.length}
+              />
+              <DossierProgressPanel
+                claimCount={claimRecords.length}
+                evidenceCount={evidenceItems.length}
+                sourceCount={sourceRecords.length}
+                timelineEventCount={timelineEvents.length}
               />
               <div className="rounded-lg border border-border bg-background p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
@@ -318,33 +396,51 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
           </CaseFileSection>
 
           <CaseFileSection eyebrow="Claims" id="claims" title="Claims">
-            {caseFile.claims.length > 0 ? (
-              <div className="grid gap-4">
-                {caseFile.claims.map((claim) => (
+            <div className="space-y-5">
+              <div className="rounded-lg border border-border bg-background p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                      Claims Engine
+                    </p>
+                    <h3 className="mt-2 text-xl font-semibold text-foreground">
+                      {claimRecords.length} placeholder claim records
+                    </h3>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-body">
+                      Claims are separated from evidence, sources, and timeline events. Every claim remains marked Requires Research until reviewed records support it.
+                    </p>
+                  </div>
+                  <Link
+                    className="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white"
+                    href={`/case-files/${caseFile.slug}/claims` as Route}
+                  >
+                    Open Claims Engine
+                  </Link>
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-3">
+                {claimRecords.slice(0, 3).map((claim) => (
                   <article
                     className="rounded-lg border border-border bg-background p-5"
                     key={claim.id}
                   >
-                    <div className="flex flex-wrap gap-2 text-sm">
-                      <CaseFileBadge tone="warning">
-                        {formatStatus(claim.status)}
-                      </CaseFileBadge>
-                      <CaseFileBadge tone="trust">
-                        {formatConfidence(claim.confidence)}
-                      </CaseFileBadge>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <p className="text-sm font-semibold text-evidence">
+                        {formatClaimType(claim.claimType)}
+                      </p>
+                      <CaseFileBadge tone="warning">{claim.status}</CaseFileBadge>
                     </div>
-                    <p className="mt-3 text-body">{claim.statement}</p>
+                    <h3 className="mt-3 text-lg font-semibold text-foreground">
+                      {claim.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-6 text-body">
+                      {claim.statement}
+                    </p>
                   </article>
                 ))}
               </div>
-            ) : (
-              <EmptyState
-                description="No historical claims are published. Each future claim must link to supporting evidence and preserve counter-evidence where applicable."
-                title="No claims published"
-              />
-            )}
+            </div>
           </CaseFileSection>
-
           <CaseFileSection eyebrow="Timeline" id="timeline" title="Timeline">
             <div className="space-y-5">
               <div className="rounded-lg border border-border bg-background p-5">
@@ -519,5 +615,8 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     </main>
   );
 }
+
+
+
 
 

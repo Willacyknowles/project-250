@@ -53,6 +53,54 @@ const evidenceReferences = {
   },
 } satisfies Record<string, SourceRelationReference>;
 
+const claimReferences = {
+  bindingAssessment: {
+    id: "binding-assessment",
+    label: "Binding Assessment",
+    status: requiresResearch,
+  },
+  dateOfPublication: {
+    id: "date-of-publication",
+    label: "Date of Publication",
+    status: requiresResearch,
+  },
+  editionIdentification: {
+    id: "edition-identification",
+    label: "Edition Identification",
+    status: requiresResearch,
+  },
+  genealogicalRelevance: {
+    id: "genealogical-relevance",
+    label: "Genealogical Relevance",
+    status: requiresResearch,
+  },
+  marginaliaAnnotations: {
+    id: "marginalia-annotations",
+    label: "Marginalia / Annotations",
+    status: requiresResearch,
+  },
+  physicalCompleteness: {
+    id: "physical-completeness",
+    label: "Physical Completeness",
+    status: requiresResearch,
+  },
+  printerImprint: {
+    id: "printer-imprint",
+    label: "Printer / Imprint",
+    status: requiresResearch,
+  },
+  provenanceChain: {
+    id: "provenance-chain",
+    label: "Provenance Chain",
+    status: requiresResearch,
+  },
+  sidgwickInscription: {
+    id: "sidgwick-inscription",
+    label: "Sidgwick Inscription",
+    status: requiresResearch,
+  },
+} satisfies Record<string, SourceRelationReference>;
+
 const timelineReferences = {
   discovery: {
     id: "discovery",
@@ -101,12 +149,14 @@ function revision(id: string) {
 
 function sourceRecord({
   id,
-  title,
-  sourceType,
+  relatedClaims = [],
   relatedEvidence = [],
   relatedTimelineEvents = [],
+  sourceType,
+  title,
 }: {
   id: string;
+  relatedClaims?: readonly SourceRelationReference[];
   relatedEvidence?: readonly SourceRelationReference[];
   relatedTimelineEvents?: readonly SourceRelationReference[];
   sourceType: SourceType;
@@ -123,7 +173,7 @@ function sourceRecord({
     confidence: unknown,
     independenceLevel: unknownIndependence,
     relatedEvidence,
-    relatedClaims: [],
+    relatedClaims,
     relatedTimelineEvents,
     notes:
       "Requires Research. This source has not been located, reviewed, cited, or connected to any historical conclusion.",
@@ -142,6 +192,10 @@ export const sourceLibraryRecords: readonly SourceLibraryRecord[] = [
       evidenceReferences.printersDevice,
       evidenceReferences.colophon,
     ],
+    relatedClaims: [
+      claimReferences.editionIdentification,
+      claimReferences.printerImprint,
+    ],
     relatedTimelineEvents: [
       timelineReferences.printing,
       timelineReferences.publication,
@@ -155,6 +209,11 @@ export const sourceLibraryRecords: readonly SourceLibraryRecord[] = [
       evidenceReferences.titlePage,
       evidenceReferences.barkerImprint,
     ],
+    relatedClaims: [
+      claimReferences.editionIdentification,
+      claimReferences.printerImprint,
+      claimReferences.dateOfPublication,
+    ],
     relatedTimelineEvents: [
       timelineReferences.printing,
       timelineReferences.publication,
@@ -165,6 +224,11 @@ export const sourceLibraryRecords: readonly SourceLibraryRecord[] = [
     title: "Title Page Observation",
     sourceType: "artifact-observation",
     relatedEvidence: [evidenceReferences.titlePage],
+    relatedClaims: [
+      claimReferences.editionIdentification,
+      claimReferences.dateOfPublication,
+      claimReferences.physicalCompleteness,
+    ],
     relatedTimelineEvents: [
       timelineReferences.printing,
       timelineReferences.publication,
@@ -175,6 +239,7 @@ export const sourceLibraryRecords: readonly SourceLibraryRecord[] = [
     title: "Inscription Observation",
     sourceType: "artifact-observation",
     relatedEvidence: [evidenceReferences.sidgwickInscription],
+    relatedClaims: [claimReferences.sidgwickInscription],
     relatedTimelineEvents: [timelineReferences.inscription],
   }),
   sourceRecord({
@@ -182,6 +247,10 @@ export const sourceLibraryRecords: readonly SourceLibraryRecord[] = [
     title: "Family / Genealogy Research Source",
     sourceType: "research-source",
     relatedEvidence: [evidenceReferences.genealogies],
+    relatedClaims: [
+      claimReferences.provenanceChain,
+      claimReferences.genealogicalRelevance,
+    ],
     relatedTimelineEvents: [timelineReferences.ownership],
   }),
   sourceRecord({
@@ -189,6 +258,7 @@ export const sourceLibraryRecords: readonly SourceLibraryRecord[] = [
     title: "Acquisition / Purchase Memory",
     sourceType: "memory",
     relatedEvidence: [],
+    relatedClaims: [claimReferences.provenanceChain],
     relatedTimelineEvents: [
       timelineReferences.ownership,
       timelineReferences.discovery,
@@ -199,6 +269,11 @@ export const sourceLibraryRecords: readonly SourceLibraryRecord[] = [
     title: "Appraiser Review Placeholder",
     sourceType: "expert-review",
     relatedEvidence: [evidenceReferences.titlePage, evidenceReferences.binding],
+    relatedClaims: [
+      claimReferences.physicalCompleteness,
+      claimReferences.bindingAssessment,
+      claimReferences.marginaliaAnnotations,
+    ],
     relatedTimelineEvents: [timelineReferences.modernInvestigation],
   }),
 ];
