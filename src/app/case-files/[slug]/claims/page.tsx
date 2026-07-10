@@ -2,6 +2,11 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { ArchivalCard } from "@/components/museum/archival-card";
+import { CuratorNote } from "@/components/museum/curator-note";
+import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
+import { GallerySurface } from "@/components/museum/gallery-surface";
+import { MuseumLabel } from "@/components/museum/museum-label";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import { formatConfidence } from "@/lib/case-file-labels";
 import { formatClaimType } from "@/lib/claim-labels";
@@ -72,7 +77,7 @@ function RelationLinks({
 }) {
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-warning/40 bg-warning/5 p-4">
+      <div className="rounded-sm border border-dashed border-warning/40 bg-warning/5 p-4">
         <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
         <p className="mt-3 text-sm leading-6 text-body">{emptyLabel}</p>
       </div>
@@ -83,7 +88,7 @@ function RelationLinks({
     <div className="grid gap-3">
       {items.map((item) => (
         <Link
-          className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm transition hover:border-evidence"
+          className="flex items-start justify-between gap-3 rounded-sm border border-border bg-cream p-4 text-sm transition hover:border-brass"
           href={getHref(item)}
           key={item.id}
         >
@@ -133,16 +138,16 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
   const claims = getClaimRecordsByCaseFileId(caseFile.id);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
+    <main className="museum-reading-room min-h-screen pb-36 text-foreground">
+      <header className="museum-spotlight text-cream">
+        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
           <Link
-            className="text-sm font-semibold text-accent"
+            className="text-sm font-semibold text-brass"
             href={`/case-files/${caseFile.slug}` as Route}
           >
             Back to Case File
           </Link>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-8 flex flex-wrap gap-2">
             <CaseFileBadge tone="evidence">
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
@@ -151,60 +156,64 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
               {claims.length} Placeholder Claims
             </CaseFileBadge>
           </div>
-          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            Claims Engine
-          </p>
-          <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
+          <MuseumLabel tone="brass">Assertion Catalogue</MuseumLabel>
+          <h1 className="mt-4 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             {caseFile.title} Claims
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-body">
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-cream/78">
             A claim register for historical assertions. Every claim remains
             Requires Research until evidence, sources, and timeline context are
             reviewed together.
           </p>
         </div>
       </header>
+      <FloatingGalleryNavigation
+        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Timeline", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/evidence`, label: "Evidence Vault", route: true }}
+        returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
+      />
 
-      <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
-        <div className="grid gap-6 xl:grid-cols-2">
+      <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
+        <GallerySurface eyebrow="Claim Register" title="Assertion Containers Awaiting Evidence">
+          <p className="max-w-3xl text-sm leading-7 text-body">
+            These records separate possible assertions from proof. They are not conclusions, and confidence remains unknown until reviewed records support them.
+          </p>
+        </GallerySurface>
+
+        <div className="mt-8 max-w-4xl">
+          <CuratorNote label="Assertion Room Note">
+            <p>
+              Claims are displayed separately from evidence so the exhibition never confuses a research target with a verified historical conclusion.
+            </p>
+          </CuratorNote>
+        </div>
+
+        <div className="mt-10 grid gap-8 xl:grid-cols-2">
           {claims.map((claim) => {
             const relatedEvidence = claim.relatedEvidenceIds.map(evidenceReference);
             const relatedSources = claim.relatedSourceIds.map(sourceReference);
             const relatedTimelineEvents = claim.relatedTimelineEventIds.map(timelineReference);
 
             return (
-              <article
-                className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8"
-                key={claim.id}
-              >
-                <div className="flex flex-wrap items-start justify-between gap-5">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-                      {formatClaimType(claim.claimType)}
-                    </p>
-                    <h2 className="mt-2 text-2xl font-semibold text-foreground">
-                      {claim.title}
-                    </h2>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
+              <ArchivalCard
+                actions={
+                  <>
                     <CaseFileBadge tone={statusTone[claim.status]}>
                       {claim.status}
                     </CaseFileBadge>
-                    <CaseFileBadge tone="trust">
+                    <CaseFileBadge tone="neutral">
                       {formatConfidence(claim.confidence)}
                     </CaseFileBadge>
-                  </div>
-                </div>
-
-                <p className="mt-5 text-sm leading-6 text-body">
-                  {claim.statement}
-                </p>
-
+                  </>
+                }
+                eyebrow={formatClaimType(claim.claimType)}
+                key={claim.id}
+                title={claim.title}
+              >
+                <p className="text-sm leading-7 text-body">{claim.statement}</p>
                 <div className="mt-6 grid gap-5 lg:grid-cols-3">
                   <section>
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                      Linked Evidence
-                    </p>
+                    <MuseumLabel>Evidence</MuseumLabel>
                     <div className="mt-3">
                       <RelationLinks
                         emptyLabel="No evidence is linked to this claim yet."
@@ -215,11 +224,8 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
                       />
                     </div>
                   </section>
-
                   <section>
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                      Linked Sources
-                    </p>
+                    <MuseumLabel>Sources</MuseumLabel>
                     <div className="mt-3">
                       <RelationLinks
                         emptyLabel="No source is linked to this claim yet."
@@ -230,11 +236,8 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
                       />
                     </div>
                   </section>
-
                   <section>
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                      Timeline Events
-                    </p>
+                    <MuseumLabel>Timeline</MuseumLabel>
                     <div className="mt-3">
                       <RelationLinks
                         emptyLabel="No timeline event is linked to this claim yet."
@@ -246,11 +249,8 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
                     </div>
                   </section>
                 </div>
-
-                <section className="mt-6 rounded-lg border border-border bg-background p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                    Open Questions
-                  </p>
+                <section className="mt-6 rounded-sm border border-border bg-cream p-4">
+                  <MuseumLabel>Open Questions</MuseumLabel>
                   <ul className="mt-3 grid gap-3 text-sm leading-6 text-body">
                     {claim.openQuestions.map((question) => (
                       <li className="flex gap-3" key={question.id}>
@@ -260,17 +260,16 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
                     ))}
                   </ul>
                 </section>
-
                 <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-                  <p className="text-sm leading-6 text-body">{claim.notes}</p>
+                  <p className="max-w-2xl text-sm leading-7 text-body">{claim.notes}</p>
                   <Link
-                    className="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white"
+                    className="museum-action-link text-sm"
                     href={`/case-files/${caseFile.slug}/claims/${claim.id}` as Route}
                   >
                     Open Claim Record
                   </Link>
                 </div>
-              </article>
+              </ArchivalCard>
             );
           })}
         </div>

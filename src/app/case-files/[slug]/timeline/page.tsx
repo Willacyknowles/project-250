@@ -2,6 +2,11 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { CuratorNote } from "@/components/museum/curator-note";
+import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
+import { GallerySurface } from "@/components/museum/gallery-surface";
+import { MuseumLabel } from "@/components/museum/museum-label";
+import { TimelineMarker } from "@/components/museum/timeline-marker";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import { formatConfidence } from "@/lib/case-file-labels";
 import { getTimelineEventsByCaseFileId } from "@/lib/timeline";
@@ -32,7 +37,7 @@ function ReferenceList({
 }) {
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-warning/40 bg-warning/5 p-4">
+      <div className="rounded-sm border border-dashed border-warning/40 bg-warning/5 p-4">
         <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
         <p className="mt-3 text-sm leading-6 text-body">{emptyLabel}</p>
       </div>
@@ -54,7 +59,7 @@ function ReferenceList({
         if (linkBase) {
           return (
             <Link
-              className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm transition hover:border-evidence"
+              className="flex items-start justify-between gap-3 rounded-sm border border-border bg-cream p-4 text-sm transition hover:border-brass"
               href={`${linkBase}/${item.id}` as Route}
               key={item.id}
             >
@@ -65,7 +70,7 @@ function ReferenceList({
 
         return (
           <div
-            className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm"
+            className="flex items-start justify-between gap-3 rounded-sm border border-border bg-cream p-4 text-sm"
             key={item.id}
           >
             {content}
@@ -114,16 +119,16 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
   const sourceLinkBase = `/case-files/${caseFile.slug}/sources`;
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
+    <main className="museum-reading-room min-h-screen pb-36 text-foreground">
+      <header className="museum-spotlight text-cream">
+        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
           <Link
-            className="text-sm font-semibold text-accent"
+            className="text-sm font-semibold text-brass"
             href={`/case-files/${caseFile.slug}` as Route}
           >
             Back to Case File
           </Link>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-8 flex flex-wrap gap-2">
             <CaseFileBadge tone="evidence">
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
@@ -132,59 +137,61 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
               {timelineEvents.length} Placeholder Events
             </CaseFileBadge>
           </div>
-          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            Investigation Timeline
-          </p>
-          <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
+          <MuseumLabel tone="brass">Museum Chronology</MuseumLabel>
+          <h1 className="mt-4 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             {caseFile.title} Timeline
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-body">
-            A structured timeline foundation for future dated evidence. Every
-            event remains marked Requires Research until reviewed sources,
-            claims, and evidence support a historical entry.
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-cream/78">
+            A structured chronology for future dated evidence. Every event
+            remains marked Requires Research until reviewed sources, claims,
+            and evidence support a historical entry.
           </p>
         </div>
       </header>
+      <FloatingGalleryNavigation
+        next={{ href: `/case-files/${caseFile.slug}/sources`, label: "Source Library", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/claims`, label: "Claims", route: true }}
+        returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
+      />
 
-      <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
-        <ol className="relative space-y-8 border-l border-border pl-6 lg:pl-10">
+      <section className="museum-exhibition-wall mx-auto max-w-6xl px-6 py-12 lg:px-8 lg:py-16">
+        <GallerySurface eyebrow="Chronology Catalogue" title="Future Event Placeholders">
+          <p className="max-w-3xl text-sm leading-7 text-body">
+            Dates are intentionally unresolved. The large chronology markers are placeholders for future reviewed evidence, not historical conclusions.
+          </p>
+        </GallerySurface>
+
+        <div className="mt-8 max-w-4xl">
+          <CuratorNote label="Chronology Wall Note">
+            <p>
+              Chronology remains a research framework. Markers preserve sequence categories without asserting dates until source review is complete.
+            </p>
+          </CuratorNote>
+        </div>
+
+        <ol className="relative mt-12 space-y-12 border-l border-brass/55 pl-7 lg:pl-12">
           {timelineEvents.map((event) => (
             <li className="relative scroll-mt-8" id={event.id} key={event.id}>
-              <span className="absolute -left-[2.05rem] top-6 size-4 rounded-full border border-evidence bg-background ring-4 ring-surface lg:-left-[2.55rem]" />
-              <article className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
-                <div className="flex flex-wrap items-start justify-between gap-5">
-                  <div>
-                    <p className="text-sm font-semibold text-evidence">
-                      {event.date ? (
-                        <time dateTime={event.date}>{event.dateLabel}</time>
-                      ) : (
-                        event.dateLabel
-                      )}
-                    </p>
-                    <h2 className="mt-2 text-2xl font-semibold text-foreground">
-                      {event.title}
-                    </h2>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <CaseFileBadge tone="warning">{event.status}</CaseFileBadge>
-                    <CaseFileBadge tone="trust">
-                      Confidence: {formatConfidence(event.confidence)}
-                    </CaseFileBadge>
-                    <CaseFileBadge tone="neutral">
-                      {formatTimelineDatePrecision(event.datePrecision)}
-                    </CaseFileBadge>
-                  </div>
+              <span className="absolute -left-[2.25rem] top-10 size-6 rounded-full border border-brass bg-cream shadow-sm ring-8 ring-parchment lg:-left-[3.25rem]" />
+              <TimelineMarker
+                dateLabel={event.dateLabel}
+                status={event.status}
+                title={event.title}
+              >
+                <div className="flex flex-wrap gap-2">
+                  <CaseFileBadge tone="neutral">
+                    Confidence: {formatConfidence(event.confidence)}
+                  </CaseFileBadge>
+                  <CaseFileBadge tone="neutral">
+                    {formatTimelineDatePrecision(event.datePrecision)}
+                  </CaseFileBadge>
                 </div>
-
-                <p className="mt-5 max-w-4xl text-sm leading-6 text-body">
+                <p className="mt-5 max-w-4xl text-sm leading-7 text-body">
                   {event.description}
                 </p>
-
-                <div className="mt-6 grid gap-5 xl:grid-cols-2">
+                <div className="mt-7 grid gap-6 xl:grid-cols-2">
                   <section>
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                      Linked Evidence
-                    </p>
+                    <MuseumLabel>Linked Evidence</MuseumLabel>
                     <div className="mt-3">
                       <ReferenceList
                         emptyLabel="No evidence is linked to this timeline event yet."
@@ -193,11 +200,8 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
                       />
                     </div>
                   </section>
-
                   <section>
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                      Linked Claims
-                    </p>
+                    <MuseumLabel>Linked Claims</MuseumLabel>
                     <div className="mt-3">
                       <ReferenceList
                         emptyLabel="No claims are linked. Claims must wait for evidence and source review."
@@ -206,12 +210,9 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
                     </div>
                   </section>
                 </div>
-
-                <div className="mt-6 grid gap-5 xl:grid-cols-[1fr_1fr]">
+                <div className="mt-7 grid gap-6 xl:grid-cols-[1fr_1fr]">
                   <section>
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                      Related Sources
-                    </p>
+                    <MuseumLabel>Related Sources</MuseumLabel>
                     <div className="mt-3">
                       <ReferenceList
                         emptyLabel="No source targets are linked to this timeline event yet."
@@ -220,17 +221,14 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
                       />
                     </div>
                   </section>
-
-                  <section className="rounded-lg border border-border bg-background p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                      Notes
-                    </p>
-                    <p className="mt-3 text-sm leading-6 text-body">
+                  <section className="rounded-sm border border-border bg-cream p-4">
+                    <MuseumLabel>Notes</MuseumLabel>
+                    <p className="mt-3 text-sm leading-7 text-body">
                       {event.notes}
                     </p>
                   </section>
                 </div>
-              </article>
+              </TimelineMarker>
             </li>
           ))}
         </ol>
@@ -238,6 +236,3 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
     </main>
   );
 }
-
-
-

@@ -12,18 +12,21 @@ export function CaseFileSection({
   title,
 }: CaseFileSectionProps) {
   return (
-    <section className="museum-fade-in scroll-mt-24 border-t border-brass/35 py-12 first:border-t-0 first:pt-0" id={id}>
-      <div className="mb-8 max-w-3xl">
+    <section
+      className="museum-fade-in scroll-mt-28 border-t border-brass/30 py-20 first:border-t-0 first:pt-0 lg:py-28"
+      id={id}
+    >
+      <div className="mb-12 max-w-5xl">
         {eyebrow ? (
-          <p className="text-xs font-semibold uppercase text-evidence">
-            {eyebrow}
-          </p>
+          <p className="museum-label-text text-evidence">{eyebrow}</p>
         ) : null}
-        <h2 className="mt-3 font-serif text-4xl leading-tight text-foreground sm:text-5xl">
+        <h2 className="mt-4 max-w-4xl font-serif text-4xl leading-tight text-foreground sm:text-5xl lg:text-6xl">
           {title}
         </h2>
       </div>
-      <div className="museum-paper rounded-sm p-6 sm:p-8">{children}</div>
+      <div className="museum-gallery-surface rounded-sm p-7 sm:p-9 lg:p-12">
+        {children}
+      </div>
     </section>
   );
 }

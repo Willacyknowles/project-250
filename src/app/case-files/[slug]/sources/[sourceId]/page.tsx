@@ -2,6 +2,7 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import { formatConfidence } from "@/lib/case-file-labels";
 import {
@@ -36,7 +37,7 @@ function MetadataRow({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-background p-4">
+    <div className="rounded-sm border border-border bg-cream p-4">
       <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
         {label}
       </dt>
@@ -56,7 +57,7 @@ function RelationLinks({
 }) {
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-warning/40 bg-warning/5 p-5">
+      <div className="rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
         <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
         <p className="mt-4 text-sm leading-6 text-body">{emptyLabel}</p>
       </div>
@@ -78,7 +79,7 @@ function RelationLinks({
         if (getHref) {
           return (
             <Link
-              className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm transition hover:border-evidence"
+              className="flex items-start justify-between gap-3 rounded-sm border border-border bg-cream p-4 text-sm transition hover:border-brass"
               href={getHref(item)}
               key={item.id}
             >
@@ -89,7 +90,7 @@ function RelationLinks({
 
         return (
           <div
-            className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm"
+            className="flex items-start justify-between gap-3 rounded-sm border border-border bg-cream p-4 text-sm"
             key={item.id}
           >
             {content}
@@ -152,10 +153,10 @@ export default async function SourceDetailPage({
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-surface">
+    <main className="museum-reading-room min-h-screen pb-36 text-foreground">
+      <header className="museum-spotlight text-cream">
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
-          <div className="flex flex-wrap gap-4 text-sm font-semibold text-accent">
+          <div className="flex flex-wrap gap-4 text-sm font-semibold text-brass">
             <Link href={`/case-files/${caseFile.slug}` as Route}>Case File</Link>
             <Link href={`/case-files/${caseFile.slug}/sources` as Route}>
               Source Library
@@ -168,28 +169,33 @@ export default async function SourceDetailPage({
             <CaseFileBadge tone={statusTone[source.status]}>
               {source.status}
             </CaseFileBadge>
-            <CaseFileBadge tone="trust">
+            <CaseFileBadge tone="neutral">
               Confidence: {formatConfidence(source.confidence)}
             </CaseFileBadge>
             <CaseFileBadge tone="neutral">
               {formatSourceIndependenceLevel(source.independenceLevel)}
             </CaseFileBadge>
           </div>
-          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+          <p className="mt-8 museum-label-text text-brass">
             Source Record
           </p>
-          <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
+          <h1 className="mt-3 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             {source.title}
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-body">
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-cream/78">
             {source.notes}
           </p>
         </div>
       </header>
+      <FloatingGalleryNavigation
+        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Timeline", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/sources`, label: "Source Library", route: true }}
+        returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
+      />
 
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[1fr_22rem] lg:px-8">
         <div className="space-y-8">
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+          <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
@@ -203,7 +209,7 @@ export default async function SourceDetailPage({
                 {source.status}
               </CaseFileBadge>
             </div>
-            <div className="mt-5 rounded-lg border border-dashed border-warning/40 bg-warning/5 p-5">
+            <div className="mt-5 rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
               <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
               <p className="mt-4 text-sm leading-6 text-body">
                 {source.citationPlaceholder}
@@ -211,7 +217,7 @@ export default async function SourceDetailPage({
             </div>
           </section>
 
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+          <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
               Related Evidence
             </p>
@@ -226,7 +232,7 @@ export default async function SourceDetailPage({
             </div>
           </section>
 
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+          <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
               Related Timeline Events
             </p>
@@ -241,7 +247,7 @@ export default async function SourceDetailPage({
             </div>
           </section>
 
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+          <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
               Related Claims
             </p>
@@ -256,14 +262,14 @@ export default async function SourceDetailPage({
             </div>
           </section>
 
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+          <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
               Revision History
             </p>
             <div className="mt-5 grid gap-3">
               {source.revisionHistory.map((revision) => (
                 <article
-                  className="rounded-lg border border-border bg-background p-4"
+                  className="rounded-sm border border-border bg-cream p-4"
                   key={revision.id}
                 >
                   <div className="flex flex-wrap justify-between gap-3">
@@ -285,7 +291,7 @@ export default async function SourceDetailPage({
         </div>
 
         <aside className="lg:sticky lg:top-6 lg:self-start">
-          <dl className="grid gap-3 rounded-lg border border-border bg-surface p-5 shadow-sm">
+          <dl className="grid gap-3 museum-drawer rounded-sm p-5">
             <MetadataRow label="Source ID" value={source.id} />
             <MetadataRow label="Source Type" value={formatSourceType(source.sourceType)} />
             <MetadataRow label="Status" value={source.status} />

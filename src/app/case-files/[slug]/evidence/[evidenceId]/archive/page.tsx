@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArchiveImagePanel } from "@/components/archive/archive-image-panel";
 import { ArchiveMediaMetadata } from "@/components/archive/archive-media-metadata";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
 import { getPrimaryArchiveMediaForEvidence } from "@/lib/archive-media";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import {
@@ -33,7 +34,7 @@ function MetadataRow({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-background p-4">
+    <div className="rounded-sm border border-border bg-cream p-4">
       <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
         {label}
       </dt>
@@ -101,10 +102,10 @@ export default async function EvidenceArchivePage({
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-surface">
+    <main className="museum-reading-room min-h-screen pb-36 text-foreground">
+      <header className="museum-spotlight text-cream">
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
-          <div className="flex flex-wrap gap-4 text-sm font-semibold text-accent">
+          <div className="flex flex-wrap gap-4 text-sm font-semibold text-brass">
             <Link href={`/case-files/${caseFile.slug}` as Route}>Case File</Link>
             <Link href={`/case-files/${caseFile.slug}/evidence` as Route}>
               Evidence Vault
@@ -122,31 +123,36 @@ export default async function EvidenceArchivePage({
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
             <CaseFileBadge tone="warning">{media.status}</CaseFileBadge>
-            <CaseFileBadge tone="trust">
+            <CaseFileBadge tone="neutral">
               Confidence: {formatConfidence(media.confidence)}
             </CaseFileBadge>
             <CaseFileBadge tone="neutral">Prototype Archive Viewer</CaseFileBadge>
           </div>
-          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+          <p className="mt-8 museum-label-text text-brass">
             Digital Archive Foundation
           </p>
-          <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
+          <h1 className="mt-3 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             {evidence.title} Archive Viewer
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-body">
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-cream/78">
             Placeholder archive media viewer for {caseFile.title}. This page
             verifies the route, layout, metadata, and placeholder state before
             real media ingestion exists.
           </p>
         </div>
       </header>
+      <FloatingGalleryNavigation
+        next={{ href: `/case-files/${caseFile.slug}/evidence`, label: "Evidence Vault", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/evidence/${evidence.id}`, label: "Evidence Record", route: true }}
+        returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
+      />
 
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[1fr_22rem] lg:px-8">
         <div className="space-y-8">
           <ArchiveImagePanel media={media} eyebrow="Prototype Archive Viewer" />
           <ArchiveMediaMetadata media={media} />
 
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+          <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
@@ -165,7 +171,7 @@ export default async function EvidenceArchivePage({
         </div>
 
         <aside className="space-y-5 lg:sticky lg:top-6 lg:self-start">
-          <dl className="grid gap-3 rounded-lg border border-border bg-surface p-5 shadow-sm">
+          <dl className="grid gap-3 museum-drawer rounded-sm p-5">
             <MetadataRow label="Media ID" value={media.id} />
             <MetadataRow label="Evidence ID" value={evidence.id} />
             <MetadataRow
@@ -184,7 +190,7 @@ export default async function EvidenceArchivePage({
             <MetadataRow label="Placeholder State" value={media.placeholderState} />
           </dl>
 
-          <section className="rounded-lg border border-border bg-surface p-5 shadow-sm">
+          <section className="museum-drawer rounded-sm p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
               Related Claims
             </p>
@@ -192,7 +198,7 @@ export default async function EvidenceArchivePage({
               <div className="mt-4 grid gap-3">
                 {evidence.relatedClaimIds.map((claim) => (
                   <div
-                    className="rounded-lg border border-border bg-background p-4"
+                    className="rounded-sm border border-border bg-cream p-4"
                     key={claim.id}
                   >
                     <p className="text-sm font-semibold text-foreground">
@@ -205,7 +211,7 @@ export default async function EvidenceArchivePage({
                 ))}
               </div>
             ) : (
-              <div className="mt-4 rounded-lg border border-dashed border-warning/40 bg-warning/5 p-4">
+              <div className="mt-4 rounded-sm border border-dashed border-warning/40 bg-warning/5 p-4">
                 <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
                 <p className="mt-3 text-sm leading-6 text-body">
                   No related claims are attached.
@@ -214,14 +220,14 @@ export default async function EvidenceArchivePage({
             )}
           </section>
 
-          <section className="rounded-lg border border-border bg-surface p-5 shadow-sm">
+          <section className="museum-drawer rounded-sm p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
               Source References
             </p>
             <div className="mt-4 grid gap-3">
               {evidence.sourceReferences.map((source) => (
                 <div
-                  className="rounded-lg border border-border bg-background p-4"
+                  className="rounded-sm border border-border bg-cream p-4"
                   key={source.id}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">

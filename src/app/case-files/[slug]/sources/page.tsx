@@ -2,6 +2,11 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { ArchivalCard } from "@/components/museum/archival-card";
+import { CuratorNote } from "@/components/museum/curator-note";
+import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
+import { GallerySurface } from "@/components/museum/gallery-surface";
+import { MuseumLabel } from "@/components/museum/museum-label";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import { formatConfidence } from "@/lib/case-file-labels";
 import {
@@ -35,7 +40,7 @@ function RelationLinks({
 }) {
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-warning/40 bg-warning/5 p-4">
+      <div className="rounded-sm border border-dashed border-warning/40 bg-warning/5 p-4">
         <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
         <p className="mt-3 text-sm leading-6 text-body">{emptyLabel}</p>
       </div>
@@ -57,7 +62,7 @@ function RelationLinks({
         if (getHref) {
           return (
             <Link
-              className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm transition hover:border-evidence"
+              className="flex items-start justify-between gap-3 rounded-sm border border-border bg-cream p-4 text-sm transition hover:border-brass"
               href={getHref(item)}
               key={item.id}
             >
@@ -68,7 +73,7 @@ function RelationLinks({
 
         return (
           <div
-            className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 text-sm"
+            className="flex items-start justify-between gap-3 rounded-sm border border-border bg-cream p-4 text-sm"
             key={item.id}
           >
             {content}
@@ -117,16 +122,16 @@ export default async function SourceLibraryPage({
   const sourceRecords = getSourceRecordsByCaseFileId(caseFile.id);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
+    <main className="museum-reading-room min-h-screen pb-36 text-foreground">
+      <header className="museum-spotlight text-cream">
+        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
           <Link
-            className="text-sm font-semibold text-accent"
+            className="text-sm font-semibold text-brass"
             href={`/case-files/${caseFile.slug}` as Route}
           >
             Back to Case File
           </Link>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-8 flex flex-wrap gap-2">
             <CaseFileBadge tone="evidence">
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
@@ -135,79 +140,99 @@ export default async function SourceLibraryPage({
               {sourceRecords.length} Placeholder Sources
             </CaseFileBadge>
           </div>
-          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            Source Library
-          </p>
-          <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
+          <MuseumLabel tone="brass">Archival Catalogue</MuseumLabel>
+          <h1 className="mt-4 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             {caseFile.title} Sources
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-body">
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-cream/78">
             A controlled source library for future reviewed citations. Every
             source record remains marked Requires Research until the source is
             located, cited, reviewed, and connected to verified evidence.
           </p>
         </div>
       </header>
+      <FloatingGalleryNavigation
+        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Timeline", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/claims`, label: "Claims", route: true }}
+        returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
+      />
 
-      <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
-        <div className="grid gap-6 xl:grid-cols-2">
+      <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
+        <GallerySurface eyebrow="Catalogue Index" title="Repository Records Awaiting Verification">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-sm border border-border bg-cream p-4">
+              <MuseumLabel>Records</MuseumLabel>
+              <p className="mt-2 font-serif text-3xl text-foreground">
+                {sourceRecords.length}
+              </p>
+            </div>
+            <div className="rounded-sm border border-border bg-cream p-4">
+              <MuseumLabel>Shelf Marks</MuseumLabel>
+              <p className="mt-2 font-serif text-2xl text-foreground">
+                Requires Research
+              </p>
+            </div>
+            <div className="rounded-sm border border-border bg-cream p-4">
+              <MuseumLabel>Verification</MuseumLabel>
+              <p className="mt-2 font-serif text-2xl text-foreground">
+                Pending Review
+              </p>
+            </div>
+          </div>
+        </GallerySurface>
+
+        <div className="mt-8 max-w-4xl">
+          <CuratorNote label="Catalogue Room Note">
+            <p>
+              Source records are catalogued as research containers. They remain placeholders until citations, repositories, and independent review can be verified.
+            </p>
+          </CuratorNote>
+        </div>
+
+        <div className="mt-10 grid gap-8 xl:grid-cols-2">
           {sourceRecords.map((source) => (
-            <article
-              className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8"
-              key={source.id}
-            >
-              <div className="flex flex-wrap items-start justify-between gap-5">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-                    {formatSourceType(source.sourceType)}
-                  </p>
-                  <h2 className="mt-2 text-2xl font-semibold text-foreground">
-                    {source.title}
-                  </h2>
-                </div>
-                <div className="flex flex-wrap gap-2">
+            <ArchivalCard
+              actions={
+                <>
                   <CaseFileBadge tone={statusTone[source.status]}>
                     {source.status}
                   </CaseFileBadge>
-                  <CaseFileBadge tone="trust">
+                  <CaseFileBadge tone="neutral">
                     {formatConfidence(source.confidence)}
                   </CaseFileBadge>
+                </>
+              }
+              eyebrow={formatSourceType(source.sourceType)}
+              key={source.id}
+              title={source.title}
+            >
+              <dl className="grid gap-4 text-sm sm:grid-cols-3">
+                <div className="rounded-sm border border-border bg-cream p-4">
+                  <MuseumLabel>Repository</MuseumLabel>
+                  <dd className="mt-2 text-foreground">{source.repositoryArchive}</dd>
                 </div>
-              </div>
-
-              <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
-                <div className="rounded-lg border border-border bg-background p-4">
-                  <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                    Independence
-                  </dt>
-                  <dd className="mt-2 font-medium text-foreground">
+                <div className="rounded-sm border border-border bg-cream p-4">
+                  <MuseumLabel>Shelf Mark</MuseumLabel>
+                  <dd className="mt-2 text-foreground">Requires Research</dd>
+                </div>
+                <div className="rounded-sm border border-border bg-cream p-4">
+                  <MuseumLabel>Independence</MuseumLabel>
+                  <dd className="mt-2 text-foreground">
                     {formatSourceIndependenceLevel(source.independenceLevel)}
-                  </dd>
-                </div>
-                <div className="rounded-lg border border-border bg-background p-4">
-                  <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                    Repository / Archive
-                  </dt>
-                  <dd className="mt-2 font-medium text-foreground">
-                    {source.repositoryArchive}
                   </dd>
                 </div>
               </dl>
 
-              <div className="mt-6 rounded-lg border border-border bg-background p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                  Citation Placeholder
-                </p>
-                <p className="mt-3 text-sm leading-6 text-body">
+              <div className="mt-5 rounded-sm border border-border bg-cream p-5">
+                <MuseumLabel>Citation</MuseumLabel>
+                <p className="mt-3 font-serif text-xl leading-8 text-foreground">
                   {source.citationPlaceholder}
                 </p>
               </div>
 
               <div className="mt-6 grid gap-5 lg:grid-cols-2">
                 <section>
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                    Related Evidence
-                  </p>
+                  <MuseumLabel>Connections to Evidence</MuseumLabel>
                   <div className="mt-3">
                     <RelationLinks
                       emptyLabel="No evidence is linked to this source record yet."
@@ -218,11 +243,8 @@ export default async function SourceLibraryPage({
                     />
                   </div>
                 </section>
-
                 <section>
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                    Related Timeline
-                  </p>
+                  <MuseumLabel>Connections to Timeline</MuseumLabel>
                   <div className="mt-3">
                     <RelationLinks
                       emptyLabel="No timeline event is linked to this source record yet."
@@ -236,15 +258,15 @@ export default async function SourceLibraryPage({
               </div>
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-                <p className="text-sm leading-6 text-body">{source.notes}</p>
+                <p className="max-w-2xl text-sm leading-7 text-body">{source.notes}</p>
                 <Link
-                  className="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white"
+                  className="museum-action-link text-sm"
                   href={`/case-files/${caseFile.slug}/sources/${source.id}` as Route}
                 >
                   Open Source Record
                 </Link>
               </div>
-            </article>
+            </ArchivalCard>
           ))}
         </div>
       </section>

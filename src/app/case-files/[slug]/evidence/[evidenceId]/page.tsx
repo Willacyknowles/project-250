@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArchiveImagePanel } from "@/components/archive/archive-image-panel";
 import { ArchiveMediaMetadata } from "@/components/archive/archive-media-metadata";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
 import {
   getArchiveMediaByEvidenceId,
   getPrimaryArchiveMediaForEvidence,
@@ -39,7 +40,7 @@ function MetadataRow({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-background p-4">
+    <div className="rounded-sm border border-border bg-cream p-4">
       <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
         {label}
       </dt>
@@ -103,10 +104,10 @@ export default async function EvidenceDetailPage({
   const primaryMedia = getPrimaryArchiveMediaForEvidence(evidence.id);
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-surface">
+    <main className="museum-reading-room min-h-screen pb-36 text-foreground">
+      <header className="museum-spotlight text-cream">
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
-          <div className="flex flex-wrap gap-4 text-sm font-semibold text-accent">
+          <div className="flex flex-wrap gap-4 text-sm font-semibold text-brass">
             <Link href={`/case-files/${caseFile.slug}` as Route}>Case File</Link>
             <Link href={`/case-files/${caseFile.slug}/evidence` as Route}>
               Evidence Vault
@@ -126,24 +127,29 @@ export default async function EvidenceDetailPage({
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
             <CaseFileBadge tone="warning">{evidence.status}</CaseFileBadge>
-            <CaseFileBadge tone="trust">
+            <CaseFileBadge tone="neutral">
               Confidence: {formatConfidence(evidence.confidence)}
             </CaseFileBadge>
             <CaseFileBadge tone="neutral">
               {archiveMedia.length} Archive Media
             </CaseFileBadge>
           </div>
-          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+          <p className="mt-8 museum-label-text text-brass">
             Evidence Record
           </p>
-          <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
+          <h1 className="mt-3 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             {evidence.title}
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-body">
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-cream/78">
             {evidence.description}
           </p>
         </div>
       </header>
+      <FloatingGalleryNavigation
+        next={{ href: `/case-files/${caseFile.slug}/evidence/${evidence.id}/archive`, label: "Archive Viewer", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/evidence`, label: "Evidence Vault", route: true }}
+        returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
+      />
 
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[1fr_22rem] lg:px-8">
         <div className="space-y-8">
@@ -151,7 +157,7 @@ export default async function EvidenceDetailPage({
             <>
               <ArchiveImagePanel media={primaryMedia} />
 
-              <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+              <section className="museum-drawer rounded-sm p-6 sm:p-8">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
@@ -170,7 +176,7 @@ export default async function EvidenceDetailPage({
                   image, scan, or document has been attached.
                 </p>
                 <Link
-                  className="mt-5 inline-flex rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-accent transition hover:border-accent hover:bg-accent/5"
+                  className="mt-5 inline-flex rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-brass transition hover:border-accent hover:bg-accent/5"
                   href={
                     `/case-files/${caseFile.slug}/evidence/${evidence.id}/archive` as Route
                   }
@@ -182,11 +188,11 @@ export default async function EvidenceDetailPage({
               <ArchiveMediaMetadata media={primaryMedia} />
             </>
           ) : (
-            <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+            <section className="museum-drawer rounded-sm p-6 sm:p-8">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
                 Archive Media
               </p>
-              <div className="mt-5 rounded-lg border border-dashed border-warning/40 bg-warning/5 p-5">
+              <div className="mt-5 rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
                 <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
                 <p className="mt-4 text-sm leading-6 text-body">
                   No archive media record is attached to this evidence item.
@@ -195,7 +201,7 @@ export default async function EvidenceDetailPage({
             </section>
           )}
 
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+          <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
               Related Claims
             </p>
@@ -203,7 +209,7 @@ export default async function EvidenceDetailPage({
               <div className="mt-5 grid gap-3">
                 {evidence.relatedClaimIds.map((claim) => (
                   <article
-                    className="rounded-lg border border-border bg-background p-4"
+                    className="rounded-sm border border-border bg-cream p-4"
                     key={claim.id}
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -218,7 +224,7 @@ export default async function EvidenceDetailPage({
                 ))}
               </div>
             ) : (
-              <div className="mt-5 rounded-lg border border-dashed border-warning/40 bg-warning/5 p-5">
+              <div className="mt-5 rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
                 <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
                 <p className="mt-4 text-sm leading-6 text-body">
                   No related claims are attached. Claims must be created only
@@ -228,14 +234,14 @@ export default async function EvidenceDetailPage({
             )}
           </section>
 
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+          <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
               Source References
             </p>
             <div className="mt-5 grid gap-3">
               {evidence.sourceReferences.map((source) => (
                 <article
-                  className="rounded-lg border border-border bg-background p-4"
+                  className="rounded-sm border border-border bg-cream p-4"
                   key={source.id}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -252,14 +258,14 @@ export default async function EvidenceDetailPage({
             </div>
           </section>
 
-          <section className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
+          <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
               Revision History
             </p>
             <div className="mt-5 grid gap-3">
               {evidence.revisionHistory.map((revision) => (
                 <article
-                  className="rounded-lg border border-border bg-background p-4"
+                  className="rounded-sm border border-border bg-cream p-4"
                   key={revision.id}
                 >
                   <div className="flex flex-wrap justify-between gap-3">
@@ -281,7 +287,7 @@ export default async function EvidenceDetailPage({
         </div>
 
         <aside className="lg:sticky lg:top-6 lg:self-start">
-          <dl className="grid gap-3 rounded-lg border border-border bg-surface p-5 shadow-sm">
+          <dl className="grid gap-3 museum-drawer rounded-sm p-5">
             <MetadataRow label="Evidence ID" value={evidence.id} />
             <MetadataRow
               label="Artifact Type"

@@ -1,9 +1,12 @@
-import type { Metadata } from "next";
-import type { Route } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArchivePlaceholder } from "@/components/archive/archive-placeholder";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { EvidenceTile } from "@/components/museum/evidence-tile";
+import { CuratorNote } from "@/components/museum/curator-note";
+import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
+import { GallerySurface } from "@/components/museum/gallery-surface";
+import { MuseumLabel } from "@/components/museum/museum-label";
 import { getArchiveMediaByEvidenceId } from "@/lib/archive-media";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import {
@@ -64,16 +67,16 @@ export default async function EvidenceVaultPage({
   );
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
+    <main className="museum-reading-room min-h-screen pb-36 text-foreground">
+      <header className="museum-spotlight text-cream">
+        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
           <Link
-            className="text-sm font-semibold text-accent"
+            className="text-sm font-semibold text-brass"
             href={`/case-files/${caseFile.slug}` as Route}
           >
             Back to Case File
           </Link>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-8 flex flex-wrap gap-2">
             <CaseFileBadge tone="evidence">
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
@@ -85,94 +88,81 @@ export default async function EvidenceVaultPage({
               {archiveMediaCount} Archive Media Placeholders
             </CaseFileBadge>
           </div>
-          <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
+          <MuseumLabel tone="brass">Museum Evidence Wall</MuseumLabel>
+          <h1 className="mt-4 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             Evidence Vault
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-body">
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-cream/78">
             Placeholder evidence and archive media records for {caseFile.title}.
             Each item remains marked Requires Research until artifact images,
             source references, and human review verify the record.
           </p>
         </div>
       </header>
+      <FloatingGalleryNavigation
+        next={{ href: `/case-files/${caseFile.slug}/claims`, label: "Claims", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}`, label: "Case File", route: true }}
+        returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
+      />
 
-      <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {evidenceItems.map((item) => {
+      <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
+        <GallerySurface eyebrow="Evidence Categories" title="Artifact Records Awaiting Review">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-sm border border-border bg-cream p-4">
+              <MuseumLabel>Records</MuseumLabel>
+              <p className="mt-2 font-serif text-3xl text-foreground">
+                {evidenceItems.length}
+              </p>
+            </div>
+            <div className="rounded-sm border border-border bg-cream p-4">
+              <MuseumLabel>Archive Media</MuseumLabel>
+              <p className="mt-2 font-serif text-3xl text-foreground">
+                {archiveMediaCount}
+              </p>
+            </div>
+            <div className="rounded-sm border border-border bg-cream p-4">
+              <MuseumLabel>Status</MuseumLabel>
+              <p className="mt-2 font-serif text-2xl text-foreground">
+                Requires Research
+              </p>
+            </div>
+            <div className="rounded-sm border border-border bg-cream p-4">
+              <MuseumLabel>Zoom</MuseumLabel>
+              <p className="mt-2 font-serif text-2xl text-foreground">
+                Placeholder
+              </p>
+            </div>
+          </div>
+        </GallerySurface>
+
+        <div className="mt-8 max-w-4xl">
+          <CuratorNote label="Archive Drawer Protocol">
+            <p>
+              Each drawer is a presentation surface for a placeholder evidence record. No object is treated as verified until reviewed sources and artifact documentation support it.
+            </p>
+          </CuratorNote>
+        </div>
+
+        <div className="mt-10 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          {evidenceItems.map((item, index) => {
             const archiveMedia = getArchiveMediaByEvidenceId(item.id);
             const primaryMedia = archiveMedia[0];
+            const mediaLabel = primaryMedia
+              ? `${formatArchiveMediaType(primaryMedia.mediaType)} media placeholder`
+              : "Requires Research. Archive media pending.";
 
             return (
-              <Link
-                className="group rounded-lg border border-border bg-surface p-5 shadow-sm transition hover:border-evidence"
-                href={
-                  `/case-files/${caseFile.slug}/evidence/${item.id}` as Route
-                }
+              <EvidenceTile
+                archiveNumber={`Drawer ${String(index + 1).padStart(2, "0")}`}
+                artifactType={formatEvidenceArtifactType(item.artifactType)}
+                caption={`${item.description} Evidence type: ${formatEvidenceType(item.evidenceType)}. Source references: ${item.sourceReferences.length}.`}
+                confidence={formatConfidence(item.confidence)}
+                href={`/case-files/${caseFile.slug}/evidence/${item.id}` as Route}
                 key={item.id}
-              >
-                <div className="flex flex-wrap gap-2">
-                  <CaseFileBadge tone="warning">{item.status}</CaseFileBadge>
-                  <CaseFileBadge tone="trust">
-                    {formatConfidence(item.confidence)}
-                  </CaseFileBadge>
-                  <CaseFileBadge tone="neutral">
-                    Media {archiveMedia.length > 0 ? "Exists" : "Pending"}
-                  </CaseFileBadge>
-                </div>
-
-                <div className="mt-5">
-                  {primaryMedia ? (
-                    <ArchivePlaceholder
-                      altText={primaryMedia.altText}
-                      caption={primaryMedia.caption}
-                      size="compact"
-                      status={primaryMedia.placeholderState}
-                    />
-                  ) : (
-                    <div className="rounded-lg border border-dashed border-warning/40 bg-warning/5 p-5">
-                      <CaseFileBadge tone="warning">
-                        Requires Research
-                      </CaseFileBadge>
-                      <p className="mt-4 text-sm leading-6 text-body">
-                        Archive media record has not been created for this
-                        evidence item.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-                  {formatEvidenceArtifactType(item.artifactType)}
-                </p>
-                <h2 className="mt-2 text-xl font-semibold text-foreground group-hover:text-accent">
-                  {item.title}
-                </h2>
-                <p className="mt-3 text-sm leading-6 text-body">
-                  {item.description}
-                </p>
-                <dl className="mt-5 grid gap-3 border-t border-border pt-4 text-sm">
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-muted">Evidence Type</dt>
-                    <dd className="font-medium text-foreground">
-                      {formatEvidenceType(item.evidenceType)}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-muted">Media Type</dt>
-                    <dd className="font-medium text-foreground">
-                      {primaryMedia
-                        ? formatArchiveMediaType(primaryMedia.mediaType)
-                        : "Requires Research"}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-muted">Sources</dt>
-                    <dd className="font-medium text-foreground">
-                      {item.sourceReferences.length}
-                    </dd>
-                  </div>
-                </dl>
-              </Link>
+                mediaLabel={mediaLabel}
+                status={item.status}
+                title={item.title}
+              />
             );
           })}
         </div>

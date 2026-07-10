@@ -4,6 +4,13 @@ import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { CaseFileOverview } from "@/components/case-files/case-file-overview";
 import { CaseFileSection } from "@/components/case-files/case-file-section";
+import { ArchivalCard } from "@/components/museum/archival-card";
+import { CuratorNote } from "@/components/museum/curator-note";
+import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
+import { GallerySurface } from "@/components/museum/gallery-surface";
+import { MuseumDossierNavigation } from "@/components/museum/museum-dossier-navigation";
+import { MuseumLabel } from "@/components/museum/museum-label";
+import { SectionDivider } from "@/components/museum/section-divider";
 import { siteConfig } from "@/config/site";
 import { getArchiveMediaByEvidenceId } from "@/lib/archive-media";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
@@ -24,10 +31,6 @@ type CaseFilePageProps = {
   params: Promise<{
     slug: string;
   }>;
-};
-
-type DossierNavigationProps = {
-  caseFile: CaseFile;
 };
 
 type MuseumActionLinkProps = {
@@ -57,85 +60,16 @@ function MuseumActionLink({ children, href }: MuseumActionLinkProps) {
   );
 }
 
-function DossierNavigation({ caseFile }: DossierNavigationProps) {
-  const navItems = [
-    { href: "#overview", label: "Overview" },
-    { href: "#provenance", label: "Provenance" },
-    { href: "#physical-description", label: "Physical Description" },
-    {
-      href: `/case-files/${caseFile.slug}/evidence`,
-      label: "Evidence Vault",
-      route: true,
-    },
-    {
-      href: `/case-files/${caseFile.slug}/claims`,
-      label: "Claims",
-      route: true,
-    },
-    {
-      href: `/case-files/${caseFile.slug}/timeline`,
-      label: "Timeline",
-      route: true,
-    },
-    {
-      href: `/case-files/${caseFile.slug}/sources`,
-      label: "Source Library",
-      route: true,
-    },
-    {
-      href: `/case-files/${caseFile.slug}/evidence/title-page/archive`,
-      label: "Archive",
-      route: true,
-    },
-    { href: "#open-questions", label: "Open Questions" },
-    { href: "#confidence-assessment", label: "Confidence Assessment" },
-    { href: "#revision-history", label: "Revision History" },
-  ] as const;
-
-  return (
-    <aside className="lg:sticky lg:top-6 lg:self-start">
-      <nav
-        aria-label="Museum dossier navigation"
-        className="museum-paper rounded-sm p-4 backdrop-blur-sm"
-      >
-        <p className="px-2 font-serif text-lg text-foreground">
-          Dossier Index
-        </p>
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:grid lg:gap-1 lg:overflow-visible lg:pb-0">
-          {navItems.map((item) => {
-            const className =
-              "whitespace-nowrap rounded-sm px-3 py-2 text-sm font-medium text-body transition hover:bg-parchment hover:text-foreground lg:whitespace-normal";
-
-            if ("route" in item) {
-              return (
-                <Link className={className} href={item.href as Route} key={item.label}>
-                  {item.label}
-                </Link>
-              );
-            }
-
-            return (
-              <a className={className} href={item.href} key={item.label}>
-                {item.label}
-              </a>
-            );
-          })}
-        </div>
-      </nav>
-    </aside>
-  );
-}
-
 function DossierFieldGrid({ fields }: { fields: readonly DossierField[] }) {
   return (
-    <dl className="grid gap-5 md:grid-cols-2">
+    <dl className="grid gap-6 md:grid-cols-2">
       {fields.map((field) => (
         <div
-          className="museum-paper-deep rounded-sm border-l-2 border-l-brass p-5"
+          className="rounded-sm border-l-2 border-l-brass bg-ivory/70 p-6"
           key={field.label}
         >
           <dt className="flex flex-wrap items-start justify-between gap-3">
-            <span className="font-serif text-xl text-foreground">
+            <span className="font-serif text-2xl leading-tight text-foreground">
               {field.label}
             </span>
             <CaseFileBadge tone={statusTone[field.status]}>
@@ -144,35 +78,13 @@ function DossierFieldGrid({ fields }: { fields: readonly DossierField[] }) {
           </dt>
           <dd className="mt-4 text-sm leading-7 text-body">{field.value}</dd>
           {field.note ? (
-            <p className="mt-4 border-t border-border pt-4 text-sm leading-6 text-muted">
+            <p className="mt-5 border-t border-border pt-4 text-sm leading-6 text-muted">
               {field.note}
             </p>
           ) : null}
         </div>
       ))}
     </dl>
-  );
-}
-
-function LedgerCard({
-  label,
-  value,
-  description,
-  tone = "neutral",
-}: {
-  description: string;
-  label: string;
-  tone?: "neutral" | "evidence" | "trust" | "warning";
-  value: string;
-}) {
-  return (
-    <article className="museum-paper-deep rounded-sm p-5">
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-semibold uppercase text-muted">{label}</p>
-        <CaseFileBadge tone={tone}>{value}</CaseFileBadge>
-      </div>
-      <p className="mt-4 text-sm leading-7 text-body">{description}</p>
-    </article>
   );
 }
 
@@ -192,67 +104,33 @@ function DossierProgressPanel({
   timelineEventCount: number;
 }) {
   const items = [
-    {
-      label: "Evidence",
-      value: evidenceCount,
-      description: "Artifact records awaiting review.",
-    },
-    {
-      label: "Claims",
-      value: claimCount,
-      description: "Assertion containers awaiting support.",
-    },
-    {
-      label: "Sources",
-      value: sourceCount,
-      description: "Citation records awaiting verification.",
-    },
-    {
-      label: "Timeline Events",
-      value: timelineEventCount,
-      description: "Dated event placeholders awaiting evidence.",
-    },
-    {
-      label: "Archive Media",
-      value: archiveMediaCount,
-      description: "Digital archive placeholders awaiting media.",
-    },
+    ["Evidence", evidenceCount, "Artifact records awaiting review."],
+    ["Claims", claimCount, "Assertion containers awaiting support."],
+    ["Sources", sourceCount, "Citation records awaiting verification."],
+    ["Timeline", timelineEventCount, "Chronology placeholders awaiting evidence."],
+    ["Archive", archiveMediaCount, "Digital media placeholders awaiting scans."],
   ] as const;
 
   return (
-    <section className="museum-paper-deep rounded-sm p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase text-muted">
-            Investigation Summary
-          </p>
-          <h3 className="mt-3 font-serif text-3xl text-foreground">
-            Dossier Progress
-          </h3>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <CaseFileBadge tone="warning">
-            {caseFile.confidenceAssessment.status}
-          </CaseFileBadge>
-          <CaseFileBadge tone="trust">
-            {formatConfidence(caseFile.confidence)}
-          </CaseFileBadge>
-        </div>
+    <GallerySurface eyebrow="Investigation Summary" title="Dossier Progress">
+      <div className="flex flex-wrap gap-2">
+        <CaseFileBadge tone="warning">
+          {caseFile.confidenceAssessment.status}
+        </CaseFileBadge>
+        <CaseFileBadge tone="neutral">
+          Confidence: {formatConfidence(caseFile.confidence)}
+        </CaseFileBadge>
       </div>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {items.map((item) => (
-          <article className="rounded-sm border border-border bg-surface p-4" key={item.label}>
-            <div className="flex items-start justify-between gap-3">
-              <p className="text-xs font-semibold uppercase text-muted">
-                {item.label}
-              </p>
-              <p className="font-serif text-3xl text-foreground">{item.value}</p>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-body">{item.description}</p>
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        {items.map(([label, value, description]) => (
+          <article className="rounded-sm border border-border bg-cream p-5" key={label}>
+            <MuseumLabel>{label}</MuseumLabel>
+            <p className="mt-3 font-serif text-4xl text-foreground">{value}</p>
+            <p className="mt-3 text-sm leading-6 text-body">{description}</p>
           </article>
         ))}
       </div>
-    </section>
+    </GallerySurface>
   );
 }
 
@@ -269,50 +147,33 @@ function EvidenceHierarchy({
 }) {
   const documentedFacts = countFieldsByStatus(caseFile, "Documented");
   const unknowns = countFieldsByStatus(caseFile, "Requires Research");
+  const ledgers = [
+    ["Facts", documentedFacts, "Documented items currently describe the platform record, not historical provenance conclusions.", "trust"],
+    ["Claims", claimCount, "No historical claims are published until each statement is tied to evidence.", "warning"],
+    ["Evidence", evidenceCount, "Evidence records are available as vault placeholders until source material is reviewed.", "evidence"],
+    ["Sources", sourceCount, "Source citations must be entered before the dossier can support conclusions.", "neutral"],
+    ["Unknowns", unknowns, "Unknowns are preserved as research targets instead of being smoothed over.", "warning"],
+  ] as const;
 
   return (
     <div className="grid gap-4 lg:grid-cols-5">
-      <LedgerCard
-        description="Documented items currently describe the platform record, not historical provenance conclusions."
-        label="Facts"
-        tone="trust"
-        value={`${documentedFacts}`}
-      />
-      <LedgerCard
-        description="No historical claims are published until each statement is tied to evidence."
-        label="Claims"
-        tone="warning"
-        value={`${claimCount}`}
-      />
-      <LedgerCard
-        description="Evidence records are available as vault placeholders until source material is reviewed."
-        label="Evidence"
-        tone="evidence"
-        value={`${evidenceCount}`}
-      />
-      <LedgerCard
-        description="Source citations must be entered before the dossier can support conclusions."
-        label="Sources"
-        tone="neutral"
-        value={`${sourceCount}`}
-      />
-      <LedgerCard
-        description="Unknowns are preserved as research targets instead of being smoothed over."
-        label="Unknowns"
-        tone="warning"
-        value={`${unknowns}`}
-      />
+      {ledgers.map(([label, value, description, tone]) => (
+        <article className="rounded-sm border border-border bg-ivory/70 p-5" key={label}>
+          <div className="flex items-start justify-between gap-3">
+            <MuseumLabel>{label}</MuseumLabel>
+            <CaseFileBadge tone={tone}>{value}</CaseFileBadge>
+          </div>
+          <p className="mt-4 text-sm leading-7 text-body">{description}</p>
+        </article>
+      ))}
     </div>
   );
 }
 
 function CrossModuleNavigation({ caseFile }: { caseFile: CaseFile }) {
   return (
-    <section className="museum-paper-deep rounded-sm p-6">
-      <p className="text-xs font-semibold uppercase text-muted">
-        Investigation Rooms
-      </p>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <GallerySurface eyebrow="Exhibition Rooms" title="Continue the Investigation">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MuseumActionLink href={`/case-files/${caseFile.slug}/evidence` as Route}>
           Evidence Vault
         </MuseumActionLink>
@@ -331,7 +192,7 @@ function CrossModuleNavigation({ caseFile }: { caseFile: CaseFile }) {
           Digital Archive
         </MuseumActionLink>
       </div>
-    </section>
+    </GallerySurface>
   );
 }
 
@@ -380,17 +241,40 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     (count, item) => count + getArchiveMediaByEvidenceId(item.id).length,
     0,
   );
+  const navItems = [
+    { href: "#overview", label: "Overview" },
+    { href: "#provenance", label: "Provenance" },
+    { href: "#physical-description", label: "Physical Description" },
+    { href: "#evidence", label: "Evidence Vault" },
+    { href: "#archive", label: "Archive" },
+    { href: "#claims", label: "Claims" },
+    { href: "#timeline", label: "Timeline" },
+    { href: "#sources", label: "Source Library" },
+    { href: "#open-questions", label: "Open Questions" },
+    { href: "#confidence-assessment", label: "Confidence" },
+    { href: "#revision-history", label: "Revision History" },
+    {
+      href: `/case-files/${caseFile.slug}/evidence/title-page/archive`,
+      label: "Enter Archive",
+      route: true,
+    },
+  ] as const;
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="museum-reading-room min-h-screen pb-36 text-foreground">
       <CaseFileOverview caseFile={caseFile} />
+      <FloatingGalleryNavigation
+        next={{ href: "#evidence", label: "Evidence Vault" }}
+        previous={{ href: "#overview", label: "Opening Gallery" }}
+        returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
+      />
 
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-10 lg:grid-cols-[18rem_1fr] lg:px-8 lg:py-16">
-        <DossierNavigation caseFile={caseFile} />
+      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-12 lg:grid-cols-[18rem_1fr] lg:px-8 lg:py-20">
+        <MuseumDossierNavigation items={navItems} />
 
-        <div className="space-y-4">
+        <div>
           <CaseFileSection eyebrow="Overview" id="overview" title="Overview">
-            <div className="space-y-8">
+            <div className="space-y-10">
               <p className="max-w-4xl font-serif text-2xl leading-10 text-foreground">
                 {caseFile.overview.summary}
               </p>
@@ -403,30 +287,28 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
                 timelineEventCount={timelineEvents.length}
               />
               <CrossModuleNavigation caseFile={caseFile} />
+              <CuratorNote label="Reading Room Note">
+                <p>
+                  The dossier is arranged as a sequence of galleries. Each room preserves uncertainty where the record is not yet reviewed.
+                </p>
+              </CuratorNote>
               <EvidenceHierarchy
                 caseFile={caseFile}
                 claimCount={claimRecords.length}
                 evidenceCount={evidenceItems.length}
                 sourceCount={sourceRecords.length}
               />
-              <div className="museum-paper-deep rounded-sm p-5">
-                <p className="text-xs font-semibold uppercase text-muted">
-                  Primary Question
-                </p>
-                <p className="mt-3 max-w-3xl text-base leading-7 text-foreground">
+              <ArchivalCard eyebrow="Research Question" title="Primary Question">
+                <p className="max-w-3xl text-base leading-8 text-body">
                   {caseFile.primaryQuestion}
                 </p>
-              </div>
+              </ArchivalCard>
               <DossierFieldGrid fields={caseFile.overview.fields} />
             </div>
           </CaseFileSection>
 
-          <CaseFileSection
-            eyebrow="Provenance"
-            id="provenance"
-            title="Provenance"
-          >
-            <div className="space-y-6">
+          <CaseFileSection eyebrow="Provenance" id="provenance" title="Provenance">
+            <div className="space-y-8">
               <p className="max-w-4xl text-base leading-8 text-body">
                 {caseFile.provenance.summary}
               </p>
@@ -439,7 +321,7 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
             id="physical-description"
             title="Physical Description"
           >
-            <div className="space-y-6">
+            <div className="space-y-8">
               <p className="max-w-4xl text-base leading-8 text-body">
                 {caseFile.physicalDescription.summary}
               </p>
@@ -448,124 +330,88 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
           </CaseFileSection>
 
           <CaseFileSection eyebrow="Evidence" id="evidence" title="Evidence Vault">
-            <div className="space-y-6">
-              <div className="museum-paper-deep rounded-sm p-5">
-                <div className="flex flex-wrap items-start justify-between gap-5">
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-muted">
-                      Evidence Vault
-                    </p>
-                    <h3 className="mt-3 font-serif text-3xl text-foreground">
-                      {evidenceItems.length} placeholder evidence records
-                    </h3>
-                    <p className="mt-4 max-w-3xl text-sm leading-7 text-body">
-                      The vault contains artifact-level evidence placeholders for review. Every record remains marked Requires Research until images, source references, and human verification are added.
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-5">
-                    <MuseumActionLink href={`/case-files/${caseFile.slug}/evidence` as Route}>
-                      Open Evidence Vault
-                    </MuseumActionLink>
-                    <MuseumActionLink
-                      href={`/case-files/${caseFile.slug}/evidence/title-page/archive` as Route}
-                    >
-                      Open Digital Archive
-                    </MuseumActionLink>
-                  </div>
+            <div className="space-y-8">
+              <GallerySurface eyebrow="Evidence Wall" title={`${evidenceItems.length} Artifact-Level Records`}>
+                <div className="flex flex-wrap gap-5">
+                  <MuseumActionLink href={`/case-files/${caseFile.slug}/evidence` as Route}>
+                    Enter Evidence Vault
+                  </MuseumActionLink>
+                  <MuseumActionLink
+                    href={`/case-files/${caseFile.slug}/evidence/title-page/archive` as Route}
+                  >
+                    View Digital Archive
+                  </MuseumActionLink>
                 </div>
-              </div>
+              </GallerySurface>
               <div className="grid gap-5 md:grid-cols-3">
                 {evidenceItems.slice(0, 3).map((item) => (
-                  <article className="museum-paper-deep rounded-sm p-5" key={item.id}>
-                    <CaseFileBadge tone="warning">{item.status}</CaseFileBadge>
-                    <h3 className="mt-4 font-serif text-2xl text-foreground">
-                      {item.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-7 text-body">
-                      {item.description}
-                    </p>
-                  </article>
+                  <ArchivalCard
+                    actions={<CaseFileBadge tone="warning">{item.status}</CaseFileBadge>}
+                    eyebrow="Evidence Object"
+                    key={item.id}
+                    title={item.title}
+                  >
+                    <p className="text-sm leading-7 text-body">{item.description}</p>
+                  </ArchivalCard>
                 ))}
               </div>
             </div>
           </CaseFileSection>
 
-          <CaseFileSection eyebrow="Claims" id="claims" title="Claims">
-            <div className="space-y-6">
-              <div className="museum-paper-deep rounded-sm p-5">
-                <div className="flex flex-wrap items-start justify-between gap-5">
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-muted">
-                      Claims Engine
-                    </p>
-                    <h3 className="mt-3 font-serif text-3xl text-foreground">
-                      {claimRecords.length} placeholder claim records
-                    </h3>
-                    <p className="mt-4 max-w-3xl text-sm leading-7 text-body">
-                      Claims are separated from evidence, sources, and timeline events. Every claim remains marked Requires Research until reviewed records support it.
-                    </p>
-                  </div>
-                  <MuseumActionLink href={`/case-files/${caseFile.slug}/claims` as Route}>
-                    Open Claims Engine
-                  </MuseumActionLink>
-                </div>
+          <CaseFileSection eyebrow="Archive" id="archive" title="Digital Archive">
+            <GallerySurface eyebrow="Media Room" title={`${archiveMediaCount} Archive Media Placeholders`}>
+              <p className="max-w-3xl text-sm leading-7 text-body">
+                The archive room preserves image placeholders until verified scans, photographs, or documents are attached to evidence records.
+              </p>
+              <div className="mt-6">
+                <MuseumActionLink
+                  href={`/case-files/${caseFile.slug}/evidence/title-page/archive` as Route}
+                >
+                  Enter Digital Archive
+                </MuseumActionLink>
               </div>
+            </GallerySurface>
+          </CaseFileSection>
+
+          <CaseFileSection eyebrow="Claims" id="claims" title="Claims">
+            <div className="space-y-8">
+              <GallerySurface eyebrow="Assertion Room" title={`${claimRecords.length} Placeholder Claims`}>
+                <MuseumActionLink href={`/case-files/${caseFile.slug}/claims` as Route}>
+                  Enter Claims Engine
+                </MuseumActionLink>
+              </GallerySurface>
               <div className="grid gap-5 md:grid-cols-3">
                 {claimRecords.slice(0, 3).map((claim) => (
-                  <article className="museum-paper-deep rounded-sm p-5" key={claim.id}>
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <p className="text-sm font-semibold text-evidence">
-                        {formatClaimType(claim.claimType)}
-                      </p>
-                      <CaseFileBadge tone="warning">{claim.status}</CaseFileBadge>
-                    </div>
-                    <h3 className="mt-4 font-serif text-2xl text-foreground">
-                      {claim.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-7 text-body">
-                      {claim.statement}
-                    </p>
-                  </article>
+                  <ArchivalCard
+                    actions={<CaseFileBadge tone="warning">{claim.status}</CaseFileBadge>}
+                    eyebrow={formatClaimType(claim.claimType)}
+                    key={claim.id}
+                    title={claim.title}
+                  >
+                    <p className="text-sm leading-7 text-body">{claim.statement}</p>
+                  </ArchivalCard>
                 ))}
               </div>
             </div>
           </CaseFileSection>
 
           <CaseFileSection eyebrow="Timeline" id="timeline" title="Timeline">
-            <div className="space-y-6">
-              <div className="museum-paper-deep rounded-sm p-5">
-                <div className="flex flex-wrap items-start justify-between gap-5">
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-muted">
-                      Investigation Timeline
-                    </p>
-                    <h3 className="mt-3 font-serif text-3xl text-foreground">
-                      {timelineEvents.length} placeholder timeline events
-                    </h3>
-                    <p className="mt-4 max-w-3xl text-sm leading-7 text-body">
-                      Timeline entries are structured for future dated evidence, but every event remains marked Requires Research until sources and claims are reviewed.
-                    </p>
-                  </div>
-                  <MuseumActionLink href={`/case-files/${caseFile.slug}/timeline` as Route}>
-                    Open Timeline
-                  </MuseumActionLink>
-                </div>
-              </div>
+            <div className="space-y-8">
+              <GallerySurface eyebrow="Chronology Room" title={`${timelineEvents.length} Timeline Placeholders`}>
+                <MuseumActionLink href={`/case-files/${caseFile.slug}/timeline` as Route}>
+                  Enter Timeline
+                </MuseumActionLink>
+              </GallerySurface>
               <ol className="grid gap-5 md:grid-cols-3">
                 {timelineEvents.slice(0, 3).map((event) => (
-                  <li className="museum-paper-deep rounded-sm p-5" key={event.id}>
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <p className="text-sm font-semibold text-evidence">
-                        {event.dateLabel}
-                      </p>
-                      <CaseFileBadge tone="warning">{event.status}</CaseFileBadge>
-                    </div>
-                    <h3 className="mt-4 font-serif text-2xl text-foreground">
-                      {event.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-7 text-body">
-                      {event.description}
-                    </p>
+                  <li key={event.id}>
+                    <ArchivalCard
+                      actions={<CaseFileBadge tone="warning">{event.status}</CaseFileBadge>}
+                      eyebrow={event.dateLabel}
+                      title={event.title}
+                    >
+                      <p className="text-sm leading-7 text-body">{event.description}</p>
+                    </ArchivalCard>
                   </li>
                 ))}
               </ol>
@@ -573,59 +419,39 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
           </CaseFileSection>
 
           <CaseFileSection eyebrow="Sources" id="sources" title="Source Library">
-            <div className="space-y-6">
-              <div className="museum-paper-deep rounded-sm p-5">
-                <div className="flex flex-wrap items-start justify-between gap-5">
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-muted">
-                      Source Library
-                    </p>
-                    <h3 className="mt-3 font-serif text-3xl text-foreground">
-                      {sourceRecords.length} placeholder source records
-                    </h3>
-                    <p className="mt-4 max-w-3xl text-sm leading-7 text-body">
-                      Source records are ready for future citation review. Every record remains marked Requires Research until the source is located, reviewed, and linked to verified evidence.
-                    </p>
-                  </div>
-                  <MuseumActionLink href={`/case-files/${caseFile.slug}/sources` as Route}>
-                    Open Source Library
-                  </MuseumActionLink>
-                </div>
-              </div>
+            <div className="space-y-8">
+              <GallerySurface eyebrow="Catalogue Room" title={`${sourceRecords.length} Placeholder Sources`}>
+                <MuseumActionLink href={`/case-files/${caseFile.slug}/sources` as Route}>
+                  Enter Source Library
+                </MuseumActionLink>
+              </GallerySurface>
               <div className="grid gap-5 md:grid-cols-3">
                 {sourceRecords.slice(0, 3).map((source) => (
-                  <article className="museum-paper-deep rounded-sm p-5" key={source.id}>
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <p className="text-sm font-semibold text-evidence">
-                        {formatSourceType(source.sourceType)}
-                      </p>
-                      <CaseFileBadge tone="warning">{source.status}</CaseFileBadge>
-                    </div>
-                    <h3 className="mt-4 font-serif text-2xl text-foreground">
-                      {source.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-7 text-body">
-                      {source.notes}
-                    </p>
-                  </article>
+                  <ArchivalCard
+                    actions={<CaseFileBadge tone="warning">{source.status}</CaseFileBadge>}
+                    eyebrow={formatSourceType(source.sourceType)}
+                    key={source.id}
+                    title={source.title}
+                  >
+                    <p className="text-sm leading-7 text-body">{source.notes}</p>
+                  </ArchivalCard>
                 ))}
               </div>
             </div>
           </CaseFileSection>
 
           <CaseFileSection
-            eyebrow="Open Questions"
+            eyebrow="Notes"
             id="open-questions"
             title="Open Questions"
           >
-            <div className="grid gap-4">
+            <div className="grid gap-5">
               {caseFile.researchQuestions.map((question) => (
-                <article className="museum-paper-deep rounded-sm p-5" key={question.id}>
-                  <p className="text-xs font-semibold uppercase text-muted">
-                    {question.status}
+                <ArchivalCard eyebrow={question.status} key={question.id} title={question.question}>
+                  <p className="text-sm leading-7 text-body">
+                    Requires Research. This question remains open until reviewed evidence and sources answer it.
                   </p>
-                  <p className="mt-3 text-body">{question.question}</p>
-                </article>
+                </ArchivalCard>
               ))}
             </div>
           </CaseFileSection>
@@ -635,21 +461,20 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
             id="confidence-assessment"
             title="Confidence Assessment"
           >
-            <article className="museum-paper-deep rounded-sm p-5">
+            <div className="space-y-6">
               <div className="flex flex-wrap gap-2">
-                <CaseFileBadge tone="trust">
+                <CaseFileBadge tone="neutral">
                   Confidence: {formatConfidence(caseFile.confidenceAssessment.level)}
                 </CaseFileBadge>
-                <CaseFileBadge
-                  tone={statusTone[caseFile.confidenceAssessment.status]}
-                >
+                <CaseFileBadge tone={statusTone[caseFile.confidenceAssessment.status]}>
                   {caseFile.confidenceAssessment.status}
                 </CaseFileBadge>
               </div>
-              <p className="mt-5 max-w-4xl text-sm leading-7 text-body">
+              <p className="max-w-4xl text-sm leading-7 text-body">
                 {caseFile.confidenceAssessment.rationale}
               </p>
-              <ul className="mt-6 grid gap-3 text-sm text-body">
+              <SectionDivider label="Requirements" />
+              <ul className="grid gap-3 text-sm text-body">
                 {caseFile.confidenceAssessment.requirements.map((requirement) => (
                   <li className="flex gap-3" key={requirement}>
                     <span className="mt-2 size-1.5 shrink-0 rounded-full bg-evidence" />
@@ -657,30 +482,24 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
                   </li>
                 ))}
               </ul>
-            </article>
+            </div>
           </CaseFileSection>
 
           <CaseFileSection
-            eyebrow="Versioning"
+            eyebrow="Revision History"
             id="revision-history"
             title="Revision History"
           >
-            <div className="grid gap-4">
+            <div className="grid gap-5">
               {caseFile.revisions.map((revision) => (
-                <article className="museum-paper-deep rounded-sm p-5" key={revision.id}>
-                  <div className="flex flex-wrap justify-between gap-3">
-                    <p className="font-semibold text-foreground">
-                      Version {revision.version}
-                    </p>
-                    <p className="text-sm text-muted">{revision.dateLabel}</p>
-                  </div>
-                  <p className="mt-2 text-sm text-muted">
-                    Investigator: {revision.investigator}
-                  </p>
-                  <p className="mt-3 text-sm leading-7 text-body">
-                    {revision.summary}
-                  </p>
-                </article>
+                <ArchivalCard
+                  eyebrow={revision.dateLabel}
+                  key={revision.id}
+                  title={`Version ${revision.version}`}
+                >
+                  <p className="text-sm text-muted">Investigator: {revision.investigator}</p>
+                  <p className="mt-3 text-sm leading-7 text-body">{revision.summary}</p>
+                </ArchivalCard>
               ))}
             </div>
           </CaseFileSection>
@@ -689,4 +508,3 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     </main>
   );
 }
-
