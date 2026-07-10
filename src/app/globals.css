@@ -1,16 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8faf8;
-  --foreground: #17201b;
-  --body: #3d4a42;
-  --muted: #647069;
-  --surface: #ffffff;
-  --border: #d9e0dc;
-  --accent: #223a5e;
-  --evidence: #b36b2c;
-  --trust: #1d7a68;
-  --warning: #8b5d12;
+  --museum-parchment: #f2eadc;
+  --museum-cream: #fffaf0;
+  --museum-cream-deep: #f7edda;
+  --museum-walnut: #241710;
+  --museum-walnut-soft: #3a261b;
+  --museum-brass: #a77a2d;
+  --museum-brass-dark: #76531f;
+  --museum-charcoal: #251f1a;
+  --museum-body: #4b4138;
+  --museum-muted: #786f64;
+  --museum-border: #d8c8aa;
+  --museum-border-strong: #bda87e;
+  --museum-trust: #386b5f;
+  --museum-warning: #8a5b18;
+  --museum-shadow-soft: 0 18px 45px rgb(36 23 16 / 0.08);
+  --museum-shadow-lift: 0 24px 60px rgb(36 23 16 / 0.14);
+  --museum-space-gallery: 4rem;
+  --museum-space-room: 2.5rem;
+  --museum-space-cabinet: 1.25rem;
+  --museum-font-display: Georgia, "Times New Roman", serif;
+  --museum-font-body: Arial, Helvetica, sans-serif;
+
+  --background: var(--museum-parchment);
+  --foreground: var(--museum-charcoal);
+  --body: var(--museum-body);
+  --muted: var(--museum-muted);
+  --surface: var(--museum-cream);
+  --border: var(--museum-border);
+  --accent: var(--museum-walnut);
+  --evidence: var(--museum-brass-dark);
+  --trust: var(--museum-trust);
+  --warning: var(--museum-warning);
 }
 
 @theme inline {
@@ -24,7 +46,12 @@
   --color-evidence: var(--evidence);
   --color-trust: var(--trust);
   --color-warning: var(--warning);
-  --font-sans: Arial, Helvetica, sans-serif;
+  --color-parchment: var(--museum-parchment);
+  --color-cream: var(--museum-cream);
+  --color-walnut: var(--museum-walnut);
+  --color-brass: var(--museum-brass);
+  --font-sans: var(--museum-font-body);
+  --font-serif: var(--museum-font-display);
 }
 
 * {
@@ -33,16 +60,120 @@
 
 html {
   min-width: 320px;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--museum-font-body);
+}
+
+::selection {
+  background: rgb(167 122 45 / 0.24);
+  color: var(--museum-charcoal);
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--museum-brass);
+  outline-offset: 3px;
+}
+
+.museum-paper {
+  background: var(--museum-cream);
+  border: 1px solid var(--museum-border);
+  box-shadow: var(--museum-shadow-soft);
+}
+
+.museum-paper-deep {
+  background: var(--museum-cream-deep);
+  border: 1px solid var(--museum-border);
+}
+
+.museum-rule {
+  border-top: 1px solid rgb(167 122 45 / 0.42);
+}
+
+.museum-action-link {
+  align-items: center;
+  color: var(--museum-walnut);
+  display: inline-flex;
+  font-weight: 700;
+  gap: 0.5rem;
+  position: relative;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.museum-action-link::after {
+  background: var(--museum-brass);
+  bottom: -0.2rem;
+  content: "";
+  height: 1px;
+  left: 0;
+  position: absolute;
+  transform: scaleX(0.55);
+  transform-origin: left;
+  transition: transform 180ms ease;
+  width: 100%;
+}
+
+.museum-action-link:hover {
+  color: var(--museum-brass-dark);
+  transform: translateY(-1px);
+}
+
+.museum-action-link:hover::after {
+  transform: scaleX(1);
+}
+
+.museum-hover-lift {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.museum-hover-lift:hover {
+  border-color: var(--museum-border-strong);
+  box-shadow: var(--museum-shadow-lift);
+  transform: translateY(-2px);
+}
+
+.museum-fade-in {
+  animation: museum-fade-in 420ms ease both;
+}
+
+@keyframes museum-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

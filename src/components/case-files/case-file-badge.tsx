@@ -4,10 +4,10 @@ type CaseFileBadgeProps = {
 };
 
 const toneClasses = {
-  evidence: "border-evidence/30 bg-evidence/10 text-evidence",
-  neutral: "border-border bg-surface text-body",
-  trust: "border-trust/30 bg-trust/10 text-trust",
-  warning: "border-warning/30 bg-warning/10 text-warning",
+  evidence: "border-evidence/35 bg-cream text-evidence",
+  neutral: "border-border bg-cream text-body",
+  trust: "border-trust/35 bg-cream text-trust",
+  warning: "border-warning/35 bg-cream text-warning",
 } as const;
 
 export function CaseFileBadge({
