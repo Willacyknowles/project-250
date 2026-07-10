@@ -8,6 +8,8 @@ import { EmptyState } from "@/components/case-files/empty-state";
 import { siteConfig } from "@/config/site";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import { getEvidenceItemsByCaseFileId } from "@/lib/evidence";
+import { formatSourceType } from "@/lib/source-labels";
+import { getSourceRecordsByCaseFileId } from "@/lib/sources";
 import { getTimelineEventsByCaseFileId } from "@/lib/timeline";
 import {
   formatConfidence,
@@ -131,9 +133,11 @@ function LedgerCard({
 function EvidenceHierarchy({
   caseFile,
   evidenceCount,
+  sourceCount,
 }: {
   caseFile: CaseFile;
   evidenceCount: number;
+  sourceCount: number;
 }) {
   const documentedFacts = countFieldsByStatus(caseFile, "Documented");
   const unknowns = countFieldsByStatus(caseFile, "Requires Research");
@@ -162,7 +166,7 @@ function EvidenceHierarchy({
         description="Source citations must be entered before the dossier can support conclusions."
         label="Sources"
         tone="neutral"
-        value={`${caseFile.sources.length}`}
+        value={`${sourceCount}`}
       />
       <LedgerCard
         description="Unknowns are preserved as research targets instead of being smoothed over."
@@ -212,6 +216,7 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
   }
 
   const evidenceItems = getEvidenceItemsByCaseFileId(caseFile.id);
+  const sourceRecords = getSourceRecordsByCaseFileId(caseFile.id);
   const timelineEvents = getTimelineEventsByCaseFileId(caseFile.id);
 
   return (
@@ -227,7 +232,11 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
               <p className="max-w-4xl text-lg leading-8 text-body">
                 {caseFile.overview.summary}
               </p>
-              <EvidenceHierarchy caseFile={caseFile} evidenceCount={evidenceItems.length} />
+              <EvidenceHierarchy
+                caseFile={caseFile}
+                evidenceCount={evidenceItems.length}
+                sourceCount={sourceRecords.length}
+              />
               <div className="rounded-lg border border-border bg-background p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                   Primary Question
@@ -383,38 +392,51 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
             </div>
           </CaseFileSection>
           <CaseFileSection eyebrow="Sources" id="sources" title="Sources">
-            {caseFile.sources.length > 0 ? (
-              <div className="grid gap-4">
-                {caseFile.sources.map((source) => (
+            <div className="space-y-5">
+              <div className="rounded-lg border border-border bg-background p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                      Source Library
+                    </p>
+                    <h3 className="mt-2 text-xl font-semibold text-foreground">
+                      {sourceRecords.length} placeholder source records
+                    </h3>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-body">
+                      Source records are ready for future citation review. Every record remains marked Requires Research until the source is located, reviewed, and linked to verified evidence.
+                    </p>
+                  </div>
+                  <Link
+                    className="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white"
+                    href={`/case-files/${caseFile.slug}/sources` as Route}
+                  >
+                    Open Source Library
+                  </Link>
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-3">
+                {sourceRecords.slice(0, 3).map((source) => (
                   <article
                     className="rounded-lg border border-border bg-background p-5"
                     key={source.id}
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                      <h3 className="text-lg font-semibold text-foreground">
-                        {source.title}
-                      </h3>
-                      <CaseFileBadge tone={statusTone[source.status]}>
-                        {source.status}
-                      </CaseFileBadge>
+                      <p className="text-sm font-semibold text-evidence">
+                        {formatSourceType(source.sourceType)}
+                      </p>
+                      <CaseFileBadge tone="warning">{source.status}</CaseFileBadge>
                     </div>
+                    <h3 className="mt-3 text-lg font-semibold text-foreground">
+                      {source.title}
+                    </h3>
                     <p className="mt-3 text-sm leading-6 text-body">
-                      {source.citation}
-                    </p>
-                    <p className="mt-3 text-xs leading-5 text-muted">
                       {source.notes}
                     </p>
                   </article>
                 ))}
               </div>
-            ) : (
-              <EmptyState
-                description="No source citations have been entered. Published dossier content must remain limited until sources are reviewed and cited."
-                title="No source citations published"
-              />
-            )}
+            </div>
           </CaseFileSection>
-
           <CaseFileSection
             eyebrow="Open Questions"
             id="open-questions"
@@ -497,4 +519,5 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     </main>
   );
 }
+
 

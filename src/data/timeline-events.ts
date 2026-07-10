@@ -102,7 +102,9 @@ export const investigationTimelineEvents: readonly InvestigationTimelineEvent[] 
       evidenceReferences.printersDevice,
       evidenceReferences.colophon,
     ],
-    relatedSources: [sourceReview("printing-source-review", "Printing Source Review")],
+    relatedSources: [sourceReview("herbert-bible-bibliography", "Herbert / Bible Bibliography"),
+      sourceReview("estc-record", "ESTC Record"),
+      sourceReview("title-page-observation", "Title Page Observation")],
   }),
   placeholderEvent({
     id: "publication",
@@ -114,7 +116,8 @@ export const investigationTimelineEvents: readonly InvestigationTimelineEvent[] 
       evidenceReferences.genealogies,
       evidenceReferences.maps,
     ],
-    relatedSources: [sourceReview("publication-source-review", "Publication Source Review")],
+    relatedSources: [sourceReview("herbert-bible-bibliography", "Herbert / Bible Bibliography"),
+      sourceReview("estc-record", "ESTC Record")],
   }),
   placeholderEvent({
     id: "ownership",
@@ -125,7 +128,8 @@ export const investigationTimelineEvents: readonly InvestigationTimelineEvent[] 
       evidenceReferences.binding,
       evidenceReferences.marginalNotes,
     ],
-    relatedSources: [sourceReview("ownership-source-review", "Ownership Source Review")],
+    relatedSources: [sourceReview("family-genealogy-research-source", "Family / Genealogy Research Source"),
+      sourceReview("acquisition-purchase-memory", "Acquisition / Purchase Memory")],
   }),
   placeholderEvent({
     id: "inscription",
@@ -133,14 +137,14 @@ export const investigationTimelineEvents: readonly InvestigationTimelineEvent[] 
     description:
       "Requires Research. Placeholder for a future inscription event if inscription evidence is verified and dated.",
     relatedEvidence: [evidenceReferences.sidgwickInscription],
-    relatedSources: [sourceReview("inscription-source-review", "Inscription Source Review")],
+    relatedSources: [sourceReview("inscription-observation", "Inscription Observation")],
   }),
   placeholderEvent({
     id: "discovery",
     title: "Discovery",
     description:
       "Requires Research. Placeholder for future discovery or intake documentation once records are reviewed.",
-    relatedSources: [sourceReview("discovery-source-review", "Discovery Source Review")],
+    relatedSources: [sourceReview("acquisition-purchase-memory", "Acquisition / Purchase Memory")],
   }),
   placeholderEvent({
     id: "modern-investigation",
@@ -148,7 +152,8 @@ export const investigationTimelineEvents: readonly InvestigationTimelineEvent[] 
     description:
       "Requires Research. Placeholder for future modern investigation milestones once formal notes are entered.",
     relatedSources: [
-      sourceReview("modern-investigation-source-review", "Investigation Notes Review"),
+      sourceReview("appraiser-review-placeholder", "Appraiser Review Placeholder"),
     ],
   }),
 ];
+

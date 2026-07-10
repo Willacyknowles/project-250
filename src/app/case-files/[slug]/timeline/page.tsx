@@ -111,6 +111,7 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
 
   const timelineEvents = getTimelineEventsByCaseFileId(caseFile.id);
   const evidenceLinkBase = `/case-files/${caseFile.slug}/evidence`;
+  const sourceLinkBase = `/case-files/${caseFile.slug}/sources`;
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -148,7 +149,7 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
       <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <ol className="relative space-y-8 border-l border-border pl-6 lg:pl-10">
           {timelineEvents.map((event) => (
-            <li className="relative" key={event.id}>
+            <li className="relative scroll-mt-8" id={event.id} key={event.id}>
               <span className="absolute -left-[2.05rem] top-6 size-4 rounded-full border border-evidence bg-background ring-4 ring-surface lg:-left-[2.55rem]" />
               <article className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
                 <div className="flex flex-wrap items-start justify-between gap-5">
@@ -215,6 +216,7 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
                       <ReferenceList
                         emptyLabel="No source targets are linked to this timeline event yet."
                         items={event.relatedSources}
+                        linkBase={sourceLinkBase}
                       />
                     </div>
                   </section>
@@ -236,3 +238,6 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
     </main>
   );
 }
+
+
+
