@@ -1,7 +1,7 @@
 import type { Route } from "next";
-import Link from "next/link";
 import { knowlesCollection } from "@/collections";
 import { ModuleList } from "@/components/foundation/module-list";
+import { MuseumButton } from "@/components/museum/museum-button";
 import { siteConfig } from "@/config/site";
 import { getReusablePlatformModules } from "@/lib/platform";
 
@@ -32,12 +32,7 @@ export default function Home() {
               {siteConfig.publicProduct}.
             </p>
             <div className="mt-6">
-              <Link
-                className="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white"
-                href={"/case-files" as Route}
-              >
-                View Case Files
-              </Link>
+              <MuseumButton href={"/case-files" as Route}>Enter Case Files</MuseumButton>
             </div>
           </div>
 

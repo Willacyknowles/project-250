@@ -6,6 +6,7 @@ import { ArchivalCard } from "@/components/museum/archival-card";
 import { CuratorNote } from "@/components/museum/curator-note";
 import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
 import { GallerySurface } from "@/components/museum/gallery-surface";
+import { MuseumButton } from "@/components/museum/museum-button";
 import { MuseumLabel } from "@/components/museum/museum-label";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
 import { formatConfidence } from "@/lib/case-file-labels";
@@ -259,12 +260,12 @@ export default async function SourceLibraryPage({
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
                 <p className="max-w-2xl text-sm leading-7 text-body">{source.notes}</p>
-                <Link
-                  className="museum-action-link text-sm"
+                <MuseumButton
+                  className="px-4 py-2 text-xs"
                   href={`/case-files/${caseFile.slug}/sources/${source.id}` as Route}
                 >
                   Open Source Record
-                </Link>
+                </MuseumButton>
               </div>
             </ArchivalCard>
           ))}

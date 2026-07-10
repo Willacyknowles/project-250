@@ -1,5 +1,4 @@
 import type { Metadata, Route } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { CaseFileOverview } from "@/components/case-files/case-file-overview";
@@ -8,6 +7,7 @@ import { ArchivalCard } from "@/components/museum/archival-card";
 import { CuratorNote } from "@/components/museum/curator-note";
 import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
 import { GallerySurface } from "@/components/museum/gallery-surface";
+import { MuseumButton } from "@/components/museum/museum-button";
 import { MuseumDossierNavigation } from "@/components/museum/museum-dossier-navigation";
 import { MuseumLabel } from "@/components/museum/museum-label";
 import { SectionDivider } from "@/components/museum/section-divider";
@@ -53,11 +53,7 @@ function countFieldsByStatus(caseFile: CaseFile, status: ResearchStatus) {
 }
 
 function MuseumActionLink({ children, href }: MuseumActionLinkProps) {
-  return (
-    <Link className="museum-action-link text-sm" href={href}>
-      {children}
-    </Link>
-  );
+  return <MuseumButton href={href}>{children}</MuseumButton>;
 }
 
 function DossierFieldGrid({ fields }: { fields: readonly DossierField[] }) {

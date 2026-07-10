@@ -1,7 +1,7 @@
 import type { Route } from "next";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { MuseumButton } from "@/components/museum/museum-button";
 import { siteConfig } from "@/config/site";
 import { getCaseFiles } from "@/lib/case-files";
 import { formatConfidence, formatStatus } from "@/lib/case-file-labels";
@@ -35,9 +35,8 @@ export default function CaseFilesPage() {
       <section className="mx-auto max-w-6xl px-6 py-10 lg:px-8">
         <div className="grid gap-4">
           {caseFiles.map((caseFile) => (
-            <Link
-              className="rounded-lg border border-border bg-surface p-5 shadow-sm transition hover:border-accent"
-              href={`/case-files/${caseFile.slug}` as Route}
+            <article
+              className="museum-drawer rounded-sm p-6"
               key={caseFile.id}
             >
               <div className="flex flex-wrap gap-2">
@@ -57,7 +56,12 @@ export default function CaseFilesPage() {
               <p className="mt-3 max-w-3xl text-sm leading-6 text-body">
                 {caseFile.summary}
               </p>
-            </Link>
+              <div className="mt-6">
+                <MuseumButton href={`/case-files/${caseFile.slug}` as Route}>
+                  Enter Case File
+                </MuseumButton>
+              </div>
+            </article>
           ))}
         </div>
       </section>

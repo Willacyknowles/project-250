@@ -6,6 +6,7 @@ import { ArchiveImagePanel } from "@/components/archive/archive-image-panel";
 import { ArchiveMediaMetadata } from "@/components/archive/archive-media-metadata";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
+import { MuseumButton } from "@/components/museum/museum-button";
 import {
   getArchiveMediaByEvidenceId,
   getPrimaryArchiveMediaForEvidence,
@@ -175,14 +176,12 @@ export default async function EvidenceDetailPage({
                   This record has an archive media control entry, but no verified
                   image, scan, or document has been attached.
                 </p>
-                <Link
-                  className="mt-5 inline-flex rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-brass transition hover:border-accent hover:bg-accent/5"
-                  href={
-                    `/case-files/${caseFile.slug}/evidence/${evidence.id}/archive` as Route
-                  }
+                <MuseumButton
+                  className="mt-5"
+                  href={`/case-files/${caseFile.slug}/evidence/${evidence.id}/archive` as Route}
                 >
                   Open Archive Viewer
-                </Link>
+                </MuseumButton>
               </section>
 
               <ArchiveMediaMetadata media={primaryMedia} />

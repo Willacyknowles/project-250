@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { MuseumButton } from "@/components/museum/museum-button";
 
 export default function NotFound() {
   return (
@@ -9,12 +9,7 @@ export default function NotFound() {
         <p className="mt-4 text-sm leading-6 text-body">
           This route is not part of the Project 250 foundation yet.
         </p>
-        <Link
-          className="mt-6 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white"
-          href="/"
-        >
-          Return home
-        </Link>
+        <MuseumButton className="mt-6" href="/">Return home</MuseumButton>
       </section>
     </main>
   );

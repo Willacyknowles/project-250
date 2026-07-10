@@ -1,6 +1,6 @@
 import type { Route } from "next";
-import Link from "next/link";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { MuseumButton } from "@/components/museum/museum-button";
 import { MuseumLabel } from "@/components/museum/museum-label";
 import type { ResearchStatus } from "@/types/case-file";
 
@@ -69,9 +69,9 @@ export function ArtifactSpotlight({
               <p className="mt-2 font-serif text-2xl text-foreground">{title}</p>
             </div>
             {linkHref ? (
-              <Link className="museum-action-link text-sm" href={linkHref}>
+              <MuseumButton className="px-4 py-2 text-xs" href={linkHref}>
                 {linkLabel}
-              </Link>
+              </MuseumButton>
             ) : null}
           </div>
           <p className="text-sm leading-7 text-body">{description}</p>
