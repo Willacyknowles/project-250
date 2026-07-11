@@ -1,4 +1,4 @@
-import type { Route } from "next";
+﻿import type { Route } from "next";
 import Link from "next/link";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { MuseumLabel } from "@/components/museum/museum-label";
@@ -41,7 +41,7 @@ export function EvidenceTile({
             </div>
           </div>
           <span className="museum-brass-plate absolute bottom-5 left-5 rounded-sm px-3 py-1 text-[0.64rem] font-bold uppercase">
-            Zoom Placeholder
+            Image Pending Review
           </span>
         </div>
         <div className="flex flex-1 flex-col p-6">

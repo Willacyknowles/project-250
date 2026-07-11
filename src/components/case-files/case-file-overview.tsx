@@ -1,4 +1,4 @@
-import type { Route } from "next";
+﻿import type { Route } from "next";
 import { ArtifactSpotlight } from "@/components/case-files/artifact-spotlight";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { AccessionCard } from "@/components/museum/accession-card";
@@ -6,8 +6,13 @@ import { CollectionBadge } from "@/components/museum/collection-badge";
 import { CuratorNote } from "@/components/museum/curator-note";
 import { MuseumLabel } from "@/components/museum/museum-label";
 import { MuseumSeal } from "@/components/museum/museum-seal";
+import { exhibitionCopy } from "@/config/exhibition-copy";
 import { siteConfig } from "@/config/site";
-import { formatConfidence } from "@/lib/case-file-labels";
+import {
+  formatDossierStatus,
+  formatResearchValue,
+  formatVisitorConfidence,
+} from "@/lib/visitor-labels";
 import type { CaseFile } from "@/types/case-file";
 
 type CaseFileOverviewProps = {
@@ -21,15 +26,16 @@ function fieldValue(caseFile: CaseFile, label: string) {
     ...caseFile.physicalDescription.fields,
   ];
 
-  return fields.find((field) => field.label === label)?.value ?? "Requires Research";
+  return formatResearchValue(fields.find((field) => field.label === label)?.value);
 }
 
 export function CaseFileOverview({ caseFile }: CaseFileOverviewProps) {
   const archiveHref =
     `/case-files/${caseFile.slug}/evidence/title-page/archive` as Route;
-  const accessionNumber = "Requires Research";
-  const collectionLocation = "Requires Research";
-  const exhibitRooms = 11;
+  const accessionNumber = exhibitionCopy.accessionUnderReview;
+  const collectionLocation = exhibitionCopy.collectionLocation;
+  const exhibitRooms = exhibitionCopy.exhibitionRooms;
+  const dossierStatus = formatDossierStatus(caseFile.confidenceAssessment.status);
 
   return (
     <header className="museum-spotlight overflow-hidden text-cream">
@@ -40,35 +46,39 @@ export function CaseFileOverview({ caseFile }: CaseFileOverviewProps) {
               caseNumber={caseFile.caseNumber.padStart(3, "0")}
               collection={siteConfig.publicProduct}
               platform={siteConfig.platformName}
-              status={caseFile.confidenceAssessment.status}
+              status={dossierStatus}
             />
             <div className="max-w-xl">
-              <CollectionBadge>{siteConfig.publicProduct}</CollectionBadge>
+              <CollectionBadge>{exhibitionCopy.openingGallery.eyebrow}</CollectionBadge>
               <p className="mt-4 font-serif text-2xl leading-tight text-cream/86">
-                Grand Museum Entrance
+                Opening Gallery
               </p>
               <p className="mt-3 text-sm leading-7 text-cream/68">
-                Visitors enter a research exhibition where each label separates observed records, claims, evidence, sources, and unknowns.
+                {exhibitionCopy.openingGallery.supportingCopy}
               </p>
             </div>
           </div>
 
           <div className="mt-10 max-w-5xl">
-            <MuseumLabel tone="brass">Museum Dossier No. {caseFile.caseNumber.padStart(3, "0")}</MuseumLabel>
+            <MuseumLabel tone="brass">
+              Museum Dossier No. {caseFile.caseNumber.padStart(3, "0")}
+            </MuseumLabel>
             <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-none text-cream sm:text-6xl lg:text-7xl">
-              {caseFile.title}
+              {exhibitionCopy.openingGallery.heading}
             </h1>
-            <p className="mt-7 max-w-3xl text-lg leading-8 text-cream/78">
-              {caseFile.summary}
-            </p>
+            <div className="mt-7 max-w-3xl space-y-2 text-lg leading-8 text-cream/78">
+              {exhibitionCopy.openingGallery.introLines.map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+            </div>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-2">
             <CaseFileBadge tone="warning">
-              Exhibit Status: {caseFile.confidenceAssessment.status}
+              Exhibit Status: {dossierStatus}
             </CaseFileBadge>
             <CaseFileBadge tone="neutral">
-              Confidence: {formatConfidence(caseFile.confidence)}
+              {formatVisitorConfidence(caseFile.confidence)}
             </CaseFileBadge>
             <CaseFileBadge tone="neutral">
               Accession: {accessionNumber}
@@ -77,23 +87,27 @@ export function CaseFileOverview({ caseFile }: CaseFileOverviewProps) {
 
           <div className="mt-9 grid max-w-5xl gap-5 xl:grid-cols-[1fr_18rem]">
             <CuratorNote label="Curator Introduction">
-              <p>
-                This gallery opens the investigation without resolving it. The object is presented as a rare-book case file whose evidence, sources, and claims remain under formal review.
-              </p>
+              <p>{exhibitionCopy.openingGallery.curatorIntroduction}</p>
             </CuratorNote>
             <div className="rounded-sm border border-cream/20 bg-cream/10 p-5 backdrop-blur-sm">
-              <MuseumLabel tone="brass">Visitor Guidance</MuseumLabel>
+              <MuseumLabel tone="brass">Visitor Information</MuseumLabel>
               <dl className="mt-4 grid gap-4 text-sm text-cream/82">
                 <div>
-                  <dt className="font-semibold uppercase text-cream/55">Reading Time</dt>
-                  <dd className="mt-1">Approx. 12 minutes</dd>
+                  <dt className="font-semibold uppercase text-cream/55">
+                    Estimated Visit
+                  </dt>
+                  <dd className="mt-1">{exhibitionCopy.estimatedVisit}</dd>
                 </div>
                 <div>
-                  <dt className="font-semibold uppercase text-cream/55">Exhibition Path</dt>
-                  <dd className="mt-1">{exhibitRooms} rooms and records</dd>
+                  <dt className="font-semibold uppercase text-cream/55">
+                    Exhibition Rooms
+                  </dt>
+                  <dd className="mt-1">{exhibitRooms}</dd>
                 </div>
                 <div>
-                  <dt className="font-semibold uppercase text-cream/55">Collection Location</dt>
+                  <dt className="font-semibold uppercase text-cream/55">
+                    Collection Location
+                  </dt>
                   <dd className="mt-1">{collectionLocation}</dd>
                 </div>
               </dl>
@@ -114,7 +128,7 @@ export function CaseFileOverview({ caseFile }: CaseFileOverviewProps) {
               <dd className="mt-2 text-cream">{accessionNumber}</dd>
             </div>
             <div>
-              <dt className="font-semibold uppercase text-cream/55">Platform</dt>
+              <dt className="font-semibold uppercase text-cream/55">Research Environment</dt>
               <dd className="mt-2 text-cream">{siteConfig.platformName}</dd>
             </div>
           </dl>
@@ -123,17 +137,17 @@ export function CaseFileOverview({ caseFile }: CaseFileOverviewProps) {
             <AccessionCard
               accessionNumber={accessionNumber}
               collection={siteConfig.publicProduct}
-              status={caseFile.confidenceAssessment.status}
+              status={dossierStatus}
             />
           </div>
         </div>
 
         <ArtifactSpotlight
           accessionNumber={accessionNumber}
-          artifactLabel="Primary Artifact Pedestal"
-          caption="Requires Research. No verified artifact image has been attached to the public dossier."
+          artifactLabel="Primary Artifact"
+          caption={exhibitionCopy.artifact.imagePendingCopy}
           collection={siteConfig.publicProduct}
-          description="A museum object record prepared for future visual documentation, bibliographic review, and provenance investigation."
+          description={exhibitionCopy.artifact.objectRecord}
           details={[
             {
               label: "Dimensions",
@@ -145,7 +159,7 @@ export function CaseFileOverview({ caseFile }: CaseFileOverviewProps) {
             },
             {
               label: "Printer",
-              value: "Requires Research",
+              value: exhibitionCopy.unknownValue,
             },
             {
               label: "Date",
@@ -153,11 +167,11 @@ export function CaseFileOverview({ caseFile }: CaseFileOverviewProps) {
             },
             {
               label: "Investigation Status",
-              value: caseFile.confidenceAssessment.status,
+              value: dossierStatus,
             },
           ]}
           linkHref={archiveHref}
-          linkLabel="Enter Digital Archive"
+          linkLabel="Open Document Viewer"
           status={caseFile.confidenceAssessment.status}
           title={caseFile.title}
         />
@@ -165,3 +179,6 @@ export function CaseFileOverview({ caseFile }: CaseFileOverviewProps) {
     </header>
   );
 }
+
+
+

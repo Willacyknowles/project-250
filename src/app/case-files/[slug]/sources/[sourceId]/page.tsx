@@ -1,10 +1,9 @@
-import type { Metadata, Route } from "next";
+﻿import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
-import { formatConfidence } from "@/lib/case-file-labels";
 import {
   formatSourceIndependenceLevel,
   formatSourceType,
@@ -13,6 +12,15 @@ import {
   getSourceRecordForCaseFile,
   getSourceRecordsByCaseFileId,
 } from "@/lib/sources";
+import {
+  formatCitationValue,
+  formatEvidenceStatus,
+  formatInterpretationStatus,
+  formatResearchValue,
+  formatRevisionInvestigator,
+  formatTimelineStatus,
+  formatVisitorConfidence,
+} from "@/lib/visitor-labels";
 import type { ResearchStatus } from "@/types/case-file";
 import type { SourceRelationReference } from "@/types/source";
 
@@ -48,17 +56,19 @@ function MetadataRow({
 
 function RelationLinks({
   emptyLabel,
+  formatStatusLabel,
   getHref,
   items,
 }: {
   emptyLabel: string;
+  formatStatusLabel: (status: ResearchStatus) => string;
   getHref?: (item: SourceRelationReference) => Route;
   items: readonly SourceRelationReference[];
 }) {
   if (items.length === 0) {
     return (
       <div className="rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
-        <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+        <CaseFileBadge tone="warning">Source Review Needed</CaseFileBadge>
         <p className="mt-4 text-sm leading-6 text-body">{emptyLabel}</p>
       </div>
     );
@@ -71,7 +81,7 @@ function RelationLinks({
           <>
             <span className="font-semibold text-foreground">{item.label}</span>
             <CaseFileBadge tone={statusTone[item.status]}>
-              {item.status}
+              {formatStatusLabel(item.status)}
             </CaseFileBadge>
           </>
         );
@@ -118,7 +128,7 @@ export async function generateMetadata({
 
   if (!caseFile) {
     return {
-      title: "Source Not Found",
+      title: "Catalogue Entry Not Found",
     };
   }
 
@@ -126,12 +136,12 @@ export async function generateMetadata({
 
   if (!source) {
     return {
-      title: "Source Not Found",
+      title: "Catalogue Entry Not Found",
     };
   }
 
   return {
-    title: `${source.title} Source Record`,
+    title: `${source.title} Catalogue Entry`,
     description: source.notes,
   };
 }
@@ -157,9 +167,9 @@ export default async function SourceDetailPage({
       <header className="museum-spotlight text-cream">
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
           <div className="flex flex-wrap gap-4 text-sm font-semibold text-brass">
-            <Link href={`/case-files/${caseFile.slug}` as Route}>Case File</Link>
+            <Link href={`/case-files/${caseFile.slug}` as Route}>Opening Gallery</Link>
             <Link href={`/case-files/${caseFile.slug}/sources` as Route}>
-              Source Library
+              Research Library
             </Link>
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
@@ -167,17 +177,17 @@ export default async function SourceDetailPage({
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
             <CaseFileBadge tone={statusTone[source.status]}>
-              {source.status}
+              {formatInterpretationStatus(source.status)}
             </CaseFileBadge>
             <CaseFileBadge tone="neutral">
-              Confidence: {formatConfidence(source.confidence)}
+              {formatVisitorConfidence(source.confidence)}
             </CaseFileBadge>
             <CaseFileBadge tone="neutral">
               {formatSourceIndependenceLevel(source.independenceLevel)}
             </CaseFileBadge>
           </div>
           <p className="mt-8 museum-label-text text-brass">
-            Source Record
+            Catalogue Entry
           </p>
           <h1 className="mt-3 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             {source.title}
@@ -188,8 +198,8 @@ export default async function SourceDetailPage({
         </div>
       </header>
       <FloatingGalleryNavigation
-        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Timeline", route: true }}
-        previous={{ href: `/case-files/${caseFile.slug}/sources`, label: "Source Library", route: true }}
+        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Chronology", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/sources`, label: "Research Library", route: true }}
         returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
       />
 
@@ -199,20 +209,20 @@ export default async function SourceDetailPage({
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-                  Citation Control
+                  Citation
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-foreground">
-                  Citation Placeholder
+                  Citation Under Review
                 </h2>
               </div>
               <CaseFileBadge tone={statusTone[source.status]}>
-                {source.status}
+                {formatInterpretationStatus(source.status)}
               </CaseFileBadge>
             </div>
             <div className="mt-5 rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
-              <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+              <CaseFileBadge tone="warning">Source Review Needed</CaseFileBadge>
               <p className="mt-4 text-sm leading-6 text-body">
-                {source.citationPlaceholder}
+                {formatCitationValue(source.citationPlaceholder)}
               </p>
             </div>
           </section>
@@ -223,7 +233,8 @@ export default async function SourceDetailPage({
             </p>
             <div className="mt-5">
               <RelationLinks
-                emptyLabel="No evidence is linked to this source record yet."
+                emptyLabel="No evidence is linked to this source yet."
+                formatStatusLabel={formatEvidenceStatus}
                 getHref={(item) =>
                   `/case-files/${caseFile.slug}/evidence/${item.id}` as Route
                 }
@@ -234,11 +245,12 @@ export default async function SourceDetailPage({
 
           <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Related Timeline Events
+              Related Chronology Entries
             </p>
             <div className="mt-5">
               <RelationLinks
-                emptyLabel="No timeline events are linked to this source record yet."
+                emptyLabel="No chronology entries are linked to this source yet."
+                formatStatusLabel={formatTimelineStatus}
                 getHref={(item) =>
                   `/case-files/${caseFile.slug}/timeline#${item.id}` as Route
                 }
@@ -249,11 +261,12 @@ export default async function SourceDetailPage({
 
           <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Related Claims
+              Related Working Conclusions
             </p>
             <div className="mt-5">
               <RelationLinks
-                emptyLabel="No claims are linked. Claims must wait for evidence and source review."
+                emptyLabel="No working conclusions are linked to this source yet."
+                formatStatusLabel={formatInterpretationStatus}
                 getHref={(item) =>
                   `/case-files/${caseFile.slug}/claims/${item.id}` as Route
                 }
@@ -264,7 +277,7 @@ export default async function SourceDetailPage({
 
           <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Revision History
+              Research History
             </p>
             <div className="mt-5 grid gap-3">
               {source.revisionHistory.map((revision) => (
@@ -279,7 +292,7 @@ export default async function SourceDetailPage({
                     <p className="text-sm text-muted">{revision.dateLabel}</p>
                   </div>
                   <p className="mt-2 text-sm text-muted">
-                    Investigator: {revision.investigator}
+                    Research Team: {formatRevisionInvestigator(revision.investigator)}
                   </p>
                   <p className="mt-3 text-sm leading-6 text-body">
                     {revision.summary}
@@ -294,10 +307,10 @@ export default async function SourceDetailPage({
           <dl className="grid gap-3 museum-drawer rounded-sm p-5">
             <MetadataRow label="Source ID" value={source.id} />
             <MetadataRow label="Source Type" value={formatSourceType(source.sourceType)} />
-            <MetadataRow label="Status" value={source.status} />
+            <MetadataRow label="Status" value={formatInterpretationStatus(source.status)} />
             <MetadataRow
               label="Confidence"
-              value={formatConfidence(source.confidence)}
+              value={formatVisitorConfidence(source.confidence)}
             />
             <MetadataRow
               label="Independence"
@@ -305,18 +318,18 @@ export default async function SourceDetailPage({
             />
             <MetadataRow
               label="Repository / Archive"
-              value={source.repositoryArchive}
+              value={formatResearchValue(source.repositoryArchive)}
             />
             <MetadataRow
               label="Related Evidence"
               value={source.relatedEvidence.length}
             />
             <MetadataRow
-              label="Related Claims"
+              label="Related Working Conclusions"
               value={source.relatedClaims.length}
             />
             <MetadataRow
-              label="Timeline Events"
+              label="Chronology Entries"
               value={source.relatedTimelineEvents.length}
             />
           </dl>
@@ -325,4 +338,3 @@ export default async function SourceDetailPage({
     </main>
   );
 }
-

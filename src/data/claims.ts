@@ -1,4 +1,4 @@
-import type { ClaimEngineRecord, ClaimType } from "@/types/claim";
+﻿import type { ClaimEngineRecord, ClaimType } from "@/types/claim";
 
 const caseFile001Id = "case-file-001";
 const requiresResearch = "Requires Research" as const;
@@ -10,9 +10,9 @@ function revision(id: string) {
       id: `${id}-rev-001`,
       version: "0.1.0",
       dateLabel: "2026-07-09",
-      investigator: "Codex",
+      investigator: "The Knowles Collection",
       summary:
-        "Created placeholder claim record for Claims Engine foundation. No historical conclusion was added.",
+        "Interpretive question defined for evidence and source review.",
     },
   ] as const;
 }
@@ -47,14 +47,14 @@ function claimRecord({
     caseFileId: caseFile001Id,
     title,
     claimType,
-    statement: `Requires Research. ${title} has not been verified as a historical conclusion.`,
+    statement: `${title} remains an open interpretation pending evidence and source review.`,
     status: requiresResearch,
     confidence: unknown,
     relatedEvidenceIds,
     relatedSourceIds,
     relatedTimelineEventIds,
     notes:
-      "Requires Research. This claim is a placeholder assertion container and must not be treated as supported until evidence, sources, and human review are complete.",
+      "This interpretation is presented as a research question, not a settled historical conclusion.",
     openQuestions,
     revisionHistory: revision(id),
   };

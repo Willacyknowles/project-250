@@ -1,4 +1,4 @@
-import type { ArchiveMediaType, EvidenceArtifactType } from "@/types/evidence";
+﻿import type { ArchiveMediaType, EvidenceArtifactType } from "@/types/evidence";
 
 const artifactTypeLabels: Record<EvidenceArtifactType, string> = {
   annotation: "Annotation",
@@ -15,7 +15,7 @@ const artifactTypeLabels: Record<EvidenceArtifactType, string> = {
 const archiveMediaTypeLabels: Record<ArchiveMediaType, string> = {
   document: "Document",
   image: "Image",
-  placeholder: "Placeholder",
+  placeholder: "Image Pending Review",
   scan: "Scan",
 };
 
@@ -26,3 +26,4 @@ export function formatEvidenceArtifactType(type: EvidenceArtifactType) {
 export function formatArchiveMediaType(type: ArchiveMediaType) {
   return archiveMediaTypeLabels[type];
 }
+

@@ -1,10 +1,9 @@
-import type { Metadata, Route } from "next";
+﻿import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-navigation";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
-import { formatConfidence } from "@/lib/case-file-labels";
 import { formatClaimType } from "@/lib/claim-labels";
 import {
   getClaimRecordForCaseFile,
@@ -13,6 +12,13 @@ import {
 import { getEvidenceItemById } from "@/lib/evidence";
 import { getSourceRecordById } from "@/lib/sources";
 import { getTimelineEventById } from "@/lib/timeline";
+import {
+  formatEvidenceStatus,
+  formatInterpretationStatus,
+  formatRevisionInvestigator,
+  formatTimelineStatus,
+  formatVisitorConfidence,
+} from "@/lib/visitor-labels";
 import type { ResearchStatus } from "@/types/case-file";
 
 type ClaimDetailPageProps = {
@@ -85,17 +91,19 @@ function timelineReference(id: string): RelationReference {
 
 function RelationLinks({
   emptyLabel,
+  formatStatusLabel,
   getHref,
   items,
 }: {
   emptyLabel: string;
+  formatStatusLabel: (status: ResearchStatus) => string;
   getHref: (item: RelationReference) => Route;
   items: readonly RelationReference[];
 }) {
   if (items.length === 0) {
     return (
       <div className="rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
-        <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+        <CaseFileBadge tone="warning">Source Review Needed</CaseFileBadge>
         <p className="mt-4 text-sm leading-6 text-body">{emptyLabel}</p>
       </div>
     );
@@ -111,7 +119,7 @@ function RelationLinks({
         >
           <span className="font-semibold text-foreground">{item.label}</span>
           <CaseFileBadge tone={statusTone[item.status]}>
-            {item.status}
+            {formatStatusLabel(item.status)}
           </CaseFileBadge>
         </Link>
       ))}
@@ -136,7 +144,7 @@ export async function generateMetadata({
 
   if (!caseFile) {
     return {
-      title: "Claim Not Found",
+      title: "Working Conclusion Not Found",
     };
   }
 
@@ -144,12 +152,12 @@ export async function generateMetadata({
 
   if (!claim) {
     return {
-      title: "Claim Not Found",
+      title: "Working Conclusion Not Found",
     };
   }
 
   return {
-    title: `${claim.title} Claim Record`,
+    title: `${claim.title} Working Conclusion`,
     description: claim.statement,
   };
 }
@@ -179,9 +187,9 @@ export default async function ClaimDetailPage({
       <header className="museum-spotlight text-cream">
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-12">
           <div className="flex flex-wrap gap-4 text-sm font-semibold text-brass">
-            <Link href={`/case-files/${caseFile.slug}` as Route}>Case File</Link>
+            <Link href={`/case-files/${caseFile.slug}` as Route}>Opening Gallery</Link>
             <Link href={`/case-files/${caseFile.slug}/claims` as Route}>
-              Claims Engine
+              Working Conclusions
             </Link>
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
@@ -189,14 +197,14 @@ export default async function ClaimDetailPage({
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
             <CaseFileBadge tone={statusTone[claim.status]}>
-              {claim.status}
+              {formatInterpretationStatus(claim.status)}
             </CaseFileBadge>
             <CaseFileBadge tone="neutral">
-              Confidence: {formatConfidence(claim.confidence)}
+              {formatVisitorConfidence(claim.confidence)}
             </CaseFileBadge>
           </div>
           <p className="mt-8 museum-label-text text-brass">
-            Claim Record
+            Working Conclusion
           </p>
           <h1 className="mt-3 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             {claim.title}
@@ -207,8 +215,8 @@ export default async function ClaimDetailPage({
         </div>
       </header>
       <FloatingGalleryNavigation
-        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Timeline", route: true }}
-        previous={{ href: `/case-files/${caseFile.slug}/claims`, label: "Claims", route: true }}
+        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Chronology", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/claims`, label: "Working Conclusions", route: true }}
         returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
       />
 
@@ -218,19 +226,19 @@ export default async function ClaimDetailPage({
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-                  Claim Statement
+                  Scholarly Interpretation
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-foreground">
-                  Assertion Control
+                  Under Review
                 </h2>
               </div>
               <CaseFileBadge tone={statusTone[claim.status]}>
-                {claim.status}
+                {formatInterpretationStatus(claim.status)}
               </CaseFileBadge>
             </div>
             <p className="mt-5 text-sm leading-6 text-body">{claim.statement}</p>
             <div className="mt-5 rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
-              <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+              <CaseFileBadge tone="warning">Source Review Needed</CaseFileBadge>
               <p className="mt-4 text-sm leading-6 text-body">{claim.notes}</p>
             </div>
           </section>
@@ -241,7 +249,8 @@ export default async function ClaimDetailPage({
             </p>
             <div className="mt-5">
               <RelationLinks
-                emptyLabel="No evidence is linked to this claim yet."
+                emptyLabel="No evidence is linked to this interpretation yet."
+                formatStatusLabel={formatEvidenceStatus}
                 getHref={(item) =>
                   `/case-files/${caseFile.slug}/evidence/${item.id}` as Route
                 }
@@ -256,7 +265,8 @@ export default async function ClaimDetailPage({
             </p>
             <div className="mt-5">
               <RelationLinks
-                emptyLabel="No sources are linked to this claim yet."
+                emptyLabel="No sources are linked to this interpretation yet."
+                formatStatusLabel={formatInterpretationStatus}
                 getHref={(item) =>
                   `/case-files/${caseFile.slug}/sources/${item.id}` as Route
                 }
@@ -267,11 +277,12 @@ export default async function ClaimDetailPage({
 
           <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Linked Timeline Events
+              Linked Chronology Entries
             </p>
             <div className="mt-5">
               <RelationLinks
-                emptyLabel="No timeline events are linked to this claim yet."
+                emptyLabel="No chronology entries are linked to this interpretation yet."
+                formatStatusLabel={formatTimelineStatus}
                 getHref={(item) =>
                   `/case-files/${caseFile.slug}/timeline#${item.id}` as Route
                 }
@@ -291,7 +302,7 @@ export default async function ClaimDetailPage({
                   key={question.id}
                 >
                   <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                    {question.status}
+                    Open Research Question
                   </p>
                   <p className="mt-2 text-sm leading-6 text-body">
                     {question.question}
@@ -303,7 +314,7 @@ export default async function ClaimDetailPage({
 
           <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Revision History
+              Research History
             </p>
             <div className="mt-5 grid gap-3">
               {claim.revisionHistory.map((revision) => (
@@ -318,7 +329,7 @@ export default async function ClaimDetailPage({
                     <p className="text-sm text-muted">{revision.dateLabel}</p>
                   </div>
                   <p className="mt-2 text-sm text-muted">
-                    Investigator: {revision.investigator}
+                    Research Team: {formatRevisionInvestigator(revision.investigator)}
                   </p>
                   <p className="mt-3 text-sm leading-6 text-body">
                     {revision.summary}
@@ -331,12 +342,12 @@ export default async function ClaimDetailPage({
 
         <aside className="lg:sticky lg:top-6 lg:self-start">
           <dl className="grid gap-3 museum-drawer rounded-sm p-5">
-            <MetadataRow label="Claim ID" value={claim.id} />
-            <MetadataRow label="Claim Type" value={formatClaimType(claim.claimType)} />
-            <MetadataRow label="Status" value={claim.status} />
+            <MetadataRow label="Interpretation ID" value={claim.id} />
+            <MetadataRow label="Interpretation Type" value={formatClaimType(claim.claimType)} />
+            <MetadataRow label="Status" value={formatInterpretationStatus(claim.status)} />
             <MetadataRow
               label="Confidence"
-              value={formatConfidence(claim.confidence)}
+              value={formatVisitorConfidence(claim.confidence)}
             />
             <MetadataRow
               label="Linked Evidence"
@@ -347,7 +358,7 @@ export default async function ClaimDetailPage({
               value={claim.relatedSourceIds.length}
             />
             <MetadataRow
-              label="Timeline Events"
+              label="Chronology Entries"
               value={claim.relatedTimelineEventIds.length}
             />
             <MetadataRow

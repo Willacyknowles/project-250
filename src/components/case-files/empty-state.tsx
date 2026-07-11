@@ -1,4 +1,4 @@
-import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+﻿import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 
 type EmptyStateProps = {
   description: string;
@@ -11,11 +11,11 @@ export function EmptyState({ title, description }: EmptyStateProps) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-warning">
-            Intake Required
+            Research Pending
           </p>
           <h3 className="mt-2 text-lg font-semibold text-foreground">{title}</h3>
         </div>
-        <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+        <CaseFileBadge tone="warning">Source Review Needed</CaseFileBadge>
       </div>
       <p className="mt-4 max-w-3xl text-sm leading-6 text-body">{description}</p>
     </div>

@@ -1,4 +1,4 @@
-import type { CaseFile, ResearchStatus } from "@/types/case-file";
+﻿import type { CaseFile, ResearchStatus } from "@/types/case-file";
 
 const documented = "Documented" satisfies ResearchStatus;
 const requiresResearch = "Requires Research" satisfies ResearchStatus;
@@ -14,7 +14,7 @@ export const caseFiles: readonly CaseFile[] = [
     version: "0.2.0",
     leadInvestigator: "Will Knowles",
     summary:
-      "Requires Research. This dossier establishes the production Case File structure for the 1610 Geneva Bible without publishing unverified provenance, physical description, evidence, claims, or sources.",
+      "A four-century-old English Bible, a Victorian inscription, and a trail of names, places, and unanswered questions.",
     primaryQuestion:
       "What evidence can establish this artifact's provenance, physical characteristics, and ownership history?",
     confidence: "unknown",
@@ -26,7 +26,7 @@ export const caseFiles: readonly CaseFile[] = [
     overview: {
       status: requiresResearch,
       summary:
-        "Requires Research. The public dossier is ready for evidence intake, but historical conclusions are intentionally withheld until primary sources and artifact documentation are reviewed.",
+        "This investigation begins with the object itself: its printed text, physical construction, handwritten marks, and surviving documentary trail.",
       fields: [
         {
           label: "Case Number",
@@ -37,7 +37,7 @@ export const caseFiles: readonly CaseFile[] = [
           label: "Working Title",
           value: "The 1610 Geneva Bible",
           status: requiresResearch,
-          note: "Validate against artifact images, title page, cataloging notes, and source records.",
+          note: "To be checked against the artifact, title page, catalogue references, and source notes.",
         },
         {
           label: "Collection",
@@ -45,17 +45,17 @@ export const caseFiles: readonly CaseFile[] = [
           status: documented,
         },
         {
-          label: "Publication Readiness",
-          value: "Not ready for historical publication",
+          label: "Collection Status",
+          value: "Active Investigation",
           status: requiresResearch,
-          note: "Evidence, sources, claims, and confidence review must be completed first.",
+          note: "Evidence, sources, interpretations, and confidence review remain in progress.",
         },
       ],
     },
     provenance: {
       status: requiresResearch,
       summary:
-        "Requires Research. No provenance chain is published for this Case File until each ownership or custody statement is tied to evidence.",
+        "The ownership history of the volume has not yet been reconstructed. Each name, transfer, and custody statement must be tied to evidence before it is presented as part of the chain.",
       fields: [
         {
           label: "Earliest Documented Owner",
@@ -82,7 +82,7 @@ export const caseFiles: readonly CaseFile[] = [
     physicalDescription: {
       status: requiresResearch,
       summary:
-        "Requires Research. Physical description should come from direct examination, images, measurements, and condition notes.",
+        "The material description awaits direct examination, photography, measurements, collation, and condition notes.",
       fields: [
         {
           label: "Artifact Type",
@@ -93,7 +93,7 @@ export const caseFiles: readonly CaseFile[] = [
           label: "Date Evidence",
           value: "Requires Research",
           status: requiresResearch,
-          note: "The 1610 date label must be confirmed from artifact evidence or source documentation.",
+          note: "The 1610 date must be checked against artifact evidence and reviewed bibliographic sources.",
         },
         {
           label: "Binding",
@@ -161,12 +161,12 @@ export const caseFiles: readonly CaseFile[] = [
       level: "unknown",
       status: requiresResearch,
       rationale:
-        "Requires Research. Confidence remains unknown because no evidence, sources, claims, or timeline events have been entered for public review.",
+        "Confidence remains unknown while the evidence, sources, interpretations, and chronology are under review.",
       requirements: [
-        "Add primary-source evidence records.",
-        "Document physical description from artifact review.",
-        "Link every claim to supporting evidence and counter-evidence where applicable.",
-        "Record provenance timeline events only after source review.",
+        "Record primary-source evidence.",
+        "Document the physical description from artifact review.",
+        "Link every interpretation to supporting evidence and counter-evidence where applicable.",
+        "Add provenance events only after source review.",
         "Complete human confidence review before publication.",
       ],
     },
@@ -182,17 +182,17 @@ export const caseFiles: readonly CaseFile[] = [
         id: "rev-001-foundation",
         version: "0.1.0",
         dateLabel: "2026-07-06",
-        investigator: "Codex",
+        investigator: "The Knowles Collection",
         summary:
-          "Created the public Case File prototype structure without adding historical evidence or conclusions.",
+          "Initial case structure established for the public research record.",
       },
       {
         id: "rev-002-dossier",
         version: "0.2.0",
         dateLabel: "2026-07-07",
-        investigator: "Codex",
+        investigator: "The Knowles Collection",
         summary:
-          "Replaced placeholder content with a structured dossier and marked unverified historical content as Requires Research.",
+          "Evidence categories defined and unresolved historical content kept under review.",
       },
     ],
   },

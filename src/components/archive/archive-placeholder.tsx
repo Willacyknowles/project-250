@@ -1,4 +1,6 @@
-import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+﻿import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+import { exhibitionCopy } from "@/config/exhibition-copy";
+import { formatEvidenceStatus } from "@/lib/visitor-labels";
 import type { ResearchStatus } from "@/types/case-file";
 
 type ArchivePlaceholderProps = {
@@ -27,14 +29,14 @@ export function ArchivePlaceholder({
     >
       <div className="max-w-xl">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-          Archive Image Pending
+          {exhibitionCopy.documentViewer.title}
         </p>
         <p className="mt-4 text-xl font-semibold text-foreground">
-          Placeholder Media
+          {exhibitionCopy.documentViewer.emptyTitle}
         </p>
         <p className="mt-3 text-sm leading-6 text-body">{caption}</p>
         <div className="mt-5 flex justify-center">
-          <CaseFileBadge tone="warning">{status}</CaseFileBadge>
+          <CaseFileBadge tone="warning">{formatEvidenceStatus(status)}</CaseFileBadge>
         </div>
       </div>
     </div>

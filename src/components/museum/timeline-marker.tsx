@@ -1,10 +1,12 @@
-import { CaseFileBadge } from "@/components/case-files/case-file-badge";
+﻿import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { MuseumLabel } from "@/components/museum/museum-label";
+import { formatTimelineStatus } from "@/lib/visitor-labels";
+import type { ResearchStatus } from "@/types/case-file";
 
 type TimelineMarkerProps = {
   children: React.ReactNode;
   dateLabel: string;
-  status: string;
+  status: ResearchStatus;
   title: string;
 };
 
@@ -22,7 +24,7 @@ export function TimelineMarker({ children, dateLabel, status, title }: TimelineM
             {title}
           </h2>
         </div>
-        <CaseFileBadge tone="warning">{status}</CaseFileBadge>
+        <CaseFileBadge tone="warning">{formatTimelineStatus(status)}</CaseFileBadge>
       </div>
       <div className="mt-8 border-t border-border pt-7">{children}</div>
     </article>

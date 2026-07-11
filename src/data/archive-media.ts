@@ -1,9 +1,9 @@
-import type { ArchiveMedia } from "@/types/evidence";
+﻿import type { ArchiveMedia } from "@/types/evidence";
 
 const requiresResearch = "Requires Research" as const;
 const unknown = "unknown" as const;
 
-function archivePlaceholder({
+function archiveMediaRecord({
   evidenceId,
   title,
 }: {
@@ -12,30 +12,30 @@ function archivePlaceholder({
 }): ArchiveMedia {
   return {
     id: `${evidenceId}-archive-placeholder`,
-    title: `${title} Archive Placeholder`,
+    title: `${title} Documentation`,
     mediaType: "placeholder",
-    caption: `Requires Research. Placeholder archive media record for ${title}.`,
+    caption: `Image documentation for ${title} is in progress.`,
     status: requiresResearch,
     confidence: unknown,
-    altText: `Requires Research: placeholder for ${title} archive media.`,
+    altText: `Image documentation pending for ${title}.`,
     placeholderState: requiresResearch,
     notes:
-      "Requires Research. No image, scan, document, photographer, creator, or capture date has been verified for this archive media record.",
+      "Photography, creator details, and capture date are pending catalogue review.",
     relatedEvidenceId: evidenceId,
   };
 }
 
 export const archiveMediaItems: readonly ArchiveMedia[] = [
-  archivePlaceholder({ evidenceId: "title-page", title: "Title Page" }),
-  archivePlaceholder({
+  archiveMediaRecord({ evidenceId: "title-page", title: "Title Page" }),
+  archiveMediaRecord({
     evidenceId: "sidgwick-inscription",
     title: "Sidgwick Inscription",
   }),
-  archivePlaceholder({ evidenceId: "barker-imprint", title: "Barker Imprint" }),
-  archivePlaceholder({ evidenceId: "binding", title: "Binding" }),
-  archivePlaceholder({ evidenceId: "marginal-notes", title: "Marginal Notes" }),
-  archivePlaceholder({ evidenceId: "printers-device", title: "Printer's Device" }),
-  archivePlaceholder({ evidenceId: "genealogies", title: "Genealogies" }),
-  archivePlaceholder({ evidenceId: "maps", title: "Maps" }),
-  archivePlaceholder({ evidenceId: "colophon", title: "Colophon" }),
+  archiveMediaRecord({ evidenceId: "barker-imprint", title: "Barker Imprint" }),
+  archiveMediaRecord({ evidenceId: "binding", title: "Binding" }),
+  archiveMediaRecord({ evidenceId: "marginal-notes", title: "Marginal Notes" }),
+  archiveMediaRecord({ evidenceId: "printers-device", title: "Printer's Device" }),
+  archiveMediaRecord({ evidenceId: "genealogies", title: "Genealogies" }),
+  archiveMediaRecord({ evidenceId: "maps", title: "Maps" }),
+  archiveMediaRecord({ evidenceId: "colophon", title: "Colophon" }),
 ];

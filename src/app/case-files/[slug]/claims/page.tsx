@@ -1,4 +1,4 @@
-import type { Metadata, Route } from "next";
+﻿import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
@@ -8,13 +8,19 @@ import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-
 import { GallerySurface } from "@/components/museum/gallery-surface";
 import { MuseumButton } from "@/components/museum/museum-button";
 import { MuseumLabel } from "@/components/museum/museum-label";
+import { exhibitionCopy } from "@/config/exhibition-copy";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
-import { formatConfidence } from "@/lib/case-file-labels";
 import { formatClaimType } from "@/lib/claim-labels";
 import { getClaimRecordsByCaseFileId } from "@/lib/claims";
 import { getEvidenceItemById } from "@/lib/evidence";
 import { getSourceRecordById } from "@/lib/sources";
 import { getTimelineEventById } from "@/lib/timeline";
+import {
+  formatEvidenceStatus,
+  formatInterpretationStatus,
+  formatTimelineStatus,
+  formatVisitorConfidence,
+} from "@/lib/visitor-labels";
 import type { ResearchStatus } from "@/types/case-file";
 
 type ClaimsPageProps = {
@@ -69,17 +75,19 @@ function timelineReference(id: string): RelationReference {
 
 function RelationLinks({
   emptyLabel,
+  formatStatusLabel,
   getHref,
   items,
 }: {
   emptyLabel: string;
+  formatStatusLabel: (status: ResearchStatus) => string;
   getHref: (item: RelationReference) => Route;
   items: readonly RelationReference[];
 }) {
   if (items.length === 0) {
     return (
       <div className="rounded-sm border border-dashed border-warning/40 bg-warning/5 p-4">
-        <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+        <CaseFileBadge tone="warning">Source Review Needed</CaseFileBadge>
         <p className="mt-3 text-sm leading-6 text-body">{emptyLabel}</p>
       </div>
     );
@@ -95,7 +103,7 @@ function RelationLinks({
         >
           <span className="font-semibold text-foreground">{item.label}</span>
           <CaseFileBadge tone={statusTone[item.status]}>
-            {item.status}
+            {formatStatusLabel(item.status)}
           </CaseFileBadge>
         </Link>
       ))}
@@ -117,14 +125,13 @@ export async function generateMetadata({
 
   if (!caseFile) {
     return {
-      title: "Claims Not Found",
+      title: "Working Conclusions Not Found",
     };
   }
 
   return {
-    title: `${caseFile.title} Claims`,
-    description:
-      "Claims Engine foundation for tracking historical assertions separately from evidence and sources.",
+    title: `${caseFile.title} Working Conclusions`,
+    description: exhibitionCopy.workingConclusions.intro,
   };
 }
 
@@ -146,45 +153,47 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
             className="text-sm font-semibold text-brass"
             href={`/case-files/${caseFile.slug}` as Route}
           >
-            Back to Case File
+            Back to Opening Gallery
           </Link>
           <div className="mt-8 flex flex-wrap gap-2">
             <CaseFileBadge tone="evidence">
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
-            <CaseFileBadge tone="warning">Claims Engine Foundation</CaseFileBadge>
+            <CaseFileBadge tone="warning">{exhibitionCopy.sourceReviewNeeded}</CaseFileBadge>
             <CaseFileBadge tone="trust">
-              {claims.length} Placeholder Claims
+              {claims.length} Working Interpretations
             </CaseFileBadge>
           </div>
-          <MuseumLabel tone="brass">Assertion Catalogue</MuseumLabel>
+          <MuseumLabel tone="brass">Working Conclusions</MuseumLabel>
           <h1 className="mt-4 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
-            {caseFile.title} Claims
+            Questions Under Interpretation
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-cream/78">
-            A claim register for historical assertions. Every claim remains
-            Requires Research until evidence, sources, and timeline context are
-            reviewed together.
+            {exhibitionCopy.workingConclusions.intro}
           </p>
         </div>
       </header>
       <FloatingGalleryNavigation
-        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Timeline", route: true }}
-        previous={{ href: `/case-files/${caseFile.slug}/evidence`, label: "Evidence Vault", route: true }}
+        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Chronology", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/evidence`, label: "Evidence Room", route: true }}
         returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
       />
 
       <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
-        <GallerySurface eyebrow="Claim Register" title="Assertion Containers Awaiting Evidence">
+        <GallerySurface eyebrow="Working Conclusions" title="Interpretations Under Review">
           <p className="max-w-3xl text-sm leading-7 text-body">
-            These records separate possible assertions from proof. They are not conclusions, and confidence remains unknown until reviewed records support them.
+            These entries separate a possible interpretation from the evidence
+            that may support it. Confidence remains unknown until sources and
+            object evidence are reviewed together.
           </p>
         </GallerySurface>
 
         <div className="mt-8 max-w-4xl">
-          <CuratorNote label="Assertion Room Note">
+          <CuratorNote label="Working Conclusions Note">
             <p>
-              Claims are displayed separately from evidence so the exhibition never confuses a research target with a verified historical conclusion.
+              The exhibition does not ask visitors to accept a conclusion before
+              the evidence is visible. Each interpretation is held open until
+              the record can bear its weight.
             </p>
           </CuratorNote>
         </div>
@@ -200,10 +209,10 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
                 actions={
                   <>
                     <CaseFileBadge tone={statusTone[claim.status]}>
-                      {claim.status}
+                      {formatInterpretationStatus(claim.status)}
                     </CaseFileBadge>
                     <CaseFileBadge tone="neutral">
-                      {formatConfidence(claim.confidence)}
+                      {formatVisitorConfidence(claim.confidence)}
                     </CaseFileBadge>
                   </>
                 }
@@ -217,7 +226,8 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
                     <MuseumLabel>Evidence</MuseumLabel>
                     <div className="mt-3">
                       <RelationLinks
-                        emptyLabel="No evidence is linked to this claim yet."
+                        emptyLabel="No evidence is linked to this interpretation yet."
+                        formatStatusLabel={formatEvidenceStatus}
                         getHref={(item) =>
                           `/case-files/${caseFile.slug}/evidence/${item.id}` as Route
                         }
@@ -229,7 +239,8 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
                     <MuseumLabel>Sources</MuseumLabel>
                     <div className="mt-3">
                       <RelationLinks
-                        emptyLabel="No source is linked to this claim yet."
+                        emptyLabel="No source is linked to this interpretation yet."
+                        formatStatusLabel={formatInterpretationStatus}
                         getHref={(item) =>
                           `/case-files/${caseFile.slug}/sources/${item.id}` as Route
                         }
@@ -238,10 +249,11 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
                     </div>
                   </section>
                   <section>
-                    <MuseumLabel>Timeline</MuseumLabel>
+                    <MuseumLabel>Chronology</MuseumLabel>
                     <div className="mt-3">
                       <RelationLinks
-                        emptyLabel="No timeline event is linked to this claim yet."
+                        emptyLabel="No chronology entry is linked to this interpretation yet."
+                        formatStatusLabel={formatTimelineStatus}
                         getHref={(item) =>
                           `/case-files/${caseFile.slug}/timeline#${item.id}` as Route
                         }
@@ -267,7 +279,7 @@ export default async function ClaimsPage({ params }: ClaimsPageProps) {
                     className="px-4 py-2 text-xs"
                     href={`/case-files/${caseFile.slug}/claims/${claim.id}` as Route}
                   >
-                    Open Claim Record
+                    Open Working Conclusion
                   </MuseumButton>
                 </div>
               </ArchivalCard>

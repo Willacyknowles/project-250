@@ -1,6 +1,10 @@
-import { CaseFileBadge } from "@/components/case-files/case-file-badge";
-import { formatConfidence } from "@/lib/case-file-labels";
+﻿import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { formatArchiveMediaType } from "@/lib/evidence-labels";
+import {
+  formatEvidenceStatus,
+  formatResearchValue,
+  formatVisitorConfidence,
+} from "@/lib/visitor-labels";
 import type { ArchiveMedia } from "@/types/evidence";
 
 type ArchiveMediaMetadataProps = {
@@ -24,29 +28,29 @@ export function ArchiveMediaMetadata({ media }: ArchiveMediaMetadataProps) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-            Media Metadata
+            Catalogue Metadata
           </p>
           <h2 className="mt-2 text-xl font-semibold text-foreground">
-            Archive Control Record
+            Document Viewer Details
           </h2>
         </div>
-        <CaseFileBadge tone="warning">{media.placeholderState}</CaseFileBadge>
+        <CaseFileBadge tone="warning">{formatEvidenceStatus(media.placeholderState)}</CaseFileBadge>
       </div>
 
       <dl className="mt-5 grid gap-3 sm:grid-cols-2">
         <MetadataRow label="Media ID" value={media.id} />
         <MetadataRow label="Media Type" value={formatArchiveMediaType(media.mediaType)} />
-        <MetadataRow label="Status" value={media.status} />
-        <MetadataRow label="Confidence" value={formatConfidence(media.confidence)} />
-        <MetadataRow label="Placeholder State" value={media.placeholderState} />
+        <MetadataRow label="Status" value={formatEvidenceStatus(media.status)} />
+        <MetadataRow label="Confidence" value={formatVisitorConfidence(media.confidence)} />
+        <MetadataRow label="Image Status" value={formatEvidenceStatus(media.placeholderState)} />
         <MetadataRow label="Related Evidence ID" value={media.relatedEvidenceId} />
         <MetadataRow
           label="Photographer / Creator"
-          value={media.photographerCreator ?? "Requires Research"}
+          value={formatResearchValue(media.photographerCreator)}
         />
         <MetadataRow
           label="Date Captured"
-          value={media.dateCaptured ?? "Requires Research"}
+          value={formatResearchValue(media.dateCaptured)}
         />
       </dl>
 
@@ -55,7 +59,7 @@ export function ArchiveMediaMetadata({ media }: ArchiveMediaMetadataProps) {
           Notes
         </p>
         <p className="mt-3 text-sm leading-6 text-body">
-          {media.notes ?? "Requires Research"}
+          {media.notes ?? "Catalogue notes are under review."}
         </p>
       </div>
     </section>

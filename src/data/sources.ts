@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   SourceIndependenceLevel,
   SourceLibraryRecord,
   SourceRelationReference,
@@ -140,9 +140,9 @@ function revision(id: string) {
       id: `${id}-rev-001`,
       version: "0.1.0",
       dateLabel: "2026-07-09",
-      investigator: "Codex",
+      investigator: "The Knowles Collection",
       summary:
-        "Created placeholder source record for Source Library foundation. No historical conclusion was added.",
+        "Catalogue entry opened for source review and citation work.",
     },
   ] as const;
 }
@@ -167,8 +167,8 @@ function sourceRecord({
     caseFileId: caseFile001Id,
     title,
     sourceType,
-    citationPlaceholder: "Requires Research",
-    repositoryArchive: "Requires Research",
+    citationPlaceholder: "Citation under review",
+    repositoryArchive: "Repository under review",
     status: requiresResearch,
     confidence: unknown,
     independenceLevel: unknownIndependence,
@@ -176,7 +176,7 @@ function sourceRecord({
     relatedClaims,
     relatedTimelineEvents,
     notes:
-      "Requires Research. This source has not been located, reviewed, cited, or connected to any historical conclusion.",
+      "This source awaits location, citation, review, and connection to verified evidence.",
     revisionHistory: revision(id),
   };
 }
@@ -266,7 +266,7 @@ export const sourceLibraryRecords: readonly SourceLibraryRecord[] = [
   }),
   sourceRecord({
     id: "appraiser-review-placeholder",
-    title: "Appraiser Review Placeholder",
+    title: "Appraiser Review",
     sourceType: "expert-review",
     relatedEvidence: [evidenceReferences.titlePage, evidenceReferences.binding],
     relatedClaims: [

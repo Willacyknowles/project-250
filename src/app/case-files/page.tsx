@@ -1,15 +1,17 @@
-import type { Route } from "next";
-import type { Metadata } from "next";
+﻿import type { Metadata, Route } from "next";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { MuseumButton } from "@/components/museum/museum-button";
 import { siteConfig } from "@/config/site";
 import { getCaseFiles } from "@/lib/case-files";
-import { formatConfidence, formatStatus } from "@/lib/case-file-labels";
+import {
+  formatDossierStatus,
+  formatVisitorConfidence,
+} from "@/lib/visitor-labels";
 
 export const metadata: Metadata = {
-  title: "Case Files",
+  title: "The Knowles Collection",
   description:
-    "Public case file index for The Knowles Collection investigation prototype.",
+    "A private rare-book collection explored through evidence, provenance, and historical inquiry.",
 };
 
 export default function CaseFilesPage() {
@@ -23,11 +25,12 @@ export default function CaseFilesPage() {
             {siteConfig.publicProduct}
           </p>
           <h1 className="mt-3 text-4xl font-semibold text-foreground sm:text-5xl">
-            Case Files
+            Opening Gallery
           </h1>
           <p className="mt-4 max-w-3xl text-lg leading-8 text-body">
-            Structured investigations designed to keep evidence, claims,
-            confidence, and revision history visible.
+            Enter The Knowles Collection through the objects themselves. Each
+            case follows the evidence, records the unanswered questions, and
+            keeps interpretation separate from proof.
           </p>
         </div>
       </section>
@@ -44,10 +47,10 @@ export default function CaseFilesPage() {
                   Case File {caseFile.caseNumber}
                 </CaseFileBadge>
                 <CaseFileBadge tone="warning">
-                  {formatStatus(caseFile.status)}
+                  {formatDossierStatus(caseFile.confidenceAssessment.status)}
                 </CaseFileBadge>
                 <CaseFileBadge tone="trust">
-                  {formatConfidence(caseFile.confidence)}
+                  {formatVisitorConfidence(caseFile.confidence)}
                 </CaseFileBadge>
               </div>
               <h2 className="mt-4 text-2xl font-semibold text-foreground">
@@ -56,9 +59,15 @@ export default function CaseFilesPage() {
               <p className="mt-3 max-w-3xl text-sm leading-6 text-body">
                 {caseFile.summary}
               </p>
-              <div className="mt-6">
+              <div className="mt-6 flex flex-wrap gap-3">
                 <MuseumButton href={`/case-files/${caseFile.slug}` as Route}>
-                  Enter Case File
+                  Begin the Investigation
+                </MuseumButton>
+                <MuseumButton
+                  href={`/case-files/${caseFile.slug}/evidence` as Route}
+                  variant="secondary"
+                >
+                  View the Evidence
                 </MuseumButton>
               </div>
             </article>
@@ -68,3 +77,5 @@ export default function CaseFilesPage() {
     </main>
   );
 }
+
+

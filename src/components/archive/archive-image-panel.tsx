@@ -1,7 +1,10 @@
+﻿import { ArchivePlaceholder } from "@/components/archive/archive-placeholder";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
-import { ArchivePlaceholder } from "@/components/archive/archive-placeholder";
-import { formatConfidence } from "@/lib/case-file-labels";
 import { formatArchiveMediaType } from "@/lib/evidence-labels";
+import {
+  formatEvidenceStatus,
+  formatVisitorConfidence,
+} from "@/lib/visitor-labels";
 import type { ArchiveMedia } from "@/types/evidence";
 
 type ArchiveImagePanelProps = {
@@ -11,7 +14,7 @@ type ArchiveImagePanelProps = {
 
 export function ArchiveImagePanel({
   media,
-  eyebrow = "Archive Media",
+  eyebrow = "Document Viewer",
 }: ArchiveImagePanelProps) {
   return (
     <figure className="rounded-lg border border-border bg-surface p-5 shadow-sm sm:p-6">
@@ -25,9 +28,9 @@ export function ArchiveImagePanel({
           </h2>
         </div>
         <div className="flex flex-wrap gap-2">
-          <CaseFileBadge tone="warning">{media.status}</CaseFileBadge>
+          <CaseFileBadge tone="warning">{formatEvidenceStatus(media.status)}</CaseFileBadge>
           <CaseFileBadge tone="trust">
-            {formatConfidence(media.confidence)}
+            {formatVisitorConfidence(media.confidence)}
           </CaseFileBadge>
         </div>
       </div>

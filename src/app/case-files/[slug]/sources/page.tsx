@@ -1,4 +1,4 @@
-import type { Metadata, Route } from "next";
+﻿import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
@@ -8,13 +8,21 @@ import { FloatingGalleryNavigation } from "@/components/museum/floating-gallery-
 import { GallerySurface } from "@/components/museum/gallery-surface";
 import { MuseumButton } from "@/components/museum/museum-button";
 import { MuseumLabel } from "@/components/museum/museum-label";
+import { exhibitionCopy } from "@/config/exhibition-copy";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
-import { formatConfidence } from "@/lib/case-file-labels";
 import {
   formatSourceIndependenceLevel,
   formatSourceType,
 } from "@/lib/source-labels";
 import { getSourceRecordsByCaseFileId } from "@/lib/sources";
+import {
+  formatCitationValue,
+  formatEvidenceStatus,
+  formatInterpretationStatus,
+  formatResearchValue,
+  formatTimelineStatus,
+  formatVisitorConfidence,
+} from "@/lib/visitor-labels";
 import type { ResearchStatus } from "@/types/case-file";
 import type { SourceRelationReference } from "@/types/source";
 
@@ -32,17 +40,19 @@ const statusTone: Record<ResearchStatus, "neutral" | "trust" | "warning"> = {
 
 function RelationLinks({
   emptyLabel,
+  formatStatusLabel,
   getHref,
   items,
 }: {
   emptyLabel: string;
+  formatStatusLabel: (status: ResearchStatus) => string;
   getHref?: (item: SourceRelationReference) => Route;
   items: readonly SourceRelationReference[];
 }) {
   if (items.length === 0) {
     return (
       <div className="rounded-sm border border-dashed border-warning/40 bg-warning/5 p-4">
-        <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+        <CaseFileBadge tone="warning">Source Review Needed</CaseFileBadge>
         <p className="mt-3 text-sm leading-6 text-body">{emptyLabel}</p>
       </div>
     );
@@ -55,7 +65,7 @@ function RelationLinks({
           <>
             <span className="font-semibold text-foreground">{item.label}</span>
             <CaseFileBadge tone={statusTone[item.status]}>
-              {item.status}
+              {formatStatusLabel(item.status)}
             </CaseFileBadge>
           </>
         );
@@ -99,14 +109,13 @@ export async function generateMetadata({
 
   if (!caseFile) {
     return {
-      title: "Source Library Not Found",
+      title: "Research Library Not Found",
     };
   }
 
   return {
-    title: `${caseFile.title} Source Library`,
-    description:
-      "Source Library foundation for reviewed citations and source records.",
+    title: `${caseFile.title} Research Library`,
+    description: exhibitionCopy.researchLibrary.intro,
   };
 }
 
@@ -130,39 +139,37 @@ export default async function SourceLibraryPage({
             className="text-sm font-semibold text-brass"
             href={`/case-files/${caseFile.slug}` as Route}
           >
-            Back to Case File
+            Back to Opening Gallery
           </Link>
           <div className="mt-8 flex flex-wrap gap-2">
             <CaseFileBadge tone="evidence">
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
-            <CaseFileBadge tone="warning">Source Library Foundation</CaseFileBadge>
+            <CaseFileBadge tone="warning">{exhibitionCopy.sourceReviewNeeded}</CaseFileBadge>
             <CaseFileBadge tone="trust">
-              {sourceRecords.length} Placeholder Sources
+              {sourceRecords.length} Catalogue Entries
             </CaseFileBadge>
           </div>
           <MuseumLabel tone="brass">Archival Catalogue</MuseumLabel>
           <h1 className="mt-4 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
-            {caseFile.title} Sources
+            Research Library
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-cream/78">
-            A controlled source library for future reviewed citations. Every
-            source record remains marked Requires Research until the source is
-            located, cited, reviewed, and connected to verified evidence.
+            {exhibitionCopy.researchLibrary.intro}
           </p>
         </div>
       </header>
       <FloatingGalleryNavigation
-        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Timeline", route: true }}
-        previous={{ href: `/case-files/${caseFile.slug}/claims`, label: "Claims", route: true }}
+        next={{ href: `/case-files/${caseFile.slug}/timeline`, label: "Chronology", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/claims`, label: "Working Conclusions", route: true }}
         returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
       />
 
       <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
-        <GallerySurface eyebrow="Catalogue Index" title="Repository Records Awaiting Verification">
+        <GallerySurface eyebrow="Catalogue Index" title="Sources Awaiting Review">
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-sm border border-border bg-cream p-4">
-              <MuseumLabel>Records</MuseumLabel>
+              <MuseumLabel>Catalogue Entries</MuseumLabel>
               <p className="mt-2 font-serif text-3xl text-foreground">
                 {sourceRecords.length}
               </p>
@@ -170,22 +177,23 @@ export default async function SourceLibraryPage({
             <div className="rounded-sm border border-border bg-cream p-4">
               <MuseumLabel>Shelf Marks</MuseumLabel>
               <p className="mt-2 font-serif text-2xl text-foreground">
-                Requires Research
+                {exhibitionCopy.citationUnderReview}
               </p>
             </div>
             <div className="rounded-sm border border-border bg-cream p-4">
               <MuseumLabel>Verification</MuseumLabel>
               <p className="mt-2 font-serif text-2xl text-foreground">
-                Pending Review
+                Source Review Needed
               </p>
             </div>
           </div>
         </GallerySurface>
 
         <div className="mt-8 max-w-4xl">
-          <CuratorNote label="Catalogue Room Note">
+          <CuratorNote label="Research Library Note">
             <p>
-              Source records are catalogued as research containers. They remain placeholders until citations, repositories, and independent review can be verified.
+              Sources are gathered here before their citations, repositories,
+              independence, and relationship to the artifact are established.
             </p>
           </CuratorNote>
         </div>
@@ -196,10 +204,10 @@ export default async function SourceLibraryPage({
               actions={
                 <>
                   <CaseFileBadge tone={statusTone[source.status]}>
-                    {source.status}
+                    {formatInterpretationStatus(source.status)}
                   </CaseFileBadge>
                   <CaseFileBadge tone="neutral">
-                    {formatConfidence(source.confidence)}
+                    {formatVisitorConfidence(source.confidence)}
                   </CaseFileBadge>
                 </>
               }
@@ -210,11 +218,11 @@ export default async function SourceLibraryPage({
               <dl className="grid gap-4 text-sm sm:grid-cols-3">
                 <div className="rounded-sm border border-border bg-cream p-4">
                   <MuseumLabel>Repository</MuseumLabel>
-                  <dd className="mt-2 text-foreground">{source.repositoryArchive}</dd>
+                  <dd className="mt-2 text-foreground">{formatResearchValue(source.repositoryArchive)}</dd>
                 </div>
                 <div className="rounded-sm border border-border bg-cream p-4">
                   <MuseumLabel>Shelf Mark</MuseumLabel>
-                  <dd className="mt-2 text-foreground">Requires Research</dd>
+                  <dd className="mt-2 text-foreground">{exhibitionCopy.citationUnderReview}</dd>
                 </div>
                 <div className="rounded-sm border border-border bg-cream p-4">
                   <MuseumLabel>Independence</MuseumLabel>
@@ -227,7 +235,7 @@ export default async function SourceLibraryPage({
               <div className="mt-5 rounded-sm border border-border bg-cream p-5">
                 <MuseumLabel>Citation</MuseumLabel>
                 <p className="mt-3 font-serif text-xl leading-8 text-foreground">
-                  {source.citationPlaceholder}
+                  {formatCitationValue(source.citationPlaceholder)}
                 </p>
               </div>
 
@@ -236,7 +244,8 @@ export default async function SourceLibraryPage({
                   <MuseumLabel>Connections to Evidence</MuseumLabel>
                   <div className="mt-3">
                     <RelationLinks
-                      emptyLabel="No evidence is linked to this source record yet."
+                      emptyLabel="No evidence is linked to this source yet."
+                      formatStatusLabel={formatEvidenceStatus}
                       getHref={(item) =>
                         `/case-files/${caseFile.slug}/evidence/${item.id}` as Route
                       }
@@ -245,10 +254,11 @@ export default async function SourceLibraryPage({
                   </div>
                 </section>
                 <section>
-                  <MuseumLabel>Connections to Timeline</MuseumLabel>
+                  <MuseumLabel>Connections to Chronology</MuseumLabel>
                   <div className="mt-3">
                     <RelationLinks
-                      emptyLabel="No timeline event is linked to this source record yet."
+                      emptyLabel="No chronology entry is linked to this source yet."
+                      formatStatusLabel={formatTimelineStatus}
                       getHref={(item) =>
                         `/case-files/${caseFile.slug}/timeline#${item.id}` as Route
                       }
@@ -264,7 +274,7 @@ export default async function SourceLibraryPage({
                   className="px-4 py-2 text-xs"
                   href={`/case-files/${caseFile.slug}/sources/${source.id}` as Route}
                 >
-                  Open Source Record
+                  Open Catalogue Entry
                 </MuseumButton>
               </div>
             </ArchivalCard>

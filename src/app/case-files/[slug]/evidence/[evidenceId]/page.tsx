@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,11 +12,7 @@ import {
   getPrimaryArchiveMediaForEvidence,
 } from "@/lib/archive-media";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
-import {
-  formatConfidence,
-  formatEvidenceType,
-  formatStatus,
-} from "@/lib/case-file-labels";
+import { formatEvidenceType } from "@/lib/case-file-labels";
 import {
   getEvidenceItemForCaseFile,
   getEvidenceItemsByCaseFileId,
@@ -25,6 +21,14 @@ import {
   formatArchiveMediaType,
   formatEvidenceArtifactType,
 } from "@/lib/evidence-labels";
+import {
+  formatCitationValue,
+  formatEvidenceStatus,
+  formatInterpretationStatus,
+  formatResearchValue,
+  formatRevisionInvestigator,
+  formatVisitorConfidence,
+} from "@/lib/visitor-labels";
 
 type EvidenceDetailPageProps = {
   params: Promise<{
@@ -111,7 +115,7 @@ export default async function EvidenceDetailPage({
           <div className="flex flex-wrap gap-4 text-sm font-semibold text-brass">
             <Link href={`/case-files/${caseFile.slug}` as Route}>Case File</Link>
             <Link href={`/case-files/${caseFile.slug}/evidence` as Route}>
-              Evidence Vault
+              Evidence Room
             </Link>
             {primaryMedia ? (
               <Link
@@ -119,7 +123,7 @@ export default async function EvidenceDetailPage({
                   `/case-files/${caseFile.slug}/evidence/${evidence.id}/archive` as Route
                 }
               >
-                Archive Viewer
+                Document Viewer
               </Link>
             ) : null}
           </div>
@@ -127,16 +131,16 @@ export default async function EvidenceDetailPage({
             <CaseFileBadge tone="evidence">
               Case File {caseFile.caseNumber.padStart(3, "0")}
             </CaseFileBadge>
-            <CaseFileBadge tone="warning">{evidence.status}</CaseFileBadge>
+            <CaseFileBadge tone="warning">{formatEvidenceStatus(evidence.status)}</CaseFileBadge>
             <CaseFileBadge tone="neutral">
-              Confidence: {formatConfidence(evidence.confidence)}
+              {formatVisitorConfidence(evidence.confidence)}
             </CaseFileBadge>
             <CaseFileBadge tone="neutral">
-              {archiveMedia.length} Archive Media
+              {archiveMedia.length} Image Documentation
             </CaseFileBadge>
           </div>
           <p className="mt-8 museum-label-text text-brass">
-            Evidence Record
+            Evidence Object
           </p>
           <h1 className="mt-3 max-w-4xl font-serif text-5xl leading-tight text-cream sm:text-6xl">
             {evidence.title}
@@ -147,8 +151,8 @@ export default async function EvidenceDetailPage({
         </div>
       </header>
       <FloatingGalleryNavigation
-        next={{ href: `/case-files/${caseFile.slug}/evidence/${evidence.id}/archive`, label: "Archive Viewer", route: true }}
-        previous={{ href: `/case-files/${caseFile.slug}/evidence`, label: "Evidence Vault", route: true }}
+        next={{ href: `/case-files/${caseFile.slug}/evidence/${evidence.id}/archive`, label: "Document Viewer", route: true }}
+        previous={{ href: `/case-files/${caseFile.slug}/evidence`, label: "Evidence Room", route: true }}
         returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
       />
 
@@ -162,25 +166,24 @@ export default async function EvidenceDetailPage({
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-                      Archive Access
+                      Document Viewer
                     </p>
                     <h2 className="mt-2 text-2xl font-semibold text-foreground">
-                      Placeholder Archive Viewer
+                      Image Pending Review
                     </h2>
                   </div>
                   <CaseFileBadge tone="warning">
-                    {primaryMedia.placeholderState}
+                    {formatEvidenceStatus(primaryMedia.placeholderState)}
                   </CaseFileBadge>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-body">
-                  This record has an archive media control entry, but no verified
-                  image, scan, or document has been attached.
+                  A high-resolution image will appear here once photography and cataloguing are complete.
                 </p>
                 <MuseumButton
                   className="mt-5"
                   href={`/case-files/${caseFile.slug}/evidence/${evidence.id}/archive` as Route}
                 >
-                  Open Archive Viewer
+                  Open Document Viewer
                 </MuseumButton>
               </section>
 
@@ -189,12 +192,12 @@ export default async function EvidenceDetailPage({
           ) : (
             <section className="museum-drawer rounded-sm p-6 sm:p-8">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-                Archive Media
+                Document Viewer
               </p>
               <div className="mt-5 rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
-                <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+                <CaseFileBadge tone="warning">{formatEvidenceStatus(evidence.status)}</CaseFileBadge>
                 <p className="mt-4 text-sm leading-6 text-body">
-                  No archive media record is attached to this evidence item.
+                  Image documentation has not yet been prepared for this object.
                 </p>
               </div>
             </section>
@@ -216,7 +219,7 @@ export default async function EvidenceDetailPage({
                         {claim.label}
                       </p>
                       <CaseFileBadge tone="warning">
-                        {formatStatus(claim.status)}
+                        {formatInterpretationStatus(claim.status)}
                       </CaseFileBadge>
                     </div>
                   </article>
@@ -224,10 +227,9 @@ export default async function EvidenceDetailPage({
               </div>
             ) : (
               <div className="mt-5 rounded-sm border border-dashed border-warning/40 bg-warning/5 p-5">
-                <CaseFileBadge tone="warning">Requires Research</CaseFileBadge>
+                <CaseFileBadge tone="warning">{formatEvidenceStatus(evidence.status)}</CaseFileBadge>
                 <p className="mt-4 text-sm leading-6 text-body">
-                  No related claims are attached. Claims must be created only
-                  after evidence and sources are reviewed.
+                  No working conclusions are linked to this object yet.
                 </p>
               </div>
             )}
@@ -247,10 +249,10 @@ export default async function EvidenceDetailPage({
                     <h2 className="font-semibold text-foreground">
                       {source.label}
                     </h2>
-                    <CaseFileBadge tone="warning">{source.status}</CaseFileBadge>
+                    <CaseFileBadge tone="warning">{formatInterpretationStatus(source.status)}</CaseFileBadge>
                   </div>
                   <p className="mt-3 text-sm leading-6 text-body">
-                    {source.citation}
+                    {formatCitationValue(source.citation)}
                   </p>
                 </article>
               ))}
@@ -259,7 +261,7 @@ export default async function EvidenceDetailPage({
 
           <section className="museum-drawer rounded-sm p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">
-              Revision History
+              Research History
             </p>
             <div className="mt-5 grid gap-3">
               {evidence.revisionHistory.map((revision) => (
@@ -274,7 +276,7 @@ export default async function EvidenceDetailPage({
                     <p className="text-sm text-muted">{revision.dateLabel}</p>
                   </div>
                   <p className="mt-2 text-sm text-muted">
-                    Investigator: {revision.investigator}
+                    Research Team: {formatRevisionInvestigator(revision.investigator)}
                   </p>
                   <p className="mt-3 text-sm leading-6 text-body">
                     {revision.summary}
@@ -296,21 +298,21 @@ export default async function EvidenceDetailPage({
               label="Evidence Type"
               value={formatEvidenceType(evidence.evidenceType)}
             />
-            <MetadataRow label="Status" value={evidence.status} />
+            <MetadataRow label="Status" value={formatEvidenceStatus(evidence.status)} />
             <MetadataRow
               label="Confidence"
-              value={formatConfidence(evidence.confidence)}
+              value={formatVisitorConfidence(evidence.confidence)}
             />
             <MetadataRow
               label="Archive Media"
-              value={`${archiveMedia.length} placeholder record${archiveMedia.length === 1 ? "" : "s"}`}
+              value={`${archiveMedia.length} image record${archiveMedia.length === 1 ? "" : "s"}`}
             />
             <MetadataRow
               label="Primary Media Type"
               value={
                 primaryMedia
                   ? formatArchiveMediaType(primaryMedia.mediaType)
-                  : "Requires Research"
+                  : formatResearchValue(null)
               }
             />
             <MetadataRow label="Related Case File" value={caseFile.title} />
@@ -328,3 +330,9 @@ export default async function EvidenceDetailPage({
     </main>
   );
 }
+
+
+
+
+
+

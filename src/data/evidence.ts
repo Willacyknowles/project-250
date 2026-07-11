@@ -1,4 +1,4 @@
-import type { EvidenceItem } from "@/types/evidence";
+﻿import type { EvidenceItem } from "@/types/evidence";
 
 const caseFile001Id = "case-file-001";
 const requiresResearch = "Requires Research" as const;
@@ -9,7 +9,7 @@ function researchPlaceholder(label: string) {
     label,
     status: requiresResearch,
     description:
-      "Requires Research. Image evidence has not been uploaded or verified for this record.",
+      "Image documentation is being prepared for this object record.",
   } as const;
 }
 
@@ -17,8 +17,8 @@ function sourcePlaceholder(id: string) {
   return [
     {
       id: `${id}-source-review`,
-      label: "Source Review Pending",
-      citation: "Requires Research",
+      label: "Source Review Needed",
+      citation: "Citation under review",
       status: requiresResearch,
     },
   ] as const;
@@ -30,9 +30,9 @@ function revision(id: string) {
       id: `${id}-rev-001`,
       version: "0.1.0",
       dateLabel: "2026-07-08",
-      investigator: "Codex",
+      investigator: "The Knowles Collection",
       summary:
-        "Created placeholder evidence record for Evidence Vault foundation. No historical conclusion was added.",
+        "Evidence category defined for future examination and source review.",
     },
   ] as const;
 }
@@ -42,7 +42,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     id: "title-page",
     title: "Title Page",
     description:
-      "Requires Research. Reserve record for title page documentation, transcription, image review, and bibliographic verification.",
+      "To be examined for title-page evidence, transcription, image review, and bibliographic comparison.",
     artifactType: "artifact-component",
     evidenceType: "digital-image",
     status: requiresResearch,
@@ -58,7 +58,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     id: "sidgwick-inscription",
     title: "Sidgwick Inscription",
     description:
-      "Requires Research. Reserve record for inscription imagery, transcription, attribution review, and provenance relevance assessment.",
+      "To be examined through inscription imagery, transcription, attribution review, and provenance assessment.",
     artifactType: "inscription",
     evidenceType: "photograph",
     status: requiresResearch,
@@ -74,7 +74,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     id: "barker-imprint",
     title: "Barker Imprint",
     description:
-      "Requires Research. Reserve record for imprint documentation, source comparison, and bibliographic verification.",
+      "To be examined for imprint evidence, source comparison, and bibliographic verification.",
     artifactType: "imprint",
     evidenceType: "digital-image",
     status: requiresResearch,
@@ -90,7 +90,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     id: "binding",
     title: "Binding",
     description:
-      "Requires Research. Reserve record for binding photographs, material description, condition notes, and dating assessment.",
+      "To be examined through binding photography, material description, condition notes, and dating assessment.",
     artifactType: "binding",
     evidenceType: "photograph",
     status: requiresResearch,
@@ -106,7 +106,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     id: "marginal-notes",
     title: "Marginal Notes",
     description:
-      "Requires Research. Reserve record for marginalia images, transcription, hand comparison, and interpretive review.",
+      "To be examined through marginalia imagery, transcription, hand comparison, and interpretive review.",
     artifactType: "annotation",
     evidenceType: "photograph",
     status: requiresResearch,
@@ -122,7 +122,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     id: "printers-device",
     title: "Printer's Device",
     description:
-      "Requires Research. Reserve record for printer's device imagery, comparison, and bibliographic source review.",
+      "To be examined through printer's device imagery, comparison, and bibliographic source review.",
     artifactType: "printer-device",
     evidenceType: "digital-image",
     status: requiresResearch,
@@ -138,7 +138,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     id: "genealogies",
     title: "Genealogies",
     description:
-      "Requires Research. Reserve record for genealogical content review, completeness check, and image documentation.",
+      "To be examined for genealogical content, completeness, and image documentation.",
     artifactType: "genealogical-record",
     evidenceType: "document",
     status: requiresResearch,
@@ -154,7 +154,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     id: "maps",
     title: "Maps",
     description:
-      "Requires Research. Reserve record for map presence, condition, completeness, and source comparison.",
+      "To be examined for map presence, condition, completeness, and source comparison.",
     artifactType: "map",
     evidenceType: "map",
     status: requiresResearch,
@@ -170,7 +170,7 @@ export const evidenceItems: readonly EvidenceItem[] = [
     id: "colophon",
     title: "Colophon",
     description:
-      "Requires Research. Reserve record for colophon imagery, transcription, and bibliographic verification.",
+      "To be examined through colophon imagery, transcription, and bibliographic verification.",
     artifactType: "colophon",
     evidenceType: "digital-image",
     status: requiresResearch,
@@ -183,4 +183,3 @@ export const evidenceItems: readonly EvidenceItem[] = [
     revisionHistory: revision("colophon"),
   },
 ];
-

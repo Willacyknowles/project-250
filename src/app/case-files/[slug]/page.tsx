@@ -1,4 +1,4 @@
-import type { Metadata, Route } from "next";
+﻿import type { Metadata, Route } from "next";
 import { notFound } from "next/navigation";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { CaseFileOverview } from "@/components/case-files/case-file-overview";
@@ -11,10 +11,11 @@ import { MuseumButton } from "@/components/museum/museum-button";
 import { MuseumDossierNavigation } from "@/components/museum/museum-dossier-navigation";
 import { MuseumLabel } from "@/components/museum/museum-label";
 import { SectionDivider } from "@/components/museum/section-divider";
+import { exhibitionCopy } from "@/config/exhibition-copy";
 import { siteConfig } from "@/config/site";
 import { getArchiveMediaByEvidenceId } from "@/lib/archive-media";
 import { getCaseFileBySlug, getCaseFiles } from "@/lib/case-files";
-import { formatConfidence } from "@/lib/case-file-labels";
+import { formatDossierStatus, formatEvidenceStatus, formatInterpretationStatus, formatResearchValue, formatRevisionInvestigator, formatTimelineStatus, formatVisitorConfidence } from "@/lib/visitor-labels";
 import { formatClaimType } from "@/lib/claim-labels";
 import { getClaimRecordsByCaseFileId } from "@/lib/claims";
 import { getEvidenceItemsByCaseFileId } from "@/lib/evidence";
@@ -69,10 +70,10 @@ function DossierFieldGrid({ fields }: { fields: readonly DossierField[] }) {
               {field.label}
             </span>
             <CaseFileBadge tone={statusTone[field.status]}>
-              {field.status}
+              {formatDossierStatus(field.status)}
             </CaseFileBadge>
           </dt>
-          <dd className="mt-4 text-sm leading-7 text-body">{field.value}</dd>
+          <dd className="mt-4 text-sm leading-7 text-body">{formatResearchValue(field.value)}</dd>
           {field.note ? (
             <p className="mt-5 border-t border-border pt-4 text-sm leading-6 text-muted">
               {field.note}
@@ -100,21 +101,21 @@ function DossierProgressPanel({
   timelineEventCount: number;
 }) {
   const items = [
-    ["Evidence", evidenceCount, "Artifact records awaiting review."],
-    ["Claims", claimCount, "Assertion containers awaiting support."],
-    ["Sources", sourceCount, "Citation records awaiting verification."],
-    ["Timeline", timelineEventCount, "Chronology placeholders awaiting evidence."],
-    ["Archive", archiveMediaCount, "Digital media placeholders awaiting scans."],
+    ["Evidence", evidenceCount, "Physical and documentary clues connected to the volume."],
+    ["Working Conclusions", claimCount, "Interpretations separated from the evidence that may support them."],
+    ["Research Library", sourceCount, "Catalogues, documents, and references awaiting review."],
+    ["Chronology", timelineEventCount, "Events arranged by date and confidence as evidence allows."],
+    ["Document Viewer", archiveMediaCount, "Image documentation being prepared for public review."],
   ] as const;
 
   return (
     <GallerySurface eyebrow="Investigation Summary" title="Dossier Progress">
       <div className="flex flex-wrap gap-2">
         <CaseFileBadge tone="warning">
-          {caseFile.confidenceAssessment.status}
+          {formatDossierStatus(caseFile.confidenceAssessment.status)}
         </CaseFileBadge>
         <CaseFileBadge tone="neutral">
-          Confidence: {formatConfidence(caseFile.confidence)}
+          {formatVisitorConfidence(caseFile.confidence)}
         </CaseFileBadge>
       </div>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -144,11 +145,11 @@ function EvidenceHierarchy({
   const documentedFacts = countFieldsByStatus(caseFile, "Documented");
   const unknowns = countFieldsByStatus(caseFile, "Requires Research");
   const ledgers = [
-    ["Facts", documentedFacts, "Documented items currently describe the platform record, not historical provenance conclusions.", "trust"],
-    ["Claims", claimCount, "No historical claims are published until each statement is tied to evidence.", "warning"],
-    ["Evidence", evidenceCount, "Evidence records are available as vault placeholders until source material is reviewed.", "evidence"],
-    ["Sources", sourceCount, "Source citations must be entered before the dossier can support conclusions.", "neutral"],
-    ["Unknowns", unknowns, "Unknowns are preserved as research targets instead of being smoothed over.", "warning"],
+    ["Observed Artifact", documentedFacts, "Confirmed catalogue facts are separated from interpretation.", "trust"],
+    ["Scholarly Interpretation", claimCount, "Working conclusions remain distinct from the evidence that may support them.", "warning"],
+    ["Documentary Evidence", evidenceCount, "Physical and documentary clues are gathered for review.", "evidence"],
+    ["Research Library", sourceCount, "Catalogues and reference works are reviewed before conclusions are strengthened.", "neutral"],
+    ["Open Research Question", unknowns, "Unresolved details remain visible so the inquiry can be followed honestly.", "warning"],
   ] as const;
 
   return (
@@ -171,21 +172,21 @@ function CrossModuleNavigation({ caseFile }: { caseFile: CaseFile }) {
     <GallerySurface eyebrow="Exhibition Rooms" title="Continue the Investigation">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MuseumActionLink href={`/case-files/${caseFile.slug}/evidence` as Route}>
-          Evidence Vault
+          Evidence Room
         </MuseumActionLink>
         <MuseumActionLink href={`/case-files/${caseFile.slug}/claims` as Route}>
-          Claims
+          Working Conclusions
         </MuseumActionLink>
         <MuseumActionLink href={`/case-files/${caseFile.slug}/timeline` as Route}>
-          Timeline
+          Chronology
         </MuseumActionLink>
         <MuseumActionLink href={`/case-files/${caseFile.slug}/sources` as Route}>
-          Source Library
+          Research Library
         </MuseumActionLink>
         <MuseumActionLink
           href={`/case-files/${caseFile.slug}/evidence/title-page/archive` as Route}
         >
-          Digital Archive
+          Document Viewer
         </MuseumActionLink>
       </div>
     </GallerySurface>
@@ -241,17 +242,17 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     { href: "#overview", label: "Overview" },
     { href: "#provenance", label: "Provenance" },
     { href: "#physical-description", label: "Physical Description" },
-    { href: "#evidence", label: "Evidence Vault" },
-    { href: "#archive", label: "Archive" },
-    { href: "#claims", label: "Claims" },
-    { href: "#timeline", label: "Timeline" },
-    { href: "#sources", label: "Source Library" },
+    { href: "#evidence", label: "Evidence Room" },
+    { href: "#archive", label: "Document Viewer" },
+    { href: "#claims", label: "Working Conclusions" },
+    { href: "#timeline", label: "Chronology" },
+    { href: "#sources", label: "Research Library" },
     { href: "#open-questions", label: "Open Questions" },
     { href: "#confidence-assessment", label: "Confidence" },
-    { href: "#revision-history", label: "Revision History" },
+    { href: "#revision-history", label: "Research History" },
     {
       href: `/case-files/${caseFile.slug}/evidence/title-page/archive`,
-      label: "Enter Archive",
+      label: "Open Document Viewer",
       route: true,
     },
   ] as const;
@@ -260,7 +261,7 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     <main className="museum-reading-room min-h-screen pb-36 text-foreground">
       <CaseFileOverview caseFile={caseFile} />
       <FloatingGalleryNavigation
-        next={{ href: "#evidence", label: "Evidence Vault" }}
+        next={{ href: "#evidence", label: "Evidence Room" }}
         previous={{ href: "#overview", label: "Opening Gallery" }}
         returnItem={{ href: "/case-files", label: "Collection Index", route: true }}
       />
@@ -269,7 +270,7 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
         <MuseumDossierNavigation items={navItems} />
 
         <div>
-          <CaseFileSection eyebrow="Overview" id="overview" title="Overview">
+          <CaseFileSection eyebrow="Opening Gallery" id="overview" title="Overview">
             <div className="space-y-10">
               <p className="max-w-4xl font-serif text-2xl leading-10 text-foreground">
                 {caseFile.overview.summary}
@@ -285,7 +286,7 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
               <CrossModuleNavigation caseFile={caseFile} />
               <CuratorNote label="Reading Room Note">
                 <p>
-                  The dossier is arranged as a sequence of galleries. Each room preserves uncertainty where the record is not yet reviewed.
+                  {exhibitionCopy.overview.note}
                 </p>
               </CuratorNote>
               <EvidenceHierarchy
@@ -325,24 +326,24 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
             </div>
           </CaseFileSection>
 
-          <CaseFileSection eyebrow="Evidence" id="evidence" title="Evidence Vault">
+          <CaseFileSection eyebrow="Evidence Room" id="evidence" title="Evidence Room">
             <div className="space-y-8">
-              <GallerySurface eyebrow="Evidence Wall" title={`${evidenceItems.length} Artifact-Level Records`}>
+              <GallerySurface eyebrow="Evidence Wall" title={exhibitionCopy.evidenceRoom.title}>
                 <div className="flex flex-wrap gap-5">
                   <MuseumActionLink href={`/case-files/${caseFile.slug}/evidence` as Route}>
-                    Enter Evidence Vault
+                    Enter Evidence Room
                   </MuseumActionLink>
                   <MuseumActionLink
                     href={`/case-files/${caseFile.slug}/evidence/title-page/archive` as Route}
                   >
-                    View Digital Archive
+                    Open Document Viewer
                   </MuseumActionLink>
                 </div>
               </GallerySurface>
               <div className="grid gap-5 md:grid-cols-3">
                 {evidenceItems.slice(0, 3).map((item) => (
                   <ArchivalCard
-                    actions={<CaseFileBadge tone="warning">{item.status}</CaseFileBadge>}
+                    actions={<CaseFileBadge tone="warning">{formatEvidenceStatus(item.status)}</CaseFileBadge>}
                     eyebrow="Evidence Object"
                     key={item.id}
                     title={item.title}
@@ -354,32 +355,32 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
             </div>
           </CaseFileSection>
 
-          <CaseFileSection eyebrow="Archive" id="archive" title="Digital Archive">
-            <GallerySurface eyebrow="Media Room" title={`${archiveMediaCount} Archive Media Placeholders`}>
+          <CaseFileSection eyebrow="Document Viewer" id="archive" title="Document Viewer">
+            <GallerySurface eyebrow="Document Viewer" title="Image Documentation in Progress">
               <p className="max-w-3xl text-sm leading-7 text-body">
-                The archive room preserves image placeholders until verified scans, photographs, or documents are attached to evidence records.
+                This room will present the binding, title page, inscriptions, and material details once photography and cataloguing are complete.
               </p>
               <div className="mt-6">
                 <MuseumActionLink
                   href={`/case-files/${caseFile.slug}/evidence/title-page/archive` as Route}
                 >
-                  Enter Digital Archive
+                  Open Document Viewer
                 </MuseumActionLink>
               </div>
             </GallerySurface>
           </CaseFileSection>
 
-          <CaseFileSection eyebrow="Claims" id="claims" title="Claims">
+          <CaseFileSection eyebrow="Working Conclusions" id="claims" title="Working Conclusions">
             <div className="space-y-8">
-              <GallerySurface eyebrow="Assertion Room" title={`${claimRecords.length} Placeholder Claims`}>
+              <GallerySurface eyebrow="Working Conclusions" title={exhibitionCopy.workingConclusions.title}>
                 <MuseumActionLink href={`/case-files/${caseFile.slug}/claims` as Route}>
-                  Enter Claims Engine
+                  Enter Working Conclusions
                 </MuseumActionLink>
               </GallerySurface>
               <div className="grid gap-5 md:grid-cols-3">
                 {claimRecords.slice(0, 3).map((claim) => (
                   <ArchivalCard
-                    actions={<CaseFileBadge tone="warning">{claim.status}</CaseFileBadge>}
+                    actions={<CaseFileBadge tone="warning">{formatInterpretationStatus(claim.status)}</CaseFileBadge>}
                     eyebrow={formatClaimType(claim.claimType)}
                     key={claim.id}
                     title={claim.title}
@@ -391,18 +392,18 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
             </div>
           </CaseFileSection>
 
-          <CaseFileSection eyebrow="Timeline" id="timeline" title="Timeline">
+          <CaseFileSection eyebrow="Chronology" id="timeline" title="Chronology">
             <div className="space-y-8">
-              <GallerySurface eyebrow="Chronology Room" title={`${timelineEvents.length} Timeline Placeholders`}>
+              <GallerySurface eyebrow="Chronology Room" title={exhibitionCopy.chronology.progressTitle}>
                 <MuseumActionLink href={`/case-files/${caseFile.slug}/timeline` as Route}>
-                  Enter Timeline
+                  Enter Chronology
                 </MuseumActionLink>
               </GallerySurface>
               <ol className="grid gap-5 md:grid-cols-3">
                 {timelineEvents.slice(0, 3).map((event) => (
                   <li key={event.id}>
                     <ArchivalCard
-                      actions={<CaseFileBadge tone="warning">{event.status}</CaseFileBadge>}
+                      actions={<CaseFileBadge tone="warning">{formatTimelineStatus(event.status)}</CaseFileBadge>}
                       eyebrow={event.dateLabel}
                       title={event.title}
                     >
@@ -414,17 +415,17 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
             </div>
           </CaseFileSection>
 
-          <CaseFileSection eyebrow="Sources" id="sources" title="Source Library">
+          <CaseFileSection eyebrow="Research Library" id="sources" title="Research Library">
             <div className="space-y-8">
-              <GallerySurface eyebrow="Catalogue Room" title={`${sourceRecords.length} Placeholder Sources`}>
+              <GallerySurface eyebrow="Research Library" title={exhibitionCopy.researchLibrary.title}>
                 <MuseumActionLink href={`/case-files/${caseFile.slug}/sources` as Route}>
-                  Enter Source Library
+                  Enter Research Library
                 </MuseumActionLink>
               </GallerySurface>
               <div className="grid gap-5 md:grid-cols-3">
                 {sourceRecords.slice(0, 3).map((source) => (
                   <ArchivalCard
-                    actions={<CaseFileBadge tone="warning">{source.status}</CaseFileBadge>}
+                    actions={<CaseFileBadge tone="warning">{formatInterpretationStatus(source.status)}</CaseFileBadge>}
                     eyebrow={formatSourceType(source.sourceType)}
                     key={source.id}
                     title={source.title}
@@ -443,9 +444,9 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
           >
             <div className="grid gap-5">
               {caseFile.researchQuestions.map((question) => (
-                <ArchivalCard eyebrow={question.status} key={question.id} title={question.question}>
+                <ArchivalCard eyebrow="Open Research Question" key={question.id} title={question.question}>
                   <p className="text-sm leading-7 text-body">
-                    Requires Research. This question remains open until reviewed evidence and sources answer it.
+                    This question remains open until the evidence and sources can answer it.
                   </p>
                 </ArchivalCard>
               ))}
@@ -460,10 +461,10 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
             <div className="space-y-6">
               <div className="flex flex-wrap gap-2">
                 <CaseFileBadge tone="neutral">
-                  Confidence: {formatConfidence(caseFile.confidenceAssessment.level)}
+                  {formatVisitorConfidence(caseFile.confidenceAssessment.level)}
                 </CaseFileBadge>
                 <CaseFileBadge tone={statusTone[caseFile.confidenceAssessment.status]}>
-                  {caseFile.confidenceAssessment.status}
+                  {formatDossierStatus(caseFile.confidenceAssessment.status)}
                 </CaseFileBadge>
               </div>
               <p className="max-w-4xl text-sm leading-7 text-body">
@@ -482,9 +483,9 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
           </CaseFileSection>
 
           <CaseFileSection
-            eyebrow="Revision History"
+            eyebrow="Research History"
             id="revision-history"
-            title="Revision History"
+            title="Research History"
           >
             <div className="grid gap-5">
               {caseFile.revisions.map((revision) => (
@@ -493,7 +494,7 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
                   key={revision.id}
                   title={`Version ${revision.version}`}
                 >
-                  <p className="text-sm text-muted">Investigator: {revision.investigator}</p>
+                  <p className="text-sm text-muted">Research Team: {formatRevisionInvestigator(revision.investigator)}</p>
                   <p className="mt-3 text-sm leading-7 text-body">{revision.summary}</p>
                 </ArchivalCard>
               ))}
@@ -504,3 +505,8 @@ export default async function CaseFilePage({ params }: CaseFilePageProps) {
     </main>
   );
 }
+
+
+
+
+

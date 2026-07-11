@@ -1,4 +1,4 @@
-import type { SourceIndependenceLevel, SourceType } from "@/types/source";
+﻿import type { SourceIndependenceLevel, SourceType } from "@/types/source";
 
 const sourceTypeLabels: Record<SourceType, string> = {
   "artifact-observation": "Artifact Observation",
@@ -6,7 +6,7 @@ const sourceTypeLabels: Record<SourceType, string> = {
   "catalog-record": "Catalog Record",
   "expert-review": "Expert Review",
   memory: "Memory",
-  placeholder: "Placeholder",
+  placeholder: "Under Review",
   "research-source": "Research Source",
 };
 
@@ -16,7 +16,7 @@ const sourceIndependenceLabels: Record<SourceIndependenceLevel, string> = {
   primary: "Primary",
   secondary: "Secondary",
   tertiary: "Tertiary",
-  unknown: "Unknown Independence",
+  unknown: "Independence Under Review",
 };
 
 export function formatSourceType(sourceType: SourceType) {
@@ -28,3 +28,4 @@ export function formatSourceIndependenceLevel(
 ) {
   return sourceIndependenceLabels[independenceLevel];
 }
+

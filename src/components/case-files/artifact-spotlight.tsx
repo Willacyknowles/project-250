@@ -1,7 +1,9 @@
-import type { Route } from "next";
+﻿import type { Route } from "next";
 import { CaseFileBadge } from "@/components/case-files/case-file-badge";
 import { MuseumButton } from "@/components/museum/museum-button";
 import { MuseumLabel } from "@/components/museum/museum-label";
+import { exhibitionCopy } from "@/config/exhibition-copy";
+import { formatEvidenceStatus } from "@/lib/visitor-labels";
 import type { ResearchStatus } from "@/types/case-file";
 
 type ArtifactDetail = {
@@ -30,7 +32,7 @@ export function ArtifactSpotlight({
   description,
   details,
   linkHref,
-  linkLabel = "Open Archive",
+  linkLabel = "Open Document Viewer",
   status,
   title,
 }: ArtifactSpotlightProps) {
@@ -42,15 +44,15 @@ export function ArtifactSpotlight({
           <div className="absolute inset-x-8 top-0 h-28 bg-cream/45 blur-3xl" aria-hidden="true" />
           <div className="absolute -right-12 top-0 h-full w-28 rotate-12 bg-white/24 blur-sm" aria-hidden="true" />
           <div className="relative flex h-full flex-col items-center justify-center border border-dashed border-border bg-surface/78 p-6 text-center">
-            <MuseumLabel tone="brass">Artifact Image Placeholder</MuseumLabel>
+            <MuseumLabel tone="brass">{exhibitionCopy.artifact.imagePendingTitle}</MuseumLabel>
             <h2 className="mt-5 max-w-sm font-serif text-3xl leading-tight text-foreground sm:text-4xl">
               {title}
             </h2>
             <p className="mt-4 max-w-xs text-sm leading-6 text-body">
-              {caption ?? "Requires Research. Image documentation has not been verified."}
+              {caption ?? exhibitionCopy.artifact.imagePendingCopy}
             </p>
             <div className="mt-6">
-              <CaseFileBadge tone="warning">{status}</CaseFileBadge>
+              <CaseFileBadge tone="warning">{formatEvidenceStatus(status)}</CaseFileBadge>
             </div>
           </div>
         </div>
