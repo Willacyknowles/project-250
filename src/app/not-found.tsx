@@ -2,11 +2,11 @@
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-6 text-foreground">
-      <section className="max-w-lg rounded-lg border border-border bg-surface p-8">
-        <p className="text-sm font-semibold uppercase text-evidence">404</p>
-        <h1 className="mt-3 text-2xl font-semibold">Gallery not found</h1>
-        <p className="mt-4 text-sm leading-6 text-body">
+    <main className="museum-reading-room flex min-h-screen items-center justify-center px-6 text-cream">
+      <section className="exhibition-object-wall max-w-lg rounded-sm p-8">
+        <p className="text-sm font-semibold uppercase text-brass">404</p>
+        <h1 className="mt-3 font-serif text-4xl">Gallery not found</h1>
+        <p className="mt-4 text-sm leading-6 text-cream/70">
           This gallery is not open to visitors from the current exhibition path.
         </p>
         <MuseumButton className="mt-6" href="/">Return to the collection</MuseumButton>

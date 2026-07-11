@@ -107,26 +107,26 @@ export default async function EvidenceVaultPage({
 
       <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
         <GallerySurface eyebrow="Evidence Categories" title="Archival Drawers">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-sm border border-border bg-cream p-4">
+          <div className="grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+            <div className="bg-cream p-5">
               <MuseumLabel>Object Entries</MuseumLabel>
               <p className="mt-2 font-serif text-3xl text-foreground">
                 {evidenceItems.length}
               </p>
             </div>
-            <div className="rounded-sm border border-border bg-cream p-4">
+            <div className="bg-cream p-5">
               <MuseumLabel>Image Documentation</MuseumLabel>
               <p className="mt-2 font-serif text-3xl text-foreground">
                 {archiveMediaCount}
               </p>
             </div>
-            <div className="rounded-sm border border-border bg-cream p-4">
+            <div className="bg-cream p-5">
               <MuseumLabel>Collection Status</MuseumLabel>
               <p className="mt-2 font-serif text-2xl text-foreground">
                 {exhibitionCopy.activeInvestigation}
               </p>
             </div>
-            <div className="rounded-sm border border-border bg-cream p-4">
+            <div className="bg-cream p-5">
               <MuseumLabel>Viewer</MuseumLabel>
               <p className="mt-2 font-serif text-2xl text-foreground">
                 Image Pending Review

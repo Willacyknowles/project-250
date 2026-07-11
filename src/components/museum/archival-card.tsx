@@ -10,6 +10,7 @@ type ArchivalCardProps = {
 export function ArchivalCard({ actions, children, eyebrow, title }: ArchivalCardProps) {
   return (
     <article className="museum-drawer museum-hover-lift museum-paper-unfold overflow-hidden rounded-sm p-6 sm:p-8">
+      <div className="mb-6 h-1 w-24 bg-brass/70" aria-hidden="true" />
       <div className="flex flex-wrap items-start justify-between gap-5 border-b border-border pb-5">
         <div className="max-w-2xl">
           {eyebrow ? <MuseumLabel tone="brass">{eyebrow}</MuseumLabel> : null}

@@ -12,7 +12,7 @@ type TimelineMarkerProps = {
 
 export function TimelineMarker({ children, dateLabel, status, title }: TimelineMarkerProps) {
   return (
-    <article className="museum-paper museum-reveal overflow-hidden rounded-sm border-l-4 border-l-brass p-6 sm:p-8 lg:p-10">
+    <article className="museum-reveal overflow-hidden rounded-sm border border-brass/25 bg-black/35 p-6 text-cream shadow-[0_32px_100px_rgb(0_0_0_/_0.28)] backdrop-blur-sm sm:p-8 lg:p-10">
       <div className="grid gap-6 lg:grid-cols-[11rem_1fr_auto] lg:items-start">
         <div className="museum-brass-plate rounded-sm px-4 py-3 text-center">
           <p className="text-[0.64rem] font-bold uppercase">Chronology</p>
@@ -20,13 +20,13 @@ export function TimelineMarker({ children, dateLabel, status, title }: TimelineM
         </div>
         <div>
           <MuseumLabel tone="brass">Exhibition Wall Marker</MuseumLabel>
-          <h2 className="mt-3 font-serif text-3xl leading-tight text-foreground sm:text-4xl">
+          <h2 className="mt-3 font-serif text-3xl leading-tight text-cream sm:text-4xl">
             {title}
           </h2>
         </div>
         <CaseFileBadge tone="warning">{formatTimelineStatus(status)}</CaseFileBadge>
       </div>
-      <div className="mt-8 border-t border-border pt-7">{children}</div>
+      <div className="mt-8 border-t border-brass/22 pt-7">{children}</div>
     </article>
   );
 }

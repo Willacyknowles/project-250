@@ -17,13 +17,13 @@ type FloatingGalleryNavigationProps = {
 };
 
 function GalleryLink({ item, prefix }: { item: GalleryNavItem; prefix: string }) {
-  const className = "group rounded-sm px-3 py-2 text-left transition hover:bg-parchment focus-visible:bg-parchment";
+  const className = "group rounded-sm border border-transparent px-3 py-2 text-left transition hover:border-brass/40 hover:bg-cream/10 focus-visible:bg-cream/10";
   const content = (
     <>
-      <span className="block text-[0.64rem] font-semibold uppercase text-muted">
+      <span className="block text-[0.64rem] font-semibold uppercase text-brass">
         {prefix}
       </span>
-      <span className="mt-1 block font-serif text-sm leading-tight text-foreground group-hover:text-evidence">
+      <span className="mt-1 block font-serif text-sm leading-tight text-cream group-hover:text-brass">
         {item.label}
       </span>
     </>
@@ -71,17 +71,17 @@ export function FloatingGalleryNavigation({
   return (
     <nav
       aria-label="Floating exhibition navigation"
-      className="fixed inset-x-3 bottom-3 z-40 mx-auto max-w-3xl rounded-sm border border-border bg-cream/94 p-3 shadow-[0_22px_70px_rgb(36_23_16_/_0.18)] backdrop-blur-md sm:inset-x-auto sm:right-5 sm:max-w-sm"
+      className="fixed inset-x-3 bottom-3 z-40 mx-auto max-w-3xl rounded-sm border border-brass/30 bg-black/72 p-3 shadow-[0_22px_70px_rgb(0_0_0_/_0.42)] backdrop-blur-md sm:inset-x-auto sm:right-5 sm:max-w-sm"
     >
       <div className="flex items-center justify-between gap-4 px-2">
-        <p className="text-[0.64rem] font-semibold uppercase text-muted">
+        <p className="text-[0.64rem] font-semibold uppercase text-cream/58">
           Exhibition Progress
         </p>
-        <p className="text-[0.64rem] font-semibold uppercase text-evidence">
+        <p className="text-[0.64rem] font-semibold uppercase text-brass">
           {Math.round(progress)}%
         </p>
       </div>
-      <div className="mt-2 h-1 overflow-hidden rounded-full bg-border" aria-hidden="true">
+      <div className="mt-2 h-1 overflow-hidden rounded-full bg-cream/16" aria-hidden="true">
         <div
           className="h-full bg-brass transition-[width] duration-300"
           style={{ width: `${progress}%` }}

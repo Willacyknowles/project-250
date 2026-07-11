@@ -38,21 +38,23 @@ export function ArtifactSpotlight({
 }: ArtifactSpotlightProps) {
   return (
     <article className="museum-paper-unfold relative text-foreground">
-      <div className="absolute -inset-x-8 -top-10 h-36 bg-brass/20 blur-3xl" aria-hidden="true" />
-      <div className="museum-pedestal overflow-hidden rounded-sm border border-brass/35 p-4 sm:p-5">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-sm border border-border bg-parchment p-4 shadow-[inset_0_0_90px_rgb(36_23_16_/_0.12)]">
-          <div className="absolute inset-x-8 top-0 h-28 bg-cream/45 blur-3xl" aria-hidden="true" />
-          <div className="absolute -right-12 top-0 h-full w-28 rotate-12 bg-white/24 blur-sm" aria-hidden="true" />
-          <div className="relative flex h-full flex-col items-center justify-center border border-dashed border-border bg-surface/78 p-6 text-center">
-            <MuseumLabel tone="brass">{exhibitionCopy.artifact.imagePendingTitle}</MuseumLabel>
-            <h2 className="mt-5 max-w-sm font-serif text-3xl leading-tight text-foreground sm:text-4xl">
-              {title}
-            </h2>
-            <p className="mt-4 max-w-xs text-sm leading-6 text-body">
-              {caption ?? exhibitionCopy.artifact.imagePendingCopy}
-            </p>
-            <div className="mt-6">
-              <CaseFileBadge tone="warning">{formatEvidenceStatus(status)}</CaseFileBadge>
+      <div className="absolute -inset-x-10 -top-16 h-48 bg-brass/25 blur-3xl" aria-hidden="true" />
+      <div className="exhibition-vitrine overflow-hidden rounded-sm p-5 sm:p-6">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-black/20 p-5">
+          <div className="absolute inset-x-10 top-0 h-36 bg-cream/45 blur-3xl" aria-hidden="true" />
+          <div className="absolute -right-16 top-0 h-full w-32 rotate-12 bg-white/20 blur-sm" aria-hidden="true" />
+          <div className="artifact-silhouette relative flex h-full flex-col items-center justify-end overflow-hidden rounded-sm p-6 text-center">
+            <div className="relative z-10 mb-4 rounded-sm border border-brass/40 bg-black/35 p-5 text-cream backdrop-blur-sm">
+              <MuseumLabel tone="brass">{exhibitionCopy.artifact.imagePendingTitle}</MuseumLabel>
+              <h2 className="mt-4 max-w-sm font-serif text-3xl leading-tight text-cream sm:text-4xl">
+                {title}
+              </h2>
+              <p className="mt-4 max-w-xs text-sm leading-6 text-cream/74">
+                {caption ?? exhibitionCopy.artifact.imagePendingCopy}
+              </p>
+              <div className="mt-5 flex justify-center">
+                <CaseFileBadge tone="warning">{formatEvidenceStatus(status)}</CaseFileBadge>
+              </div>
             </div>
           </div>
         </div>

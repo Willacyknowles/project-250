@@ -17,7 +17,7 @@ export function ArchiveImagePanel({
   eyebrow = "Document Viewer",
 }: ArchiveImagePanelProps) {
   return (
-    <figure className="rounded-lg border border-border bg-surface p-5 shadow-sm sm:p-6">
+    <figure className="museum-gallery-surface rounded-sm p-5 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-evidence">

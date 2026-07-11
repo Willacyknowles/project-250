@@ -198,7 +198,7 @@ export default async function CaseFileTimelinePage({ params }: TimelinePageProps
                     {formatTimelineDatePrecision(event.datePrecision)}
                   </CaseFileBadge>
                 </div>
-                <p className="mt-5 max-w-4xl text-sm leading-7 text-body">
+                <p className="mt-5 max-w-4xl text-sm leading-7 text-cream/72">
                   {event.description}
                 </p>
                 <div className="mt-7 grid gap-6 xl:grid-cols-2">

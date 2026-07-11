@@ -75,17 +75,17 @@ export function MuseumDossierNavigation({ items }: MuseumDossierNavigationProps)
     <aside className="lg:sticky lg:top-6 lg:self-start">
       <nav
         aria-label="Museum dossier navigation"
-        className="museum-gallery-surface rounded-sm p-4 shadow-[0_24px_70px_rgb(36_23_16_/_0.12)] backdrop-blur-sm"
+        className="rounded-sm border border-brass/24 bg-black/45 p-4 shadow-[0_24px_70px_rgb(0_0_0_/_0.32)] backdrop-blur-md"
       >
         <div className="border-b border-brass/35 px-2 pb-4">
-          <p className="museum-label-text text-evidence">Gallery Directory</p>
+          <p className="museum-label-text text-brass">Gallery Directory</p>
           <div className="mt-2 flex items-end justify-between gap-4">
-            <p className="font-serif text-2xl leading-none text-foreground">
+            <p className="font-serif text-2xl leading-none text-cream">
               Exhibition Path
             </p>
-            <p className="text-xs font-semibold uppercase text-muted">{Math.round(progress)}%</p>
+            <p className="text-xs font-semibold uppercase text-cream/58">{Math.round(progress)}%</p>
           </div>
-          <div className="mt-4 h-1 overflow-hidden rounded-full bg-border" aria-hidden="true">
+          <div className="mt-4 h-1 overflow-hidden rounded-full bg-cream/16" aria-hidden="true">
             <div
               className="h-full bg-brass transition-[width] duration-300"
               style={{ width: `${progress}%` }}
@@ -98,7 +98,7 @@ export function MuseumDossierNavigation({ items }: MuseumDossierNavigationProps)
             const className = `group whitespace-nowrap rounded-sm border border-transparent px-3 py-2 text-sm font-medium transition lg:whitespace-normal ${
               isActive
                 ? "border-brass/35 bg-walnut text-cream shadow-sm"
-                : "text-body hover:border-border hover:bg-cream hover:text-foreground"
+                : "text-cream/68 hover:border-brass/30 hover:bg-cream/10 hover:text-cream"
             }`;
             const content = (
               <>

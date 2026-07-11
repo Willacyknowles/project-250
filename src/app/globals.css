@@ -5,6 +5,9 @@
   --museum-ivory: #fff8ec;
   --museum-cream: #fffaf0;
   --museum-cream-deep: #f7edda;
+  --museum-black: #070604;
+  --museum-night: #110d09;
+  --museum-gallery-wall: #18110d;
   --museum-walnut: #241710;
   --museum-walnut-soft: #3a261b;
   --museum-bronze: #8d6324;
@@ -20,6 +23,7 @@
   --museum-shadow-soft: 0 18px 45px rgb(36 23 16 / 0.08);
   --museum-shadow-lift: 0 24px 60px rgb(36 23 16 / 0.14);
   --museum-shadow-spotlight: 0 40px 120px rgb(10 6 4 / 0.38);
+  --museum-shadow-theater: 0 42px 140px rgb(0 0 0 / 0.42);
   --museum-space-gallery: 4rem;
   --museum-space-room: 2.5rem;
   --museum-space-cabinet: 1.25rem;
@@ -71,10 +75,9 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgb(255 248 236 / 0.9), transparent 36rem),
-    linear-gradient(90deg, rgb(36 23 16 / 0.025) 1px, transparent 1px),
-    linear-gradient(180deg, rgb(36 23 16 / 0.02) 1px, transparent 1px),
-    var(--background);
+    radial-gradient(circle at 50% -8rem, rgb(167 122 45 / 0.2), transparent 34rem),
+    radial-gradient(circle at 12% 12rem, rgb(255 248 236 / 0.08), transparent 24rem),
+    linear-gradient(180deg, var(--museum-black), var(--museum-night) 44rem, #1a120d);
   background-size: auto, 48px 48px, 48px 48px, auto;
   color: var(--foreground);
   font-family: var(--museum-font-body);
@@ -96,7 +99,9 @@ a {
 }
 
 .museum-paper {
-  background: var(--museum-cream);
+  background:
+    linear-gradient(180deg, rgb(255 250 240 / 0.98), rgb(247 237 218 / 0.96)),
+    linear-gradient(90deg, rgb(36 23 16 / 0.04) 1px, transparent 1px);
   border: 1px solid var(--museum-border);
   box-shadow: var(--museum-shadow-soft);
 }
@@ -108,17 +113,65 @@ a {
 
 .museum-gallery-surface {
   background:
+    radial-gradient(circle at 20% 0%, rgb(255 255 255 / 0.92), transparent 16rem),
     linear-gradient(135deg, rgb(255 250 240 / 0.98), rgb(247 237 218 / 0.92)),
-    radial-gradient(circle at 20% 0%, rgb(167 122 45 / 0.12), transparent 22rem);
+    linear-gradient(180deg, rgb(141 99 36 / 0.08), transparent 16rem);
   border: 1px solid var(--museum-border);
-  box-shadow: var(--museum-shadow-soft);
+  box-shadow:
+    var(--museum-shadow-soft),
+    0 34px 90px rgb(0 0 0 / 0.18);
+  position: relative;
+}
+
+.museum-gallery-surface::before {
+  background: linear-gradient(90deg, transparent, rgb(167 122 45 / 0.45), transparent);
+  content: "";
+  height: 1px;
+  left: 2rem;
+  position: absolute;
+  right: 2rem;
+  top: 1.25rem;
 }
 
 .museum-spotlight {
   background:
-    radial-gradient(circle at 70% 30%, rgb(255 250 240 / 0.2), transparent 20rem),
-    radial-gradient(circle at 50% 12%, rgb(167 122 45 / 0.24), transparent 26rem),
-    linear-gradient(135deg, #1d120d, var(--museum-walnut) 45%, #120b08);
+    linear-gradient(90deg, rgb(0 0 0 / 0.78), rgb(0 0 0 / 0.34) 42%, rgb(0 0 0 / 0.84)),
+    radial-gradient(circle at 74% 30%, rgb(255 250 240 / 0.22), transparent 18rem),
+    radial-gradient(circle at 44% 14%, rgb(167 122 45 / 0.34), transparent 28rem),
+    linear-gradient(135deg, #100b08, var(--museum-walnut) 44%, #050403);
+  box-shadow: inset 0 -1px 0 rgb(167 122 45 / 0.35);
+  display: flex;
+  min-height: 72svh;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.museum-spotlight::before {
+  background:
+    linear-gradient(90deg, rgb(255 250 240 / 0.08) 1px, transparent 1px),
+    linear-gradient(180deg, rgb(255 250 240 / 0.06) 1px, transparent 1px);
+  background-size: 92px 92px;
+  content: "";
+  inset: 0;
+  opacity: 0.36;
+  pointer-events: none;
+  position: absolute;
+}
+
+.museum-spotlight::after {
+  background:
+    radial-gradient(ellipse at center, transparent 0 42%, rgb(0 0 0 / 0.42) 100%),
+    linear-gradient(180deg, transparent 0 70%, rgb(0 0 0 / 0.42));
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.museum-spotlight > * {
+  position: relative;
+  z-index: 1;
 }
 
 .museum-rule {
@@ -215,15 +268,19 @@ a {
 
 .museum-reading-room {
   background:
-    radial-gradient(circle at 12% 4rem, rgb(255 250 240 / 0.92), transparent 26rem),
-    linear-gradient(180deg, rgb(255 248 236 / 0.72), rgb(242 234 220 / 0.88));
+    linear-gradient(90deg, rgb(255 250 240 / 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 85% 6rem, rgb(167 122 45 / 0.2), transparent 24rem),
+    radial-gradient(circle at 16% 18rem, rgb(255 250 240 / 0.08), transparent 22rem),
+    linear-gradient(180deg, var(--museum-black), var(--museum-gallery-wall) 42rem, #1b120d);
+  background-size: 7rem 100%, auto, auto, auto;
 }
 
 .museum-pedestal {
   background:
-    linear-gradient(180deg, rgb(255 250 240 / 0.97), rgb(247 237 218 / 0.94)),
-    linear-gradient(90deg, rgb(36 23 16 / 0.035) 1px, transparent 1px);
-  box-shadow: 0 38px 95px rgb(10 6 4 / 0.26);
+    radial-gradient(circle at 50% 4%, rgb(255 250 240 / 0.62), transparent 12rem),
+    linear-gradient(180deg, rgb(255 250 240 / 0.96), rgb(210 185 139 / 0.94)),
+    linear-gradient(90deg, rgb(36 23 16 / 0.06) 1px, transparent 1px);
+  box-shadow: var(--museum-shadow-theater);
   position: relative;
 }
 
@@ -245,7 +302,9 @@ a {
 }
 
 .museum-drawer {
-  background: linear-gradient(180deg, rgb(255 250 240 / 0.98), rgb(247 237 218 / 0.98));
+  background:
+    radial-gradient(circle at 20% 0%, rgb(255 255 255 / 0.72), transparent 11rem),
+    linear-gradient(180deg, rgb(255 250 240 / 0.98), rgb(247 237 218 / 0.98));
   border: 1px solid var(--museum-border);
   box-shadow:
     var(--museum-shadow-soft),
@@ -265,9 +324,97 @@ a {
 
 .museum-exhibition-wall {
   background:
-    linear-gradient(90deg, rgb(141 99 36 / 0.14) 1px, transparent 1px),
-    linear-gradient(180deg, rgb(255 250 240 / 0.72), rgb(247 237 218 / 0.44));
+    linear-gradient(90deg, rgb(255 250 240 / 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 72% 12%, rgb(167 122 45 / 0.18), transparent 18rem),
+    linear-gradient(180deg, rgb(255 250 240 / 0.05), rgb(7 6 4 / 0.22));
   background-size: 7rem 100%, auto;
+}
+
+.exhibition-home {
+  background:
+    radial-gradient(circle at 62% 18%, rgb(167 122 45 / 0.28), transparent 28rem),
+    linear-gradient(90deg, rgb(255 250 240 / 0.05) 1px, transparent 1px),
+    linear-gradient(180deg, var(--museum-black), #1a120d 48rem, var(--museum-parchment));
+  background-size: auto, 8rem 100%, auto;
+}
+
+.exhibition-hero {
+  min-height: 100svh;
+  overflow: hidden;
+  position: relative;
+}
+
+.exhibition-hero::before {
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.76), rgb(0 0 0 / 0.18) 48%, rgb(0 0 0 / 0.76)),
+    radial-gradient(circle at 72% 34%, rgb(255 250 240 / 0.18), transparent 20rem),
+    linear-gradient(180deg, transparent 0 68%, rgb(0 0 0 / 0.62));
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.exhibition-hero > * {
+  position: relative;
+  z-index: 2;
+}
+
+.exhibition-vitrine {
+  background:
+    radial-gradient(circle at 50% 8%, rgb(255 250 240 / 0.48), transparent 10rem),
+    linear-gradient(180deg, rgb(255 250 240 / 0.1), rgb(255 250 240 / 0.03));
+  border: 1px solid rgb(255 250 240 / 0.22);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    var(--museum-shadow-theater);
+  position: relative;
+}
+
+.exhibition-vitrine::before {
+  background: linear-gradient(110deg, transparent 0 28%, rgb(255 255 255 / 0.24) 38%, transparent 54% 100%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.artifact-silhouette {
+  background:
+    radial-gradient(circle at 50% 4%, rgb(255 250 240 / 0.62), transparent 8rem),
+    linear-gradient(110deg, #7b5633, #c2a16b 38%, #5e3d22 39% 42%, #cbb47f 43%, #7a5634);
+  border: 1px solid rgb(255 250 240 / 0.32);
+  box-shadow:
+    inset 0 0 70px rgb(36 23 16 / 0.24),
+    0 32px 80px rgb(0 0 0 / 0.36);
+  position: relative;
+}
+
+.artifact-silhouette::before {
+  background:
+    linear-gradient(90deg, transparent 0 47%, rgb(36 23 16 / 0.35) 48% 52%, transparent 53% 100%),
+    repeating-linear-gradient(90deg, rgb(255 250 240 / 0.18) 0 1px, transparent 1px 10px);
+  content: "";
+  inset: 1.5rem;
+  position: absolute;
+}
+
+.artifact-silhouette::after {
+  background:
+    radial-gradient(circle at 38% 32%, rgb(36 23 16 / 0.22), transparent 0.9rem),
+    radial-gradient(circle at 62% 62%, rgb(36 23 16 / 0.16), transparent 1.2rem);
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.exhibition-object-wall {
+  background:
+    radial-gradient(circle at 50% 0%, rgb(255 250 240 / 0.2), transparent 12rem),
+    linear-gradient(180deg, rgb(255 250 240 / 0.06), rgb(255 250 240 / 0.015));
+  border: 1px solid rgb(255 250 240 / 0.14);
+  box-shadow: var(--museum-shadow-theater);
 }
 
 .museum-paper-unfold {

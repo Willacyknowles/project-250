@@ -118,9 +118,9 @@ function DossierProgressPanel({
           {formatVisitorConfidence(caseFile.confidence)}
         </CaseFileBadge>
       </div>
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="mt-8 grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-2 xl:grid-cols-5">
         {items.map(([label, value, description]) => (
-          <article className="rounded-sm border border-border bg-cream p-5" key={label}>
+          <article className="bg-cream p-5" key={label}>
             <MuseumLabel>{label}</MuseumLabel>
             <p className="mt-3 font-serif text-4xl text-foreground">{value}</p>
             <p className="mt-3 text-sm leading-6 text-body">{description}</p>
@@ -153,9 +153,9 @@ function EvidenceHierarchy({
   ] as const;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-5">
+    <div className="grid gap-px overflow-hidden rounded-sm border border-border bg-border lg:grid-cols-5">
       {ledgers.map(([label, value, description, tone]) => (
-        <article className="rounded-sm border border-border bg-ivory/70 p-5" key={label}>
+        <article className="bg-ivory/80 p-5" key={label}>
           <div className="flex items-start justify-between gap-3">
             <MuseumLabel>{label}</MuseumLabel>
             <CaseFileBadge tone={tone}>{value}</CaseFileBadge>

@@ -167,20 +167,20 @@ export default async function SourceLibraryPage({
 
       <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
         <GallerySurface eyebrow="Catalogue Index" title="Sources Awaiting Review">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-sm border border-border bg-cream p-4">
+          <div className="grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-3">
+            <div className="bg-cream p-5">
               <MuseumLabel>Catalogue Entries</MuseumLabel>
               <p className="mt-2 font-serif text-3xl text-foreground">
                 {sourceRecords.length}
               </p>
             </div>
-            <div className="rounded-sm border border-border bg-cream p-4">
+            <div className="bg-cream p-5">
               <MuseumLabel>Shelf Marks</MuseumLabel>
               <p className="mt-2 font-serif text-2xl text-foreground">
                 {exhibitionCopy.citationUnderReview}
               </p>
             </div>
-            <div className="rounded-sm border border-border bg-cream p-4">
+            <div className="bg-cream p-5">
               <MuseumLabel>Verification</MuseumLabel>
               <p className="mt-2 font-serif text-2xl text-foreground">
                 Source Review Needed
