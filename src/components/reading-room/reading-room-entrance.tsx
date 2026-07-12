@@ -1,25 +1,14 @@
 "use client";
 
 import type { Route } from "next";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArtifactFallbackPoster } from "./artifact-fallback-poster";
-import { ArtifactLoadingState } from "./artifact-loading-state";
-import type { ArtifactStageProps } from "./artifact-stage";
+import { ArtifactPhotoStage } from "./artifact-photo-stage";
 import { OpenBibleTransition } from "./open-bible-transition";
 import { useReducedMotion } from "./use-reduced-motion";
 
 const caseFileRoute = "/case-files/1610-geneva-bible" as Route;
-
-const DynamicArtifactStage = dynamic<ArtifactStageProps>(
-  () => import("./artifact-stage").then((module) => module.ArtifactStage),
-  {
-    loading: () => <ArtifactLoadingState />,
-    ssr: false,
-  },
-);
 
 export function ReadingRoomEntrance() {
   const router = useRouter();
@@ -45,7 +34,7 @@ export function ReadingRoomEntrance() {
       () => {
         router.push(caseFileRoute);
       },
-      reducedMotion ? 120 : 1500,
+      reducedMotion ? 120 : 1450,
     );
   }, [isOpening, reducedMotion, router]);
 
@@ -70,7 +59,7 @@ export function ReadingRoomEntrance() {
               type="button"
             >
               <span>Open the Bible</span>
-              <span aria-hidden="true">→</span>
+              <span aria-hidden="true">-&gt;</span>
             </button>
             <Link className="reading-room-secondary-cta" href={caseFileRoute}>
               Enter the Exhibition
@@ -79,11 +68,7 @@ export function ReadingRoomEntrance() {
         </div>
 
         <div className="reading-room-stage" aria-label="Artifact presentation">
-          <ArtifactFallbackPoster />
-          <DynamicArtifactStage
-            isOpening={isOpening}
-            reducedMotion={reducedMotion}
-          />
+          <ArtifactPhotoStage isOpening={isOpening} />
           <div className="reading-room-object-label">
             <p>THE 1610 GENEVA BIBLE</p>
             <span>Active Investigation</span>

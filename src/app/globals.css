@@ -609,8 +609,13 @@ a {
 .reading-room-stage {
   align-self: stretch;
   animation: reading-room-object-in 1450ms ease 320ms both;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 38rem;
   overflow: hidden;
+  padding: clamp(2rem, 4vw, 4rem);
+  perspective: 1600px;
   position: relative;
   z-index: 6;
 }
@@ -629,13 +634,170 @@ a {
 
 .reading-room-stage::after {
   background:
-    radial-gradient(ellipse at 52% 69%, rgb(0 0 0 / 0.74), transparent 20rem),
-    linear-gradient(90deg, rgb(0 0 0 / 0.52), transparent 28%, transparent 72%, rgb(0 0 0 / 0.6));
+    radial-gradient(ellipse at 52% 74%, rgb(0 0 0 / 0.58), transparent 22rem),
+    linear-gradient(90deg, rgb(0 0 0 / 0.48), transparent 28%, transparent 72%, rgb(0 0 0 / 0.58));
   content: "";
   inset: 0;
   pointer-events: none;
   position: absolute;
   z-index: 3;
+}
+
+.reading-room-artifact {
+  display: grid;
+  justify-items: center;
+  margin: 0;
+  max-width: min(44rem, 100%);
+  position: relative;
+  transform: translate3d(0, 0, 0);
+  transition:
+    filter 900ms ease,
+    opacity 900ms ease,
+    transform 900ms ease;
+  width: 100%;
+  z-index: 4;
+}
+
+.reading-room-artifact[data-opening="true"] {
+  filter: brightness(1.08);
+  transform: translate3d(-1.5rem, 0, 5rem) rotateX(1deg) rotateY(-4deg) scale(1.08);
+}
+
+.reading-room-artifact__case {
+  display: flex;
+  justify-content: center;
+  max-height: min(76svh, 49rem);
+  position: relative;
+  width: min(28rem, 72vw);
+}
+
+.reading-room-artifact__glow {
+  background:
+    radial-gradient(ellipse at 50% 12%, rgb(255 245 213 / 0.42), transparent 20rem),
+    radial-gradient(ellipse at 50% 52%, rgb(167 122 45 / 0.24), transparent 18rem);
+  filter: blur(10px);
+  inset: -14% -34%;
+  opacity: 0.9;
+  position: absolute;
+}
+
+.reading-room-artifact__main {
+  border: 1px solid rgb(255 250 240 / 0.2);
+  box-shadow:
+    0 30px 70px rgb(0 0 0 / 0.58),
+    0 0 80px rgb(167 122 45 / 0.18);
+  line-height: 0;
+  max-height: min(76svh, 49rem);
+  overflow: hidden;
+  position: relative;
+  transform: perspective(1400px) rotateX(1.5deg) rotateY(-5deg) rotateZ(0.35deg);
+}
+
+.reading-room-artifact__image {
+  display: block;
+  height: min(76svh, 49rem);
+  max-width: 100%;
+  object-fit: contain;
+  width: auto;
+}
+
+.reading-room-artifact__glass {
+  background:
+    linear-gradient(108deg, transparent 0 30%, rgb(255 255 255 / 0.24) 39%, transparent 48% 100%),
+    radial-gradient(circle at 62% 12%, rgb(255 255 255 / 0.18), transparent 8rem);
+  inset: -0.5rem;
+  opacity: 0.42;
+  pointer-events: none;
+  position: absolute;
+}
+
+.reading-room-artifact__shadow {
+  background: radial-gradient(ellipse at center, rgb(0 0 0 / 0.62), transparent 68%);
+  bottom: -2.8rem;
+  filter: blur(6px);
+  height: 4.6rem;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 74%;
+}
+
+.reading-room-artifact__caption {
+  backdrop-filter: blur(14px);
+  background: rgb(5 4 3 / 0.44);
+  border: 1px solid rgb(211 169 92 / 0.26);
+  color: rgb(255 250 240 / 0.62);
+  display: grid;
+  gap: 0.28rem;
+  justify-items: center;
+  margin-top: 1.35rem;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
+.reading-room-artifact__caption span:first-child {
+  color: var(--museum-brass);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.reading-room-artifact__caption span:last-child {
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.reading-room-artifact__details {
+  display: grid;
+  gap: 0.8rem;
+  position: absolute;
+  right: -2.4rem;
+  top: 52%;
+  transform: translateY(-50%);
+  width: 7.5rem;
+}
+
+.reading-room-detail {
+  aspect-ratio: 3 / 4;
+  background: rgb(5 4 3 / 0.58);
+  border: 1px solid rgb(255 250 240 / 0.18);
+  box-shadow: 0 18px 42px rgb(0 0 0 / 0.38);
+  overflow: hidden;
+  position: relative;
+  transition:
+    border-color 260ms ease,
+    transform 260ms ease;
+}
+
+.reading-room-detail:hover {
+  border-color: rgb(211 169 92 / 0.62);
+  transform: translateY(-2px);
+}
+
+.reading-room-detail__image {
+  filter: saturate(0.86) contrast(1.04);
+  object-fit: cover;
+}
+
+.reading-room-detail::after {
+  background: linear-gradient(180deg, transparent 42%, rgb(0 0 0 / 0.72));
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.reading-room-detail span {
+  bottom: 0.48rem;
+  color: var(--museum-ivory);
+  font-size: 0.62rem;
+  font-weight: 800;
+  left: 0.55rem;
+  letter-spacing: 0.08em;
+  position: absolute;
+  right: 0.55rem;
+  text-transform: uppercase;
+  z-index: 1;
 }
 
 .reading-room-canvas,
@@ -955,6 +1117,27 @@ a {
 
   .reading-room-stage {
     min-height: 48svh;
+    padding: 1rem 0 6rem;
+  }
+
+  .reading-room-artifact {
+    max-width: min(38rem, 100%);
+  }
+
+  .reading-room-artifact[data-opening="true"] {
+    transform: translateY(-0.75rem) scale(1.04);
+  }
+
+  .reading-room-artifact__case {
+    width: min(25rem, 78vw);
+  }
+
+  .reading-room-artifact__details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 1rem;
+    position: static;
+    transform: none;
+    width: min(28rem, 86vw);
   }
 
   .reading-room-visit-panel {
@@ -984,6 +1167,24 @@ a {
 
   .reading-room-stage {
     min-height: 24rem;
+    padding-bottom: 6.5rem;
+  }
+
+  .reading-room-artifact__case {
+    width: min(20rem, 82vw);
+  }
+
+  .reading-room-artifact__image {
+    height: min(52svh, 33rem);
+  }
+
+  .reading-room-artifact__caption {
+    width: min(22rem, 88vw);
+  }
+
+  .reading-room-artifact__details {
+    gap: 0.55rem;
+    width: min(21rem, 88vw);
   }
 
   .reading-room-object-label {
