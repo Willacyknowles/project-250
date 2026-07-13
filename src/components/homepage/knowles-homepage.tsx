@@ -130,6 +130,36 @@ export function KnowlesHomepage() {
         </div>
       </section>
 
+      <section
+        className="home-immersive-pathway"
+        aria-labelledby="immersive-examination"
+      >
+        <div className="home-immersive-pathway__content">
+          <p>{homepageContent.immersiveExhibition.label}</p>
+          <h2 id="immersive-examination">
+            {homepageContent.immersiveExhibition.title}
+          </h2>
+          <span>{homepageContent.immersiveExhibition.copy}</span>
+          <MetadataList
+            items={homepageContent.immersiveExhibition.metadata}
+            variant="light"
+          />
+          <MuseumAction
+            href={homepageContent.immersiveExhibition.href as Route}
+          >
+            {homepageContent.immersiveExhibition.primaryAction}
+          </MuseumAction>
+        </div>
+        <div className="home-immersive-pathway__image">
+          <Image
+            alt={homepageContent.immersiveExhibition.image.alt}
+            fill
+            sizes="(max-width: 900px) 92vw, 46vw"
+            src={homepageContent.immersiveExhibition.image.src}
+          />
+        </div>
+      </section>
+
       <section className="home-section home-collection" id="collection">
         <SectionHeader
           copy="A growing set of object records, case files, and research pathways for rare English Bibles and related material."

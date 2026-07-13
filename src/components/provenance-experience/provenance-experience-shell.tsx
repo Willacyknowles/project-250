@@ -132,8 +132,8 @@ export function ProvenanceExperienceShell({
       setOrientationOpen(true);
     }
 
-    window.setTimeout(() => moveToNode(0), 80);
-  }, [experience.id, moveToNode]);
+    window.setTimeout(() => moveToNode(0), reducedMotion ? 80 : 850);
+  }, [experience.id, moveToNode, reducedMotion]);
 
   const closeOrientation = useCallback(() => {
     setOrientationOpen(false);
@@ -204,7 +204,11 @@ export function ProvenanceExperienceShell({
   return (
     <main className="provenance-experience" data-started={started}>
       <section className="provenance-entry" aria-labelledby="provenance-title">
-        <ArtifactStage experience={experience} />
+        <ArtifactStage
+          experience={experience}
+          onBegin={beginExperience}
+          started={started}
+        />
         <div className="provenance-entry__copy">
           <p>{experience.collectionLabel}</p>
           <h1 id="provenance-title">{experience.title}</h1>

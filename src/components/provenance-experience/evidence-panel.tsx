@@ -80,9 +80,7 @@ export function EvidencePanel({ experience, node, onClose }: EvidencePanelProps)
             >
               Open the Case File
             </Link>
-          ) : (
-            <span>Case file pending</span>
-          )}
+          ) : null}
           <Link href={experience.exitHref as Route}>Return to the Collection</Link>
         </div>
       </div>

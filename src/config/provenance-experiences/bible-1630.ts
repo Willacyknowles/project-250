@@ -1,6 +1,45 @@
-import type { ProvenanceExperience } from "@/types/provenance-experience";
+import type {
+  ProvenanceExperience,
+  ProvenanceExperienceImage,
+} from "@/types/provenance-experience";
 
 const objectId = "1630-king-james-bible";
+const basePath = "/images/knowles-collection/1630-king-james-bible";
+
+const image = (
+  file: string,
+  label: string,
+  alt: string,
+  width: number,
+  height = 1280,
+): ProvenanceExperienceImage => ({
+  alt,
+  height,
+  label,
+  src: `${basePath}/${file}`,
+  width,
+});
+
+const frontBoard = image(
+  "front-board.jpg",
+  "Closed volume",
+  "The 1630 King James Bible standing closed, showing a worn brown binding with brass decoration.",
+  947,
+);
+
+const angledBoard = image(
+  "front-board-angled.jpg",
+  "Front board and fittings",
+  "Angled view of the closed 1630 King James Bible showing the front board, worn leather, and metal fittings.",
+  874,
+);
+
+const foreEdge = image(
+  "fore-edge.jpg",
+  "Fore edge",
+  "Fore-edge view of the 1630 King James Bible showing the page block between the boards.",
+  937,
+);
 
 export const bible1630ProvenanceExperience = {
   id: "prototype-1630-king-james-bible",
@@ -11,11 +50,14 @@ export const bible1630ProvenanceExperience = {
   title: "396 Years of the King James Bible",
   subtitle: "History as Inheritance",
   thematicLine: "Follow the surviving evidence through time.",
-  statusLabel: "Development Prototype",
+  statusLabel: "Active Investigation",
   statusDescription:
-    "The repository does not yet contain a public 1630 object record, evidence set, source set, or artifact photography. This prototype validates the interaction model without publishing historical claims.",
-  exitHref: "/",
-  developmentOnly: true,
+    "This photographic examination begins with the surviving volume and separates visible evidence from interpretation still under review.",
+  entryImage: frontBoard,
+  exitHref: "/#collection",
+  sourceHref: "/#research",
+  unresolvedHref: "/#access",
+  developmentOnly: false,
   orientation: {
     desktop:
       "Scroll to move through time. Select an evidence marker to examine it. Use arrow keys to move, Enter to open, Escape to close, H for help, and M for sound.",
@@ -24,109 +66,112 @@ export const bible1630ProvenanceExperience = {
   },
   nodes: [
     {
-      id: "object-record-needed",
+      id: "surviving-object",
       objectId,
-      dateLabel: "Object record pending",
-      category: "open-question",
-      title: "Object Record Needed",
-      evidenceKind: "unresolved-question",
-      observation:
-        "No public case-file record for the 1630 King James Bible exists in the repository.",
-      question:
-        "What verified object record should establish identity, date evidence, format, condition, and research scope?",
-      interpretation:
-        "The prototype can test movement and evidence presentation, but historical interpretation must wait for a reviewed record.",
-      sourceSummary: "No source record is currently attached to this object.",
-      confidence: "unresolved",
-      confidenceRationale:
-        "The repository contains only a future collection pathway, not reviewed object evidence.",
-      evidenceIds: [],
-      sourceIds: [],
-      developmentOnly: true,
-    },
-    {
-      id: "artifact-photography-needed",
-      objectId,
-      dateLabel: "Photography required",
+      dateLabel: "Object Encounter",
       category: "material-evidence",
-      title: "Artifact Photography Required",
+      title: "The Surviving Object",
       evidenceKind: "direct-observation",
       observation:
-        "No 1630 artifact photographs are available in public assets.",
+        "The volume survives as a substantial closed book with worn brown leather, brass decoration, metal fittings, raised spine bands, and a visible page block.",
       question:
-        "Which views are required before visitors can examine the binding, page edges, inscriptions, or material details?",
+        "Which visible features belong to the book's original manufacture, and which belong to later binding, repair, handling, or storage?",
       interpretation:
-        "A high-quality 2.5D object encounter should use real photography only after the object has been documented.",
-      sourceSummary: "Image source and capture details are missing.",
-      confidence: "unresolved",
+        "The exterior offers the first evidence layer. Its wear, fittings, spine, and page edges can be examined before any ownership history is asserted.",
+      sourceSummary:
+        "Current evidence is limited to direct photographic observation of the object exterior.",
+      confidence: "supported",
       confidenceRationale:
-        "The experience cannot represent the object visually until real artifact photography is supplied.",
+        "The exterior features named here are visible in supplied object photographs; their dating and sequence remain under review.",
+      image: angledBoard,
       evidenceIds: [],
       sourceIds: [],
-      developmentOnly: true,
     },
     {
-      id: "evidence-model-ready",
+      id: "printed-in-london-1630",
       objectId,
-      dateLabel: "Evidence model ready",
-      category: "research-revision",
-      title: "Evidence Model Ready",
+      dateLabel: "1630",
+      startYear: 1630,
+      category: "printing",
+      title: "Printed in London, 1630",
+      evidenceKind: "documented-fact",
+      observation:
+        "The object is identified in this exhibition as a 1630 King James Bible; the imprint and bibliographic record remain the evidence to be reviewed in detail.",
+      question:
+        "How should the imprint be transcribed, and which bibliography or catalogue record should support the publication statement?",
+      interpretation:
+        "The date anchors the examination, but printer, edition, and bibliographic identity should remain tied to reviewed title-page and imprint evidence.",
+      sourceSummary:
+        "Imprint transcription and bibliographic source review are still being prepared for public citation.",
+      confidence: "possible",
+      confidenceRationale:
+        "The exhibition title supplies the working date; detailed bibliographic confidence awaits review of the imprint and sources.",
+      evidenceIds: [],
+      sourceIds: [],
+    },
+    {
+      id: "title-page-identity",
+      objectId,
+      dateLabel: "Bibliographic Identity",
+      category: "documentary-source",
+      title: "The Title Page as Identity",
+      evidenceKind: "supported-inference",
+      observation:
+        "The title page is the expected primary witness for edition identity, wording, printer information, and publication date.",
+      question:
+        "What exactly appears on the title page, and how does it compare with reviewed bibliographic descriptions?",
+      interpretation:
+        "Identity should be established from transcription and source comparison rather than from the date label alone.",
+      sourceSummary:
+        "Title-page photography and catalogue comparison are under review before transcription is published.",
+      confidence: "unresolved",
+      confidenceRationale:
+        "The title page has not yet been connected to a reviewed public source in this repository.",
+      evidenceIds: [],
+      sourceIds: [],
+    },
+    {
+      id: "addressed-to-a-king",
+      objectId,
+      dateLabel: "Dedication",
+      category: "documentary-source",
+      title: "Addressed to a King",
       evidenceKind: "contextual-association",
       observation:
-        "Project 250 already separates evidence, claims, sources, timeline events, and confidence states for the 1610 case file.",
+        "King James Bibles commonly include prefatory material addressed to the monarch, but this copy's dedication page must be examined directly.",
       question:
-        "How should the 1630 object inherit this structure once its evidence is reviewed?",
+        "Which prefatory leaves survive in this volume, and what do they reveal about completeness and use?",
       interpretation:
-        "The same experience engine can connect future 1630 nodes to evidence IDs, source IDs, confidence rationale, and case-file links.",
-      sourceSummary: "Architecture and existing 1610 records provide the structural model.",
+        "The dedication can provide context for the edition, but it should not be used as provenance evidence unless this copy's page is documented.",
+      sourceSummary:
+        "Dedication-page photography and completeness notes are under review.",
       confidence: "contextual",
       confidenceRationale:
-        "This is a platform architecture observation, not a historical claim about the 1630 object.",
+        "The dedication is relevant edition context; this copy's surviving prefatory leaves still need direct documentation.",
       evidenceIds: [],
       sourceIds: [],
-      developmentOnly: true,
     },
     {
-      id: "case-file-pending",
+      id: "later-hands-enter-the-book",
       objectId,
-      dateLabel: "Case file pending",
-      category: "documentary-source",
-      title: "Case File Pending",
+      dateLabel: "Later Hands",
+      category: "inscription",
+      title: "Later Hands Enter the Book",
       evidenceKind: "unresolved-question",
       observation:
-        "There is no public route for a 1630 King James Bible case file.",
+        "Any inscriptions, family records, signatures, or marginal notes would belong to a later evidence layer distinct from printing and binding.",
       question:
-        "Which evidence categories, sources, claims, and open questions should be created before publication?",
+        "Which later marks are present, who made them, and can any be connected to documentary sources without overstating the evidence?",
       interpretation:
-        "The immersive route should remain separate from historical publication until the case file exists.",
-      sourceSummary: "No 1630 case-file source library is present.",
+        "Human marks may eventually become the strongest provenance clues, but names and relationships must be tested before they become part of the story.",
+      sourceSummary:
+        "Inscription and family-record photography are still under curatorial review.",
       confidence: "unresolved",
       confidenceRationale:
-        "No repository source can yet support a public 1630 chronology.",
+        "No ownership relationship or family connection is asserted until the marks and sources are reviewed together.",
+      image: foreEdge,
       evidenceIds: [],
       sourceIds: [],
-      developmentOnly: true,
-    },
-    {
-      id: "investigation-continues",
-      objectId,
-      dateLabel: "Investigation continues",
-      category: "open-question",
-      title: "The Investigation Continues",
-      evidenceKind: "unresolved-question",
-      observation:
-        "A rare book does not arrive with a complete history.",
-      question:
-        "What survives, what can be verified, and what must remain unknown?",
-      interpretation:
-        "The finished experience should end with stewardship, not certainty.",
-      sourceSummary: "Future evidence and sources will determine the public narrative.",
-      confidence: "unresolved",
-      confidenceRationale:
-        "The prototype intentionally preserves uncertainty until reviewed records exist.",
-      evidenceIds: [],
-      sourceIds: [],
-      developmentOnly: true,
     },
   ],
 } as const satisfies ProvenanceExperience;

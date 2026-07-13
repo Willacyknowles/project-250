@@ -1679,6 +1679,7 @@ a {
 
 .home-exhibition__content > span,
 .home-section-header > span,
+.home-immersive-pathway__content > span,
 .home-access-panel > span,
 .home-journal-panel > span {
   color: #5f574e;
@@ -1686,6 +1687,108 @@ a {
   font-size: 1.02rem;
   line-height: 1.8;
   margin-top: 1.4rem;
+}
+
+.home-immersive-pathway {
+  background:
+    radial-gradient(ellipse at 72% 36%, rgb(185 154 96 / 0.2), transparent 24rem),
+    linear-gradient(135deg, var(--museum-black-modern), var(--museum-panel-modern));
+  color: var(--bone);
+  display: grid;
+  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(20rem, 0.86fr) minmax(20rem, 1fr);
+  min-height: 82svh;
+  overflow: hidden;
+  padding: clamp(4rem, 8vw, 8rem) clamp(1rem, 6vw, 6rem);
+  position: relative;
+}
+
+.home-immersive-pathway::before {
+  background: linear-gradient(90deg, rgb(185 154 96 / 0.42), transparent);
+  content: "";
+  height: 1px;
+  left: clamp(1rem, 6vw, 6rem);
+  position: absolute;
+  right: clamp(1rem, 6vw, 6rem);
+  top: clamp(2rem, 4vw, 4rem);
+}
+
+.home-immersive-pathway__content {
+  align-self: center;
+  max-width: 42rem;
+  position: relative;
+  z-index: 1;
+}
+
+.home-immersive-pathway__content > p {
+  color: var(--muted-gold);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.home-immersive-pathway__content h2 {
+  color: var(--bone);
+  font-family: var(--museum-font-display);
+  font-size: clamp(3.6rem, 7vw, 7.4rem);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 0.88;
+  margin: 1rem 0 0;
+  max-width: 9ch;
+}
+
+.home-immersive-pathway__content > span {
+  color: rgb(244 239 231 / 0.72);
+}
+
+.home-immersive-pathway .home-metadata-list {
+  border-color: rgb(244 239 231 / 0.16);
+}
+
+.home-immersive-pathway .home-metadata-list div {
+  border-color: rgb(244 239 231 / 0.16);
+}
+
+.home-immersive-pathway .home-metadata-list[data-variant="light"] dt {
+  color: rgb(185 154 96 / 0.88);
+}
+
+.home-immersive-pathway .home-metadata-list[data-variant="light"] dd {
+  color: var(--bone);
+}
+
+.home-immersive-pathway .home-action {
+  margin-top: 1.8rem;
+}
+
+.home-immersive-pathway__image {
+  align-self: center;
+  aspect-ratio: 3 / 4;
+  border: 1px solid rgb(244 239 231 / 0.16);
+  box-shadow:
+    0 44px 110px rgb(0 0 0 / 0.56),
+    0 0 100px rgb(185 154 96 / 0.12);
+  min-height: 36rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.home-immersive-pathway__image::after {
+  background:
+    linear-gradient(105deg, transparent 0 36%, rgb(244 239 231 / 0.16) 44%, transparent 52%),
+    radial-gradient(ellipse at 50% 0%, rgb(244 239 231 / 0.22), transparent 18rem);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.home-immersive-pathway__image img {
+  filter: saturate(0.92) contrast(1.08);
+  object-fit: cover;
 }
 
 .home-section {
@@ -2099,9 +2202,14 @@ a.home-collection-card:hover {
 
   .home-section-header,
   .home-exhibition,
+  .home-immersive-pathway,
   .home-evidence,
   .home-access-journal {
     grid-template-columns: 1fr;
+  }
+
+  .home-immersive-pathway__image {
+    min-height: 30rem;
   }
 
   .home-collection-grid,
@@ -2241,6 +2349,7 @@ a.home-collection-card:hover {
   }
 
   .home-exhibition,
+  .home-immersive-pathway,
   .home-section,
   .home-evidence,
   .home-access-panel,
@@ -2253,12 +2362,18 @@ a.home-collection-card:hover {
     min-height: 25rem;
   }
 
+  .home-immersive-pathway__image {
+    min-height: 28rem;
+    order: -1;
+  }
+
   .home-section-header {
     gap: 1rem;
   }
 
   .home-section-header h2,
   .home-exhibition__content h2,
+  .home-immersive-pathway__content h2,
   .home-evidence h2,
   .home-access-panel h2,
   .home-journal-panel h2 {
@@ -2366,6 +2481,37 @@ a.home-collection-card:hover {
   min-height: 78svh;
 }
 
+.provenance-artifact-stage__button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: zoom-in;
+  display: block;
+  padding: 0;
+  transform-origin: center;
+  transition:
+    filter 700ms ease,
+    opacity 700ms ease,
+    transform 900ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.provenance-artifact-stage__button:focus-visible {
+  outline: 2px solid var(--muted-gold);
+  outline-offset: 0.7rem;
+}
+
+.provenance-artifact-stage__button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-0.35rem) scale(1.015);
+}
+
+.provenance-experience[data-started="true"] .provenance-artifact-stage__button {
+  cursor: default;
+  filter: brightness(1.12) contrast(1.05);
+  opacity: 0.72;
+  transform: translateX(8vw) scale(1.18);
+}
+
 .provenance-artifact-stage__light {
   background:
     radial-gradient(ellipse at 50% 12%, rgb(244 239 231 / 0.34), transparent 22rem),
@@ -2386,6 +2532,17 @@ a.home-collection-card:hover {
   overflow: hidden;
   position: relative;
   width: min(32rem, 72vw);
+}
+
+.provenance-artifact-stage__image::after {
+  background:
+    linear-gradient(105deg, transparent 0 38%, rgb(244 239 231 / 0.18) 44%, transparent 52%),
+    radial-gradient(ellipse at 42% 4%, rgb(244 239 231 / 0.24), transparent 18rem);
+  content: "";
+  inset: 0;
+  opacity: 0.44;
+  pointer-events: none;
+  position: absolute;
 }
 
 .provenance-artifact-stage__image img {
@@ -2461,6 +2618,14 @@ a.home-collection-card:hover {
 .provenance-entry__copy {
   align-self: center;
   max-width: 38rem;
+  transition:
+    opacity 650ms ease,
+    transform 800ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.provenance-experience[data-started="true"] .provenance-entry__copy {
+  opacity: 0.26;
+  transform: translateX(1.25rem);
 }
 
 .provenance-entry__copy > p,
@@ -2905,7 +3070,7 @@ a.home-collection-card:hover {
 @media (max-width: 920px) {
   .provenance-entry {
     grid-template-columns: 1fr;
-    padding: 4rem 1rem 2rem;
+    padding: 5.2rem 1rem 8rem;
   }
 
   .provenance-entry::after {
@@ -2918,6 +3083,20 @@ a.home-collection-card:hover {
     min-height: 48svh;
   }
 
+  .provenance-artifact-stage__button {
+    width: min(22rem, 88vw);
+  }
+
+  .provenance-experience[data-started="true"] .provenance-artifact-stage__button {
+    opacity: 0.82;
+    transform: translateY(0.6rem) scale(1.04);
+  }
+
+  .provenance-artifact-stage__image {
+    max-height: 44svh;
+    width: min(22rem, 88vw);
+  }
+
   .provenance-artifact-stage__pending {
     max-height: 44svh;
     width: min(22rem, 88vw);
@@ -2925,10 +3104,17 @@ a.home-collection-card:hover {
 
   .provenance-entry__copy {
     max-width: min(24rem, calc(100vw - 2rem));
+    width: 100%;
   }
 
   .provenance-entry__copy h1 {
-    font-size: clamp(3.4rem, 14vw, 5.2rem);
+    font-size: clamp(3rem, 12vw, 4.1rem);
+    max-width: 7.2ch;
+    overflow-wrap: break-word;
+  }
+
+  .provenance-entry__copy strong {
+    font-size: clamp(1.4rem, 7vw, 2.1rem);
   }
 
   .provenance-entry__actions button {
@@ -2936,16 +3122,30 @@ a.home-collection-card:hover {
   }
 
   .provenance-controls {
-    left: 1rem;
-    right: 1rem;
+    box-sizing: border-box;
+    display: grid;
+    gap: 0.45rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    left: 50%;
+    right: auto;
     top: 1rem;
+    transform: translateX(-50%);
+    width: min(17rem, calc(100vw - 2rem));
   }
 
   .provenance-controls a,
   .provenance-controls button {
-    flex: 1;
-    padding-left: 0.4rem;
-    padding-right: 0.4rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.07em;
+    min-width: 0;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .provenance-experience:not([data-started="true"]) .provenance-progress {
+    display: none;
   }
 
   .provenance-progress {

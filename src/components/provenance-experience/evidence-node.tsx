@@ -34,7 +34,7 @@ export function EvidenceNode({ active, node, onOpen }: EvidenceNodeProps) {
         <div className="provenance-node__labels">
           <span>{evidenceKindLabels[node.evidenceKind]}</span>
           <span>{confidenceLabels[node.confidence]}</span>
-          {node.developmentOnly ? <span>Development Only</span> : null}
+          {node.developmentOnly ? <span>Internal Review</span> : null}
         </div>
         <p>{node.observation}</p>
         <button onClick={() => onOpen(node)} type="button">

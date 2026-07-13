@@ -1,4 +1,7 @@
-import { readingRoomImages } from "@/config/reading-room-assets";
+import {
+  kingJames1630Images,
+  readingRoomImages,
+} from "@/config/reading-room-assets";
 
 export const homepageContent = {
   navigation: [
@@ -45,6 +48,21 @@ export const homepageContent = {
       ["Case file", "Available"],
     ],
   },
+  immersiveExhibition: {
+    label: "Immersive Examination",
+    title: "396 Years of the King James Bible",
+    copy:
+      "Enter a full-screen photographic journey through the surviving evidence of a 1630 King James Bible. The experience begins with the object itself, then follows what can be observed, questioned, and tested.",
+    image: kingJames1630Images.primary,
+    metadata: [
+      ["Object", "1630 King James Bible"],
+      ["Collection", "The Knowles Collection"],
+      ["Status", "Active Investigation"],
+      ["Experience", "Full-screen provenance path"],
+    ],
+    primaryAction: "Begin the Examination",
+    href: "/provenance/1630-king-james-bible",
+  },
   collection: [
     {
       actionLabel: "Open Case File",
@@ -58,14 +76,14 @@ export const homepageContent = {
       title: "1610 Geneva Bible",
     },
     {
-      actionLabel: "View Prototype",
-      category: "Future Object Record",
+      actionLabel: "Begin the Examination",
+      category: "Immersive Examination",
       description:
-        "A development pathway for testing provenance exploration before the 1630 object record, evidence, and photography are ready for public review.",
+        "A photographic provenance path that begins with the surviving object and keeps interpretation separate from visible evidence.",
       href: "/provenance/1630-king-james-bible",
-      image: null,
+      image: kingJames1630Images.primary,
       meta: "1630",
-      status: "Cataloguing in progress",
+      status: "Active Investigation",
       title: "1630 King James Bible",
     },
     {
