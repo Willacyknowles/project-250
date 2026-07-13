@@ -58,10 +58,11 @@ export const homepageContent = {
       title: "1610 Geneva Bible",
     },
     {
-      actionLabel: "Catalogue Pending",
+      actionLabel: "View Prototype",
       category: "Future Object Record",
       description:
-        "A reserved collection pathway for a future King James Bible record once cataloguing material is ready for public review.",
+        "A development pathway for testing provenance exploration before the 1630 object record, evidence, and photography are ready for public review.",
+      href: "/provenance/1630-king-james-bible",
       image: null,
       meta: "1630",
       status: "Cataloguing in progress",
